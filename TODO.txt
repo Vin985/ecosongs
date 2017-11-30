@@ -1,0 +1,11 @@
+wac2wav
+--------
+
+- Change authorship/give credit where it is ext_modules
+
+audioIO
+--------
+
+generate_composite
+  - error checks
+  - type checks
