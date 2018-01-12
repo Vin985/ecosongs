@@ -562,7 +562,7 @@ def remove_noiseInSpectro(spectro,
     if dB:
         spectro = 20 * np.log10(spectro)
 
-    len_spectro_e = len(spectro[0])
+    len_spectro_e = spectro.shape[0]
     histo_size = int(len_spectro_e / histo_relative_size)
 
     background_noise = []

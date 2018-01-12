@@ -3,27 +3,53 @@ import numpy as np
 
 from spectrograms import create_image, create_spectrogram, generate_composite
 
-offset = 300
-duration = 5
+offset = 0
+duration = 15
 file_path = "../../data/wav/test_real.wav"
 
 audio, sr = librosa.load(file_path, sr=None)
+
 start = offset * sr
 end = start + duration * sr
 sample = audio[start:end]
 
-res = generate_composite(
-    sample,
-    n_fft=[128, 512, 2048],
-    color_masks=[(255, 0, 0), (0, 255, 0), (0, 0, 255)],
-    duration=5)
-res.show()
+# im = create_spectrogram(
+#     sample,
+#     duration=duration,
+#     n_fft=512,
+#     contrast=1.5,
+#     remove_noise=False,
+#     color_mask=(255, 0, 0))
+# im = create_spectrogram(
+#     sample,
+#     duration=duration,
+#     n_fft=2048,
+#     contrast=1.5,
+#     remove_noise=True,
+#     color_mask=(255, 0, 0))
+
+# im = create_spectrogram(
+#     audio,
+#     duration=duration,
+#     n_fft=2048,
+#     contrast=1.5,
+#     remove_noise=True,
+#     color_mask=(255, 0, 0))
+# im.show()
+
+# res = generate_composite(
+#     sample,
+#     n_fft=[128, 512, 2048],
+#     color_masks=[(255, 0, 0), (0, 255, 0), (0, 0, 255)],
+#     duration=duration)
+# res.show()
+# res.save("test.png")
 
 #
 # create_spectrogram(y, sr, offset=295, duration=25, n_fft=128, contrast=1.5)
 # create_spectrogram(y, sr, offset=295, duration=25, n_fft=512, contrast=1.5)
 # create_spectrogram(y, sr, offset=295, duration=25, n_fft=2048, contrast=1.5)
-
+#
 # create_spectrogram(
 #     y,
 #     sr,
