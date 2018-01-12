@@ -1,21 +1,26 @@
-import configparser
+import timeit
 
+import config
 from audiofile import Recording
-from generators import SpectrogramGenerator
+from image import ImageGenerator
+from spectrogram import SpectrogramGenerator
 
-#from spectrograms import create_image
-
-config = configparser.ConfigParser()
-config.read("ecosongs.conf")
+conf = config.Config("ecosongs.conf")
+specgen = SpectrogramGenerator(conf.spectrogram)
+imgen = ImageGenerator(conf.image)
 
 r = Recording("../../data/wav/test_real.wav")
-
-specgen = SpectrogramGenerator(config)
-
 sample = r.getSample(0, 15)
 
-print(sample)
-print(sample.length / sample.sr)
+sample.generate_spectrograms(specgen)
+
+imgen.generate_composite(sample.spectrograms)
+
+t2 = timeit.Timer(
+    "imgen.generate_composite(sample.spectrograms)", globals=globals())
+print(t2.repeat(number=50))
+
+#imgen.create_image(sample, 512, show=True)
 
 # file_path = "../../data/wav/test_real.wav"
 #
