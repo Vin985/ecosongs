@@ -17,14 +17,14 @@ class ImageGenerator:
         # Normalize spectrogram in [0:1]
         spec -= spec.min(axis=None)
         spec /= spec.max(axis=None)
-        if (self.config['invert_colors']):
+        if self.config['invert_colors']:
             spec = 1 - spec
         spec = spec * 255
         # flip upside down since writing image start from top left
         spec = np.flipud(spec)
         return spec
 
-    def spec2img(self, spec, color_mask):
+    def spec2img(self, spec, color_mask=(255, 0, 0)):
 
         # spec = librosa.amplitude_to_db(spec, ref=np.max, top_db=80.0)
         spec = self.__prepare_spectrogram(spec)
@@ -37,7 +37,7 @@ class ImageGenerator:
         img = ImageOps.colorize(img, (0, 0, 0), color_mask)
 
         # enhance contrast
-        if (self.config['contrast'] > 0):
+        if self.config['contrast']:
             c_enh = ImageEnhance.Contrast(img)
             img = c_enh.enhance(self.config['contrast'])
 
@@ -48,11 +48,16 @@ class ImageGenerator:
         img = img.resize((int(299 * spec.duration / 1.5), 299), Image.BILINEAR)
         return np.asarray(img)
 
-    def generate_composite(self, specs):
-        # TODO: iterate over the audio file
+    def generate_composite(self, sample, specgen):
         # TODO: more checks
-        if len(specs) != 3:
-            print("3 spectrograms must be provided")
+        if len(self.config['composite_ffts']) != 3:
+            print("3 spectrograms sizes must be provided in the "\
+            " composite_ffts option in the configuration file")
+            return ()
+        specs = [
+            specgen.create_spectrogram(sample, fft)
+            for fft in self.config['composite_ffts']
+        ]
         res = itertools.starmap(self.create_composite_part,
                                 zip(specs, self.config['color_masks']))
         res = functools.reduce(np.add, res)

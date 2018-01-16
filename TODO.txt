@@ -3,6 +3,13 @@ wac2wav
 
 - Change authorship/give credit where it is
 
+File management
+----------------
+- convert wac to wav to flac
+
+spectrograms
+-------------
+
 generate_composite
   - error checks
   - type checks
@@ -15,4 +22,3 @@ Remove silence in files?
  - Metadata to compensate for time absence
  - Based on SNR?
  - Plot SNR as function of time => time window to compute SNR?
-

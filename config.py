@@ -13,9 +13,10 @@ class Config:
 
     def __spectrogram_conf(self, config):
         self.spectrogram = {}
-        self.spectrogram['ffts'] = json.loads(
-            config.get("spectrogram", "ffts", fallback=[512]))
+
         self.spectrogram['window'] = config.get("spectrogram", "window")
+        self.spectrogram['default_fft'] = config.getint(
+            "spectrogram", "default_fft", fallback=512)
         # noise removal parameters
         self.spectrogram['remove_noise'] = config.getboolean(
             "noise_removal", "remove_noise")
@@ -27,12 +28,14 @@ class Config:
     def __image_conf(self, config):
         self.image = {}
         colors = json.loads(
-            config.get("image", "color_masks", fallback=["red"]))
+            config.get(
+                "image", "color_masks", fallback='["red", "lime", "blue"]'))
         self.image['color_masks'] = list(map(self.get_color_rgb, colors))
-        self.image['contrast'] = config.getint(
-            "image", "contrast", fallback="0")
+        self.image['contrast'] = config.getint("image", "contrast", fallback=0)
         self.image['invert_colors'] = config.getboolean(
             "image", "invert_colors", fallback=False)
+        self.image['composite_ffts'] = json.loads(
+            config.get("image", "composite_ffts"))
 
     def get_color_rgb(self, color):
         if type(color) is tuple:
