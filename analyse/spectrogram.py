@@ -33,33 +33,23 @@ class SpectrogramGenerator:
 
         specdb = librosa.amplitude_to_db(spectro, ref=np.max)
         if self.config['remove_noise']:
-            # specdb = self.remove_noise(
-            #     specdb,
-            #     histo_relative_size=self.config['hist_rel_size'],
-            #     window_smoothing=self.config['window_smoothing'])
-            specdb = self.remove_noise2(specdb)
+            specdb = self.remove_noise(specdb)
             specdb = specdb.astype("float32")
 
         return Spectrogram(specdb, n_fft, sample.duration, sample.sr,
                            self.config)
 
-    def remove_noise(spectro,
-                     histo_relative_size=8,
-                     window_smoothing=5,
-                     N=0.1,
-                     plot=False):
+    def remove_noise(self, spectro):
         """
         Compute a new spectrogram which is "Noise Removed".
 
         spectro: spectrogram of the audio signal
+        Options to be configured in conf file:
         histo_relative_size: ratio between the size of the spectrogram and
            the size of the histogram
         window_smoothing: number of points to apply a mean filtering on the
            histogram and on the background noise curve
         N: Parameter to set the threshold around the modal intensity
-        dB: If set at True, the spectrogram is converted in decibels
-        plot: if set at True, the function plot the orginal and noise
-           removed spectrograms
 
         Output:
             Noise removed spectrogram
@@ -69,16 +59,18 @@ class SpectrogramGenerator:
            Queensland University of Technology, Brisbane.
         """
 
-        low_value = 1.e-07  # Minimum value for the new spectrogram (preferably slightly higher than 0)
+        # Min value for the new spectrogram (preferably slightly higher than 0)
+        low_value = 1.e-07
+        N = self.config['N']
 
         len_spectro_e = spectro.shape[0]
-        histo_size = int(len_spectro_e / histo_relative_size)
+        histo_size = int(len_spectro_e / self.config['hist_rel_size'])
 
         background_noise = []
         for row in spectro:
             hist, bin_edges = np.histogram(row, bins=histo_size, density=False)
 
-            ws = int(window_smoothing / 2)
+            ws = int(self.config['window_smoothing'] / 2)
             hist_smooth = ([
                 np.mean(hist[i - ws:i + ws])
                 for i in range(ws, len(hist) - ws)

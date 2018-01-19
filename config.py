@@ -24,6 +24,8 @@ class Config:
             "noise_removal", "window_smoothing")
         self.spectrogram['hist_rel_size'] = config.getint(
             "noise_removal", "hist_rel_size")
+        self.spectrogram['N'] = config.getfloat(
+            "noise_removal", "N", fallback=0.1)
 
     def __image_conf(self, config):
         self.image = {}

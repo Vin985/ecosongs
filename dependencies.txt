@@ -1,0 +1,4 @@
+librosa
+webcolors
+Pillow
+matplotlib

@@ -1,5 +1,3 @@
-import librosa
-
 import config
 from analyse.image import ImageGenerator
 from analyse.spectrogram import SpectrogramGenerator
