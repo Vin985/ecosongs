@@ -14,11 +14,14 @@ generate_composite
   - error checks
   - type checks
 
-noise_reduction
-  - histo size
-  - Check how it works
-
 Remove silence in files?
  - Metadata to compensate for time absence
  - Based on SNR?
  - Plot SNR as function of time => time window to compute SNR?
+
+Refactor
+----------
+
+Put all audio classes in single file?
+
+Put all indexes in single class?

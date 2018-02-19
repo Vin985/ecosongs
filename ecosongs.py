@@ -3,9 +3,10 @@
 import os
 
 import utils.files as files
-from utils.wacconverter import WacConverter
 
 from gui.gui import Ui_Ecosongs
+from gui.QWacConverter import QWacConverter
+from PySide2.QtCore import Slot
 from PySide2.QtWidgets import (QApplication, QFileDialog, QMainWindow,
                                QMessageBox)
 
@@ -17,8 +18,8 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
     def __init__(self):
         super(self.__class__, self).__init__()
         self.setupUi(self)
+        self.wacConverter = QWacConverter(self.logConsole)
         self.linkEvents()
-        self.wacConverter = WacConverter()
 
     # Define callbacks when events happen
     def linkEvents(self):
@@ -26,26 +27,38 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
         self.srcBrowseBtn.clicked.connect(self.browseSrc)
         self.destBrowseBtn.clicked.connect(self.browseDest)
         self.convertBtn.clicked.connect(self.convert)
+        self.cancelBtn.clicked.connect(self.wacConverter.requestInterruption)
         # ComboBox
         self.srcPathInput.textChanged.connect(self.setRoot)
         self.destPathInput.textChanged.connect(self.setDest)
         # Checkbox
         self.isFolder.toggled.connect(self.folder_opt)
-        #self.keepStruct.toggled.connect(self.struct_opt)
+        self.overwrite.toggled.connect(self.setOverwrite)
+        #Thread
+        self.wacConverter.started.connect(self.start_thread)
+        self.wacConverter.converting.connect(self.log)
+        self.wacConverter.finished.connect(self.endConversion)
+
+    def start_thread(self):
+        self.logConsole.clear()
 
     # Update ui based on selected options
     def folder_opt(self):
         self.isRecursive.setEnabled(self.isFolder.isChecked())
-        #self.keepStruct.setEnabled(self.isFolder.isChecked())
 
-    def struct_opt(self):
-        self.wacConverter.keepStruct = self.keepStruct.isChecked()
+    def setOverwrite(self):
+        self.wacConverter.overwrite = self.overwrite.isChecked()
 
     def setRoot(self, text):
-        self.wacConverter.rootDir = text  #self.srcPathInput.text()
+        self.wacConverter.setRootDir(text)
 
     def setDest(self, text):
-        self.wacConverter.destDir = text  #self.destPathInput.text()
+        self.wacConverter.destDir = text
+
+    def log(self, text, progress=False):
+        self.logConsole.append(text)
+        if progress:
+            self.progressBar.setValue(self.progressBar.value() + 1)
 
     # Browse source directory
     def browseSrc(self):
@@ -85,7 +98,6 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
         textInput.setText(rootDir)
 
     def getSourceFiles(self):
-        self.wacConverter.rootDir = self.srcPathInput.text()
         self.wacConverter.files = files.get_all_files(
             self.wacConverter.rootDir, FILE_EXT, self.isRecursive)
 
@@ -94,6 +106,7 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
         self.statusbar.showMessage(
             "%d file(s) found" % len(self.wacConverter.files))
 
+    @Slot()
     def convert(self):
         try:
             if not self.wacConverter.files:
@@ -110,11 +123,26 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
                 "{0} file(s) will be converted and saved in {1}".format(
                     len(self.wacConverter.files), self.wacConverter.destDir))
             if ret == QMessageBox.Ok:
-                self.logConsole.clear()
-                self.wacConverter.files_to_wav(self.logConsole)
+                self.startConversion()
+
         except AttributeError:
             self.showAlert(
                 "No files are selected, please select at least one file")
+
+    def startConversion(self):
+        print("start")
+        self.initProgressBar(len(self.wacConverter.files))
+        self.wacConverter.start()
+        self.cancelBtn.setEnabled(True)
+        self.convertBtn.setEnabled(False)
+
+    @Slot()
+    def endConversion(self):
+        print("cancel")
+        self.progressBar.setEnabled(False)
+        self.progressBar.setValue(0)
+        self.convertBtn.setEnabled(True)
+        self.cancelBtn.setEnabled(False)
 
     def showAlert(self, text):
         msgBox = QMessageBox()
@@ -130,6 +158,11 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
         msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         msgBox.setDefaultButton(QMessageBox.Ok)
         return (msgBox.exec_())
+
+    def initProgressBar(self, maxValue):
+        self.progressBar.setEnabled(True)
+        self.progressBar.setMaximum(maxValue)
+        #self.progressBar.setValue(0)
 
 
 if __name__ == '__main__':

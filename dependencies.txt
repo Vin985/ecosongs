@@ -4,3 +4,7 @@ Pillow
 matplotlib
 wac2wav
 cython (wac2wav)
+pysoundfile?
+cv2?
+colormap?
+easydev?

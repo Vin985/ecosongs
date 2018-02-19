@@ -4,6 +4,8 @@ import itertools
 import numpy as np
 from PIL import Image, ImageEnhance, ImageOps
 
+from colormap.colors import Colormap
+
 
 class ImageGenerator:
     def __init__(self, config):
@@ -26,7 +28,6 @@ class ImageGenerator:
 
     def spec2img(self, spec, color_mask=(255, 0, 0)):
 
-        # spec = librosa.amplitude_to_db(spec, ref=np.max, top_db=80.0)
         spec = self.__prepare_spectrogram(spec)
 
         # Create image from float points
@@ -34,12 +35,16 @@ class ImageGenerator:
         # Convert in grayscale
         img = img.convert("L")
         # Colorise spectrogram
-        img = ImageOps.colorize(img, (0, 0, 0), color_mask)
+        if color_mask:
+            img = ImageOps.colorize(img, (0, 0, 0), color_mask)
 
         # enhance contrast
         if self.config['contrast']:
-            c_enh = ImageEnhance.Contrast(img)
-            img = c_enh.enhance(self.config['contrast'])
+            if self.config['contrast'] == -1:
+                img = ImageOps.autocontrast(img)
+            else:
+                c_enh = ImageEnhance.Contrast(img)
+                img = c_enh.enhance(self.config['contrast'])
 
         return img
 

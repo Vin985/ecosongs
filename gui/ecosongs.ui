@@ -35,24 +35,13 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="3" column="0">
-        <widget class="QLabel" name="destinationLabel">
-         <property name="text">
-          <string>Destination</string>
+       <item row="5" column="0" colspan="2">
+        <widget class="QProgressBar" name="progressBar">
+         <property name="enabled">
+          <bool>false</bool>
          </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QPushButton" name="srcBrowseBtn">
-         <property name="text">
-          <string>Browse</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QPushButton" name="destBrowseBtn">
-         <property name="text">
-          <string>Browse</string>
+         <property name="value">
+          <number>0</number>
          </property>
         </widget>
        </item>
@@ -66,6 +55,68 @@
          </property>
          <property name="text">
           <string>Source</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="destinationLabel">
+         <property name="text">
+          <string>Destination</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="4">
+        <widget class="QTextEdit" name="logConsole"/>
+       </item>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="srcBrowseBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QPushButton" name="destBrowseBtn">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QCheckBox" name="overwrite">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Overwrite old files</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2" alignment="Qt::AlignRight">
+        <widget class="QPushButton" name="cancelBtn">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>Cancel</string>
          </property>
         </widget>
        </item>
@@ -132,19 +183,6 @@
          </item>
         </layout>
        </item>
-       <item row="5" column="2">
-        <widget class="QPushButton" name="convertBtn">
-         <property name="text">
-          <string>Convert</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="destPathInput"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="srcPathInput"/>
-       </item>
        <item row="1" column="0">
         <widget class="QCheckBox" name="isRecursive">
          <property name="enabled">
@@ -164,15 +202,43 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="3">
-        <widget class="QTextEdit" name="logConsole"/>
+       <item row="5" column="3">
+        <widget class="QPushButton" name="convertBtn">
+         <property name="text">
+          <string>Convert</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="2">
+        <widget class="QLineEdit" name="destPathInput">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QLineEdit" name="srcPathInput">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>628</width>
+           <height>21</height>
+          </size>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
     </layout>
    </widget>
-   <zorder>groupBox</zorder>
-   <zorder>keepStruct</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -189,13 +255,11 @@
  <layoutdefault spacing="6" margin="9"/>
  <tabstops>
   <tabstop>isFolder</tabstop>
-  <tabstop>isFile</tabstop>
   <tabstop>srcPathInput</tabstop>
   <tabstop>srcBrowseBtn</tabstop>
   <tabstop>destPathInput</tabstop>
   <tabstop>destBrowseBtn</tabstop>
   <tabstop>logConsole</tabstop>
-  <tabstop>convertBtn</tabstop>
  </tabstops>
  <resources/>
  <connections/>

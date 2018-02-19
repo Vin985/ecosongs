@@ -5,15 +5,15 @@ from audio.sample import Sample
 
 
 class Recording(Sample):
-    def __init__(self, path, specgen, audio_type="songmeter"):
+    def __init__(self, path, specgen, audio_type="songmeter", sr=None):
         self.path = path
         self.infos = ExtractInfo(path, audio_type)
-        super().__init__(*self.__loadAudioFile(), specgen)
+        super().__init__(*self.__loadAudioFile(sr), specgen)
 
-    def __loadAudioFile(self):
+    def __loadAudioFile(self, sr):
         # TODO: externalize supported types
         if self.infos.ext in ["wav", "flac"]:
-            return (librosa.load(self.path, sr=None))
+            return (librosa.load(self.path, sr=sr))
         else:
             raise ValueError("Unsupported audio file type")
 

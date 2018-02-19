@@ -1,5 +1,6 @@
 import os
 import re
+import time
 
 from wac2wav import wac2wav
 
@@ -10,16 +11,25 @@ class WacConverter:
         self.destDir = dest
         self.files = files
 
-    def files_to_wav(self, qt_console=None):
-        regex = re.compile(r"^" + self.rootDir + "(.*)\.wac$")
+    def files_to_wav(self):
         for fn in self.files:
-            new = regex.sub(self.destDir + "\\1.wav", fn)
-            dirname = os.path.dirname(new)
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
-            if qt_console:
-                qt_console.append("Converting {0} in {1}".format(fn, new))
-            wac2wav(fn, new)
+            self.file_to_wac(fn)
+
+    def file_to_wav(self, filename):
+        new = self.regex.sub(self.destDir + "\\1.wav", filename)
+        dirname = os.path.dirname(new)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        self.log("Converting {0} in {1}".format(filename, new))
+        time.sleep(1)
+        #wac2wav(filename, new)
+
+    def log(self, text):
+        print(text)
+
+    def setRootDir(self, rootDir):
+        self.rootDir = rootDir
+        self.regex = re.compile(r"^" + self.rootDir + "(.*)\.wac$")
 
 
 # if __name__ == '__main__':

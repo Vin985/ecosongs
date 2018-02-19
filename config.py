@@ -8,8 +8,14 @@ class Config:
     def __init__(self, path):
         config = configparser.ConfigParser()
         config.read(path)
+        self.__db_conf(config)
         self.__spectrogram_conf(config)
         self.__image_conf(config)
+
+    def __db_conf(self, config):
+        self.db = {}
+        self.db['type'] = config.get("database", "type")
+        self.db['name'] = config.get("database", "name")
 
     def __spectrogram_conf(self, config):
         self.spectrogram = {}
