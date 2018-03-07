@@ -1,8 +1,7 @@
 from db.sqlite import SQLiteManager
 
 
-def getDBManager(config):
-    # TODO: Check if type exists
+def get_db_manager(config):
     db = config['type']
     if db == "sqlite":
         return (SQLiteManager(config))
