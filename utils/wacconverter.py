@@ -22,7 +22,7 @@ class WacConverter:
             os.makedirs(dirname)
         self.log("Converting {0} in {1}".format(filename, new))
         time.sleep(1)
-        #wac2wav(filename, new)
+        wac2wav(filename, new)
 
     def log(self, text):
         print(text)

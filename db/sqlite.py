@@ -6,7 +6,8 @@ from db.manager import DBManager
 class SQLiteManager(DBManager):
     def __init__(self, config):
         print("initializing SQLite Manager")
-        self.connection = sqlite3.connect(config['name'] + 'db')
+        dbname = config.get("database", "name")
+        self.connection = sqlite3.connect(dbname + 'db')
         #self.init_db()
 
     def init_db(self):

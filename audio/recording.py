@@ -21,6 +21,10 @@ class Recording(Sample):
         # Convert starting time to frames
         start_frame = start * self.sr
 
+        print(self.sr)
+        print(duration)
+        print(start_frame)
+
         # if starting frame is greater than file length, raise an Exception
         if start_frame > self.length:
             raise ValueError('Starting value is greater than file length')

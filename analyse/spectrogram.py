@@ -1,16 +1,13 @@
 import librosa
 import numpy as np
 
-from analyse.compute_indice import remove_noiseInSpectro
-
 
 class Spectrogram:
-    def __init__(self, spec, n_fft, duration, sr, config):
+    def __init__(self, spec, n_fft, duration, sr):
         self.spec = spec
         self.fft = n_fft
         self.duration = duration
         self.sr = sr
-        self.config = config
 
     def __str__(self):
         string = "Spectrogram with fft: {0.fft}, shape {1} and value \n {0.spec}".format(
@@ -21,25 +18,40 @@ class Spectrogram:
 class SpectrogramGenerator:
     def __init__(self, config):
         # spectrogram parameters
-        self.config = config
+        self.__read_config(config)
+
+    def __read_config(self, config):
+        self.spec_window = config.get("spectrogram", "window")
+        self.default_fft = config.getint(
+            "spectrogram", "default_fft", fallback=512)
+        # noise removal parameters
+        self.NR = config.getboolean("noise_removal", "remove_noise")
+        self.NR_window_smoothing = config.getint(
+            "noise_removal", "window_smoothing")
+        self.NR_hist_rel_size = config.getint("noise_removal", "hist_rel_size")
+        self.NR_N = config.getfloat("noise_removal", "N", fallback=0.1)
 
     # TODO : add other params to spectrogram
+
     def create_spectrogram(self, sample, n_fft):
         if not n_fft:
-            n_fft = self.config['default_fft']
+            n_fft = self.default_fft
         spectro = librosa.stft(
-            sample.audio, n_fft, window=self.config['window'])
+            sample.audio, n_fft, window=self.spec_window)
+
         mag, phase = librosa.magphase(spectro)
 
         specdb = librosa.amplitude_to_db(spectro, ref=np.max)
-        if self.config['remove_noise']:
-            specdb = self.remove_noise(specdb)
+
+        if self.NR:
+            specdb = self.__remove_noise(specdb)
             specdb = specdb.astype("float32")
 
-        return Spectrogram(specdb, n_fft, sample.duration, sample.sr,
-                           self.config)
+        #specdb = librosa.feature.melspectrogram(S=specdb, n_mels=128)
 
-    def remove_noise(self, spectro):
+        return Spectrogram(specdb, n_fft, sample.duration, sample.sr)
+
+    def __remove_noise(self, spectro):
         """
         Compute a new spectrogram which is "Noise Removed".
 
@@ -61,16 +73,16 @@ class SpectrogramGenerator:
 
         # Min value for the new spectrogram (preferably slightly higher than 0)
         low_value = 1.e-07
-        N = self.config['N']
+        N = self.NR_N
 
         len_spectro_e = spectro.shape[0]
-        histo_size = int(len_spectro_e / self.config['hist_rel_size'])
+        histo_size = int(len_spectro_e / self.NR_hist_rel_size)
 
         background_noise = []
         for row in spectro:
             hist, bin_edges = np.histogram(row, bins=histo_size, density=False)
 
-            ws = int(self.config['window_smoothing'] / 2)
+            ws = int(self.NR_window_smoothing / 2)
             hist_smooth = ([
                 np.mean(hist[i - ws:i + ws])
                 for i in range(ws, len(hist) - ws)
