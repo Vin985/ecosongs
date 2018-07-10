@@ -1,0 +1,7 @@
+## Configuration
+- Load config at startup
+- Add alert for default working directory
+- Add as default in config file
+
+## View
+- display file tree
