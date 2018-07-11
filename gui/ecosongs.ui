@@ -6,109 +6,348 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>900</height>
+    <width>1299</width>
+    <height>659</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QSplitter" name="splitter">
-    <property name="geometry">
-     <rect>
-      <x>-20</x>
-      <y>10</y>
-      <width>1221</width>
-      <height>841</height>
-     </rect>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
     </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
+    <property name="leftMargin">
+     <number>0</number>
     </property>
-    <widget class="QWidget" name="left_panel" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>1</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-    <widget class="QWidget" name="center_panel" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>2</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-    <widget class="QTabWidget" name="right_panel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>1</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Action bar&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="tabPosition">
-      <enum>QTabWidget::East</enum>
-     </property>
-     <widget class="QWidget" name="right_panelPage1" native="true">
-      <attribute name="title">
-       <string/>
-      </attribute>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QListWidget" name="sidebar">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>93</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QListView{
+  	show-decoration-selected: 1; 
+	outline:none;
+}
+QListView::item {
+	border: 1 outset rgb(136, 138, 133);
+	border-radius: 2;
+	background-color: rgb(238, 238, 236);
+	padding: 5 5 5 5;
+	margin:0 2 2 2;
+	width:75;
+/*background-color:blue;*/
+}
+
+
+QListView::item:selected:!active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #ABAFE5, stop: 1 #8588B2);
+}
+
+QListView::item:selected:active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #6a6ea9, stop: 1 #888dd9);
+	selection-background-color: green;
+}
+
+QListView::item:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);
+}
+
+QListView::text:selected {
+    border:none;
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
+      </property>
+      <property name="showDropIndicator" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>48</width>
+        <height>48</height>
+       </size>
+      </property>
+      <property name="flow">
+       <enum>QListView::TopToBottom</enum>
+      </property>
+      <property name="viewMode">
+       <enum>QListView::IconMode</enum>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="currentRow">
+       <number>0</number>
+      </property>
+      <item>
+       <property name="text">
+        <string>Database Manager</string>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="textAlignment">
+        <set>AlignCenter</set>
+       </property>
+       <property name="icon">
+        <iconset resource="ecosongs.qrc">
+         <normaloff>:/tango/db_manager</normaloff>:/tango/db_manager</iconset>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsEnabled</set>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Audio</string>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="textAlignment">
+        <set>AlignCenter</set>
+       </property>
+       <property name="icon">
+        <iconset resource="ecosongs.qrc">
+         <normaloff>:/tango/audio</normaloff>:/tango/audio</iconset>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsEnabled</set>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Analysis</string>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="textAlignment">
+        <set>AlignCenter</set>
+       </property>
+       <property name="icon">
+        <iconset resource="ecosongs.qrc">
+         <normaloff>:/tango/analysis</normaloff>:/tango/analysis</iconset>
+       </property>
+      </item>
      </widget>
-    </widget>
-   </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="pages">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>6</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QListView{
+  	show-decoration-selected: 1; 
+	outline:none;
+}
+QListView::item {
+	border: 1 outset rgb(136, 138, 133);
+	border-radius: 2;
+	background-color: rgb(238, 238, 236);
+	padding: 5 5 5 5;
+	margin:0 2 2 2;
+	width:75;
+/*background-color:blue;*/
+}
+
+
+QListView::item:selected:!active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #ABAFE5, stop: 1 #8588B2);
+}
+
+QListView::item:selected:active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #6a6ea9, stop: 1 #888dd9);
+	selection-background-color: green;
+}
+
+QListView::item:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);
+}
+
+QListView::text:selected {
+    border:none;
+}</string>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="db_page">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QTableWidget" name="table">
+          <property name="minimumSize">
+           <size>
+            <width>90</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustIgnored</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="audio_page">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>PushButton</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1299</width>
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="mFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionChoose_working_folder"/>
-    <addaction name="actionOpen_File_s"/>
-    <addaction name="actionSave"/>
+    <addaction name="aSetwd"/>
+    <addaction name="aOpen"/>
+    <addaction name="aSave"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_database"/>
-    <addaction name="actionSave_database"/>
-    <addaction name="actionExport_database"/>
+    <addaction name="aOpen_db"/>
+    <addaction name="aSave_db"/>
+    <addaction name="aExport_db"/>
     <addaction name="separator"/>
-    <addaction name="actionExit"/>
+    <addaction name="aExit"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="mHelp">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionHelp"/>
+    <addaction name="aHelp"/>
     <addaction name="separator"/>
-    <addaction name="actionAbout"/>
+    <addaction name="aAbout"/>
    </widget>
-   <widget class="QMenu" name="menuTools">
+   <widget class="QMenu" name="mTools">
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionConvert_to_wac"/>
+    <addaction name="wac2wav"/>
    </widget>
-   <widget class="QMenu" name="menuAnalyses">
+   <widget class="QMenu" name="mAnalyses">
     <property name="title">
      <string>Analyses</string>
     </property>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuAnalyses"/>
-   <addaction name="menuTools"/>
-   <addaction name="menuHelp"/>
+   <addaction name="mFile"/>
+   <addaction name="mAnalyses"/>
+   <addaction name="mTools"/>
+   <addaction name="mHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -119,35 +358,35 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
-   <addaction name="actionChoose_working_folder"/>
-   <addaction name="actionSave"/>
+   <addaction name="aSetwd"/>
+   <addaction name="aSave"/>
   </widget>
-  <action name="actionAbout">
+  <action name="aAbout">
    <property name="text">
     <string>About</string>
    </property>
   </action>
-  <action name="actionHelp">
+  <action name="aHelp">
    <property name="text">
     <string>Help</string>
    </property>
   </action>
-  <action name="actionOpen_File_s">
+  <action name="aOpen">
    <property name="text">
     <string>Open File(s)</string>
    </property>
   </action>
-  <action name="actionExit">
+  <action name="aExit">
    <property name="text">
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionSave">
+  <action name="aSave">
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../../../mnt/win/UMoncton/Doctorat/dev/ecosongs/resources/fontawesome-free-5.1.0-desktop/svgs/solid/save.svg</normaloff>../../../../../../mnt/win/UMoncton/Doctorat/dev/ecosongs/resources/fontawesome-free-5.1.0-desktop/svgs/solid/save.svg</iconset>
+    <iconset resource="ecosongs.qrc">
+     <normaloff>:/tango/document-save</normaloff>:/tango/document-save</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -156,36 +395,38 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionConvert_to_wac">
+  <action name="wac2wav">
    <property name="text">
     <string>Convert WAC files</string>
    </property>
   </action>
-  <action name="actionChoose_working_folder">
+  <action name="aSetwd">
    <property name="icon">
-    <iconset>
-     <normaloff>../../../../../../mnt/win/UMoncton/Doctorat/dev/ecosongs/resources/fontawesome-free-5.1.0-desktop/svgs/solid/folder.svg</normaloff>../../../../../../mnt/win/UMoncton/Doctorat/dev/ecosongs/resources/fontawesome-free-5.1.0-desktop/svgs/solid/folder.svg</iconset>
+    <iconset resource="ecosongs.qrc">
+     <normaloff>:/tango/document-open</normaloff>:/tango/document-open</iconset>
    </property>
    <property name="text">
     <string>Choose working folder</string>
    </property>
   </action>
-  <action name="actionOpen_database">
+  <action name="aOpen_db">
    <property name="text">
     <string>Load database</string>
    </property>
   </action>
-  <action name="actionSave_database">
+  <action name="aSave_db">
    <property name="text">
     <string>Save database</string>
    </property>
   </action>
-  <action name="actionExport_database">
+  <action name="aExport_db">
    <property name="text">
     <string>Export database</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="ecosongs.qrc"/>
+ </resources>
  <connections/>
 </ui>
