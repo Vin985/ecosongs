@@ -20,12 +20,12 @@ imgen = ImageGenerator(config)
 r = Recording(
     "../../data/acoustic/test/audiomoth/outside park/16k_g5_rect_smallH_street.WAV",
     specgen,
-    audio_type="")
+    recorder="")
 
 # res = librosa.effects.split(r.audio, top_db=10)
 # print(res)
 # print(r.get_SNR(activity_threshold_dB=5, N=1))
-sample = r.getSample(20, 15)
+sample = r.get_sample(20, 15)
 # print(sample.has_bird(imgen))
 # for i in range(0, 600, 15):
 #     print(i)
