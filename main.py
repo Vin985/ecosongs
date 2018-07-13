@@ -8,6 +8,7 @@ import soundfile as sf
 from analyse.image import ImageGenerator
 from analyse.spectrogram import SpectrogramGenerator
 from audio.recording import Recording
+from db import models
 
 config = configparser.ConfigParser()
 config.read("ecosongs.conf")
@@ -19,8 +20,11 @@ imgen = ImageGenerator(config)
 #    "../../data/acoustic/test/wav/test_real.wav", specgen, audio_type="")
 r = Recording(
     "../../data/acoustic/test/audiomoth/outside park/16k_g5_rect_smallH_street.WAV",
-    specgen,
     recorder="")
+
+
+# for record in models.RecordingModel.select():
+#     print("test " + record.name)
 
 # res = librosa.effects.split(r.audio, top_db=10)
 # print(res)
@@ -34,7 +38,7 @@ sample = r.get_sample(20, 15)
 
 ## TODO: allow spec2img to accept a Spectrogram object
 ## NOTE: image might have to be resized to be viewed in fullscreen
-spec = sample.get_spectrogram(n_fft=512)
+spec = sample.get_spectrogram(specgen, n_fft=512)
 im = imgen.spec2img(spec.spec, size=(int(299 * spec.duration / 1.5), 299))
 im.show()
 

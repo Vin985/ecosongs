@@ -15,6 +15,7 @@ def extract_from_file(filepath, recorder):
     else:
         data["name"] = filename
         data["date"] = "Unknown"
+    return data
 
 # SongMeter format:
 # SITEID_DATE_TIME
