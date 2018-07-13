@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'ecosongs.ui',
 # licensing of 'ecosongs.ui' applies.
 #
-# Created: Wed Jul 11 17:06:13 2018
+# Created: Fri Jul 13 12:46:43 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!
@@ -146,19 +146,11 @@ class Ui_Ecosongs(object):
 "    border:none;\n"
 "}")
         self.pages.setObjectName("pages")
-        self.db_page = QtWidgets.QWidget()
+        self.db_page = DBExplorer()
         self.db_page.setAutoFillBackground(True)
         self.db_page.setObjectName("db_page")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.db_page)
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.table = QtWidgets.QTableWidget(self.db_page)
-        self.table.setMinimumSize(QtCore.QSize(90, 0))
-        self.table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
-        self.table.setObjectName("table")
-        self.table.setColumnCount(0)
-        self.table.setRowCount(0)
-        self.horizontalLayout_2.addWidget(self.table)
+        self.gridLayout = QtWidgets.QGridLayout(self.db_page)
+        self.gridLayout.setObjectName("gridLayout")
         self.pages.addWidget(self.db_page)
         self.audio_page = QtWidgets.QWidget()
         self.audio_page.setObjectName("audio_page")
@@ -265,4 +257,5 @@ class Ui_Ecosongs(object):
         self.aSave_db.setText(QtWidgets.QApplication.translate("Ecosongs", "Save database", None, -1))
         self.aExport_db.setText(QtWidgets.QApplication.translate("Ecosongs", "Export database", None, -1))
 
+from gui.widgets.dbexplorer.DBExplorer import DBExplorer
 from . import ecosongs_rc

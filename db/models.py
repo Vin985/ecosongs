@@ -26,6 +26,9 @@ class BaseModel(peewee.Model):
 
 class RecordingModel(BaseModel):
     name = peewee.CharField()
+    date = peewee.DateField()
+    filepath = peewee.CharField()
+    type = peewee.CharField()
 
     class Meta:
         table_name = 'recordings'

@@ -255,37 +255,11 @@ QListView::text:selected {
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="db_page">
+      <widget class="DBExplorer" name="db_page">
        <property name="autoFillBackground">
         <bool>true</bool>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QTableWidget" name="table">
-          <property name="minimumSize">
-           <size>
-            <width>90</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustIgnored</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <layout class="QGridLayout" name="gridLayout"/>
       </widget>
       <widget class="QWidget" name="audio_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -425,6 +399,14 @@ QListView::text:selected {
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DBExplorer</class>
+   <extends>QWidget</extends>
+   <header>gui/widgets/dbexplorer/DBExplorer.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="ecosongs.qrc"/>
  </resources>

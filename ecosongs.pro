@@ -16,7 +16,8 @@ RESOURCES += \
     gui/ecosongs.qrc
 
 FORMS += \
-    gui/ecosongs.ui
+    gui/ecosongs.ui \
+    gui/widgets/dbexplorer/dbexplorer.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \

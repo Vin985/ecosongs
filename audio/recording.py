@@ -7,26 +7,35 @@ from db import models
 
 class Recording(sample.Sample):
 
-    def __init__(self, filepath, recorder=None, infos={}):
+    def __init__(self, filepath, recorder=None, model=None):
         self.filepath = filepath
-        if not infos:
+        if not model:
             infos = metadata.extract_from_file(filepath, recorder)
-        self.model = models.RecordingModel()
+        self.model = models.RecordingModel(filepath=filepath, **infos)
         self.audio = None
-        self.infos = infos
-        # TODO: add model to init
-        self.model.name = infos["name"]
-        self.model.save()
+
+    @property
+    def name(self):
+        """
+        Docstring for name property
+        """
+        return self.model.name
+
+    @name.setter
+    def name(self, name):
+        """
+        Docstring for name property
+        """
+        self.model.name = name
 
     def load_audio(self, sr):
         # TODO: externalize supported types
-        if self.infos["type"] in ["wav", "flac"]:
+        if self.model.type in ["wav", "flac"]:
             (self.audio, self.sr) = (librosa.load(self.filepath, sr=sr))
         else:
             raise ValueError("Unsupported audio file type")
 
     def get_sample(self, start, duration, sr=None):
-
         if not self.audio:
             self.load_audio(sr)
 
