@@ -1,5 +1,4 @@
 from db.models import RecordingModel
-from playhouse import shortcuts
 from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 

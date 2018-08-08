@@ -21,7 +21,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QPushButton" name="dbLoadButton">
+       <widget class="QPushButton" name="dbImportButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -29,7 +29,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Load file(s) into database</string>
+         <string>Import file(s) into database</string>
         </property>
        </widget>
       </item>

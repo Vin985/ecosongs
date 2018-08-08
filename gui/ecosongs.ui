@@ -403,7 +403,7 @@ QListView::text:selected {
   <customwidget>
    <class>DBExplorer</class>
    <extends>QWidget</extends>
-   <header>gui/widgets/dbexplorer/DBExplorer.h</header>
+   <header>gui/widgets/dbmanager/dbexplorer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

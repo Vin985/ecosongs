@@ -5,3 +5,13 @@
 
 ## View
 - display file tree
+
+## DBExplorer
+- Import files in database
+- Remove/edit entry
+- Select columns etc.
+- Add Import options:
+    - wac conversion
+    - splitting
+    - noise removal
+    - flac compression

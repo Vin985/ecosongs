@@ -17,7 +17,12 @@ RESOURCES += \
 
 FORMS += \
     gui/ecosongs.ui \
-    gui/widgets/dbexplorer/dbexplorer.ui
+    gui/widgets/dbexplorer/dbexplorer.ui \
+    gui/widgets/filemanager/fileimport.ui \
+    gui/widgets/dbmanager/dbexplorer.ui \
+    gui/widgets/dbmanager/fileimport.ui \
+    gui/widgets/dbmanager/ui/dbexplorer.ui \
+    gui/widgets/dbmanager/ui/fileimport.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \

@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'dbexplorer.ui',
 # licensing of 'dbexplorer.ui' applies.
 #
-# Created: Fri Jul 13 17:36:34 2018
+# Created: Wed Aug  8 17:17:37 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!
@@ -20,14 +20,14 @@ class Ui_DBExplorer(object):
         self.dbOptions.setObjectName("dbOptions")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.dbOptions)
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.dbLoadButton = QtWidgets.QPushButton(self.dbOptions)
+        self.dbImportButton = QtWidgets.QPushButton(self.dbOptions)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.dbLoadButton.sizePolicy().hasHeightForWidth())
-        self.dbLoadButton.setSizePolicy(sizePolicy)
-        self.dbLoadButton.setObjectName("dbLoadButton")
-        self.gridLayout_2.addWidget(self.dbLoadButton, 0, 0, 1, 1)
+        sizePolicy.setHeightForWidth(self.dbImportButton.sizePolicy().hasHeightForWidth())
+        self.dbImportButton.setSizePolicy(sizePolicy)
+        self.dbImportButton.setObjectName("dbImportButton")
+        self.gridLayout_2.addWidget(self.dbImportButton, 0, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_2.addItem(spacerItem, 0, 1, 1, 1)
         self.gridLayout.addWidget(self.dbOptions, 0, 0, 1, 1)
@@ -51,6 +51,6 @@ class Ui_DBExplorer(object):
     def retranslateUi(self, DBExplorer):
         DBExplorer.setWindowTitle(QtWidgets.QApplication.translate("DBExplorer", "Form", None, -1))
         self.dbOptions.setTitle(QtWidgets.QApplication.translate("DBExplorer", "Database Explorer", None, -1))
-        self.dbLoadButton.setText(QtWidgets.QApplication.translate("DBExplorer", "Load file(s) into database", None, -1))
+        self.dbImportButton.setText(QtWidgets.QApplication.translate("DBExplorer", "Import file(s) into database", None, -1))
         self.rowsFound.setText(QtWidgets.QApplication.translate("DBExplorer", "TextLabel", None, -1))
 
