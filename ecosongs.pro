@@ -22,7 +22,8 @@ FORMS += \
     gui/widgets/dbmanager/dbexplorer.ui \
     gui/widgets/dbmanager/fileimport.ui \
     gui/widgets/dbmanager/ui/dbexplorer.ui \
-    gui/widgets/dbmanager/ui/fileimport.ui
+    gui/widgets/dbmanager/ui/fileimport.ui \
+    gui/widgets/wacConverter/qwacconverter.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \

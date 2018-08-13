@@ -5,6 +5,8 @@
 
 ## View
 - display file tree
+- Check if in database or not
+
 
 ## DBExplorer
 - Import files in database

@@ -11,7 +11,7 @@
             <icon_contained_condition user_name="Done" ICON="checked"/>
         </conditional_style>
     </conditional_styles>
-    <properties show_icon_for_attributes="true" fit_to_viewport="false" edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff"/>
+    <properties fit_to_viewport="false" show_icon_for_attributes="true" edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -115,7 +115,6 @@
     </p>
   </body>
 </html>
-
 </richcontent>
 <node TEXT="toolbar" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_261792515" CREATED="1522520049091" MODIFIED="1522520335165">
 <node TEXT="one analysis per tab?" ID="ID_676382557" CREATED="1522520178050" MODIFIED="1522520194765"/>
@@ -151,5 +150,6 @@
 <node TEXT="text/buttons" ID="ID_1306560671" CREATED="1522520518055" MODIFIED="1522520523111"/>
 </node>
 </node>
+<node TEXT="File tree view" POSITION="left" ID="ID_861506097" CREATED="1534108210971" MODIFIED="1534108225953"/>
 </node>
 </map>
