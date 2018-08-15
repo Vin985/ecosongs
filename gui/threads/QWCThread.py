@@ -9,7 +9,7 @@ class QWCThread(QtCore.QThread, WacConverter):
 
     def __init__(self, qconsole, root="", dest="", files=[]):
         QtCore.QThread.__init__(self)
-        super().__init__(root, dest, files)
+        super(WacConverter, self).__init__().__init__(root, dest, files)
         self.console = qconsole
 
     def __del__(self):

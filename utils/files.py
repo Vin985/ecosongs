@@ -12,12 +12,16 @@ class FileManager:
         pass
 
 
-def get_all_files(root, ext, recursive=True):
+def get_all_files(root, extensions, recursive=True):
     pattern = root
     if recursive:
         pattern += "/**"
-    pattern += "/*" + ext
-    return (glob(pattern, recursive=recursive))
+    files = []
+    for ext in extensions:
+        pattrn = pattern + "/*" + ext
+        print(pattrn)
+        files.extend(glob(pattrn, recursive=True))
+    return (files)
 
 
 # convert batch from wac to wav

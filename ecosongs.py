@@ -6,9 +6,6 @@ from PySide2.QtCore import Slot
 #from PySide2.QtCore import QFile, QTextStream
 from PySide2.QtWidgets import QApplication, QMainWindow
 
-FILE_EXT = ".wac"
-DEST_DIR = "wav"
-
 
 class Ecosongs(QMainWindow, Ui_Ecosongs):
     def __init__(self):
