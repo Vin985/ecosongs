@@ -13,7 +13,8 @@ INCLUDEPATH =
 #DEFINES = 
 
 RESOURCES += \
-    gui/ecosongs.qrc
+    gui/ecosongs.qrc \
+    src/gui/ecosongs.qrc
 
 FORMS += \
     gui/ecosongs.ui \
@@ -25,7 +26,11 @@ FORMS += \
     gui/widgets/wacConverter/qwacconverter.ui \
     gui/widgets/dbmanager/ui/dialog.ui \
     gui/widgets/dbmanager/ui/fileimport2.ui \
-    gui/widgets/dbmanager/ui/fileimport.ui
+    gui/widgets/dbmanager/ui/fileimport.ui \
+    src/gui/widgets/dbmanager/ui/dbexplorer.ui \
+    src/gui/widgets/dbmanager/ui/fileimport.ui \
+    src/gui/widgets/dbmanager/ui/fileimport2.ui \
+    src/gui/ecosongs.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \
