@@ -3,7 +3,7 @@
 
 from gui.ecosongs_ui import Ui_Ecosongs
 from PySide2.QtCore import Slot
-#from PySide2.QtCore import QFile, QTextStream
+# from PySide2.QtCore import QFile, QTextStream
 from PySide2.QtWidgets import QApplication, QMainWindow
 
 
@@ -31,7 +31,7 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
     def initProgressBar(self, maxValue):
         self.progressBar.setEnabled(True)
         self.progressBar.setMaximum(maxValue)
-        #self.progressBar.setValue(0)
+        # self.progressBar.setValue(0)
 
     @Slot()
     def exit(self):

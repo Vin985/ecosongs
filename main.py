@@ -16,6 +16,8 @@ config.read("ecosongs.conf")
 specgen = SpectrogramGenerator(config)
 imgen = ImageGenerator(config)
 
+# TODO
+
 #r = Recording(
 #    "../../data/acoustic/test/wav/test_real.wav", specgen, audio_type="")
 r = Recording(
