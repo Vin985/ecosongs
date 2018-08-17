@@ -2,7 +2,6 @@ import os
 
 from utils.filemanager import FileManager
 
-from gui.threads.QWCThread import QWCThread
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
 from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
@@ -16,16 +15,23 @@ class FileImport(QWizard, Ui_FileImport):
 
     def __init__(self):
         super(self.__class__, self).__init__()
+        # Initialize UI
         self.setupUi(self)
         self.site_manual.setVisible(not self.radio_site_auto.isChecked())
         self.file_manager = FileManager()
-        #self.wacConverter = QWCThread(self.logConsole)
+        # self.wacConverter = QWCThread(self.logConsole)
+        self.registerFields()
         self.linkEvents()
 
+    def registerFields(self):
+        self.page1.registerField("src_path*", self.input_src_path)
+
     # Define callbacks when events happen
+
     def linkEvents(self):
         # Button pushed
         self.btn_browse_src.clicked.connect(self.browse_src)
+        self.currentIdChanged.connect(self.change_page)
         # self.btn_browse_dest.clicked.connect(self.browse_dest)
         # self.btn_import.clicked.connect(self.import_files)
         # self.btn_cancel.clicked.connect(self.wacConverter.requestInterruption)
@@ -41,15 +47,25 @@ class FileImport(QWizard, Ui_FileImport):
         # self.wacConverter.converting.connect(self.log)
         # self.wacConverter.finished.connect(self.end_conversion)
 
+    def change_page(self):
+        print("page changed:" + str(self.currentId()))
+
     def start_thread(self):
         self.logConsole.clear()
 
-    # Update ui based on selected options
+    # Called when any radio button for folder or file is selected
     def folder_opt(self):
+        # Only enable subfolder option if import folder is selected
         self.checkbox_subfolders.setEnabled(self.radio_folder.isChecked())
+        # If import files
         if self.radio_file.isChecked():
+            # Allow user to enter site info manually
             self.radio_site_manual.setEnabled(True)
+            # else if subfolders are checked
         elif self.checkbox_subfolders.isChecked():
+            # Disable manual info and force automatic detection
+            # This is because multiple site can be imported
+
             self.radio_site_manual.setEnabled(False)
             self.radio_site_auto.setChecked(True)
             self.site_auto.setVisible(True)
@@ -91,32 +107,33 @@ class FileImport(QWizard, Ui_FileImport):
             # List all files to display
             self.file_manager.get_all_files(self.checkbox_subfolders)
         # TODO: extract metadata
-        self.show_files()
+        # self.show_files()
 
     # Browse destination directory
     def browse_dest(self):
         self.browse(self.input_dest_path, True)
 
     # Generic method to browse for files
-    def browse(self, textInput, isFolder):
+    def browse(self, text_input, is_folder):
         default = os.getcwd()
-        if isFolder:
+        if is_folder:
             # We want to select a folder
-            if textInput.text():
-                default = textInput.text()
+            if text_input.text():
+                default = text_input.text()
             text = QFileDialog.getExistingDirectory(self, "Choose directory",
                                                     default)
             if text:
-                rootDir = text
+                root_dir = text
         else:
             # We want to select files
             # TODO : add formats in config
             (files, pattern) = QFileDialog.getOpenFileNames(
-                self, "Choose files", default, "Audio files (*.wav, *.wac);;WAV files (*.wav);;WAC files (*.wac)")
+                self, "Choose files", default,
+                "Audio files (*.wav, *.wac);;WAV files (*.wav);;WAC files (*.wac)")
             self.file_manager.setFiles(files)
 
         # Update gui input
-        textInput.setText(rootDir)
+        text_input.setText(root_dir)
 
     def show_files(self):
         self.log_console.clear()
@@ -180,4 +197,4 @@ class FileImport(QWizard, Ui_FileImport):
     def initProgressBar(self, maxValue):
         self.progress_bar.setEnabled(True)
         self.progress_bar.setMaximum(maxValue)
-        #self.progressBar.setValue(0)
+        # self.progressBar.setValue(0)

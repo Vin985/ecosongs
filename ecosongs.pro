@@ -30,7 +30,9 @@ FORMS += \
     src/gui/widgets/dbmanager/ui/dbexplorer.ui \
     src/gui/widgets/dbmanager/ui/fileimport.ui \
     src/gui/widgets/dbmanager/ui/fileimport2.ui \
-    src/gui/ecosongs.ui
+    src/gui/ecosongs.ui \
+    src/gui/widgets/dbmanager/ui/fileimport_page1.ui \
+    src/gui/widgets/dbmanager/ui/fileimport_page2.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \

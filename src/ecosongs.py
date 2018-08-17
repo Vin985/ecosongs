@@ -15,6 +15,7 @@ class Ecosongs(QMainWindow, Ui_Ecosongs):
         self.linkEvents()
 
     def loadConfig(self):
+        # TODO: load config
         pass
 
     # Define callbacks when events happen
