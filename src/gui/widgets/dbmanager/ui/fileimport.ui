@@ -505,7 +505,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radio_type_auto">
+        <widget class="QRadioButton" name="radio_rec_auto">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -522,12 +522,12 @@
           <bool>true</bool>
          </property>
          <attribute name="buttonGroup">
-          <string notr="true">radio_type</string>
+          <string notr="true">radio_recorders</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radio_type_sm">
+        <widget class="QRadioButton" name="radio_rec_sm">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -538,12 +538,12 @@
           <string>SongMeter</string>
          </property>
          <attribute name="buttonGroup">
-          <string notr="true">radio_type</string>
+          <string notr="true">radio_recorders</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radio_type_am">
+        <widget class="QRadioButton" name="radio_rec_am">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -554,7 +554,7 @@
           <string>Audiomoth</string>
          </property>
          <attribute name="buttonGroup">
-          <string notr="true">radio_type</string>
+          <string notr="true">radio_recorders</string>
          </attribute>
         </widget>
        </item>
@@ -604,13 +604,23 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>891</width>
-      <height>541</height>
+      <width>861</width>
+      <height>461</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="2" column="0">
-      <widget class="QTextEdit" name="log_console"/>
+      <widget class="QLabel" name="lbl_status">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </item>
      <item row="0" column="0">
       <spacer name="verticalSpacer">
@@ -628,17 +638,23 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="lbl_status">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="3" column="0">
+      <widget class="QTableView" name="table_files">
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
        </property>
-       <property name="text">
-        <string/>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ContiguousSelection</enum>
        </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -664,8 +680,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radio_site_info"/>
-  <buttongroup name="radio_type"/>
+  <buttongroup name="radio_recorders"/>
   <buttongroup name="radio_is_folder"/>
+  <buttongroup name="radio_site_info"/>
  </buttongroups>
 </ui>

@@ -2,13 +2,22 @@ import os
 from datetime import datetime
 from glob import glob
 
+import pandas as pd
+
+RECORDER_AM = "Audiomoth"
+RECORDER_SM2 = "SongMeter"
+RECORDER_AUTO = "Auto-detect"
+
 
 class FileManager:
     # TODO: put in config
     FILE_EXT = (".wac", ".wav", ".WAV")
 
-    def __init__(self, type=None, subfolders=True):
-        self.type = type
+    def __init__(self, recorder=None, recursive=True):
+        self.options = {"recursive": recursive, "recorder": recorder}
+
+    def log(self, text):
+        print(text)
 
     def wac2wav(self, path):
         pass
@@ -16,28 +25,101 @@ class FileManager:
     def wac2flac(self, path):
         pass
 
-    def set_files(self, files):
-        # TODO Extract metatdata here?
-        self.files = files
-        self.root_dir = os.path.dirname(files[0])
+    def get_files(self):
+        if self.options["folder"]:
+            self.get_files_from_folder()
+        self.extract_infos()
+        self.files_loaded()
 
-    def get_all_files(self, recursive=True):
+    def files_loaded(self):
+        self.log("\n".join(self.file_paths))
+
+    def get_files_from_folder(self):
+        self.log("get files from folder: " + self.root_dir)
         pattern = self.root_dir
-        if recursive:
+        if self.options["recursive"]:
             pattern += "/**"
         files = []
         for ext in self.FILE_EXT:
             pattrn = pattern + "/*" + ext
-            print(pattrn)
             files.extend(glob(pattrn, recursive=True))
-        self.files = files
+        self.file_paths = files
 
-    def extract_info(files):
+    def set_overwrite(self):
         pass
+        # self.file_manager.overwrite = self.checkbox_overwrite.isChecked()
 
-    def extract_metadata(fullpath, type=None, use_hierarchy=True,
+    def set_root(self, path):
+        pass
+        # self.file_manager.root_dir = path
+
+    def set_dest(self, path):
+        pass
+        # self.file_manager.dest_dir = path
+
+    def extract_infos(self):
+        file_infos = list(map(self.extract_info, self.file_paths))
+        # TODO: oder of columns in config
+        self.file_infos = pd.DataFrame(file_infos, columns=["name", "year", "site", "plot", "date", "path", "ext", "recorder", "error"])
+        self.log(self.file_infos)
+
+    def extract_info(self, fullpath):
+        # Initialize result dict. Defaults added for table display
+        res = {"error": 0, "site": None, "plot": None,
+               "year": None, "name": None, "path": fullpath}
+        # Remove root directory to deduce info from hierarchy
+        path = fullpath.split("/")
+        path.reverse()
+        path = path[0:4]
+
+        # Separate filename from extension
+        file = path[0]
+        f = file.split(".")
+        res["ext"] = f[len(f) - 1]
+        # Get filename
+        name = f[0]
+        # Split file using underscore: only for difference between Audiomoth
+        # and SongMeter
+        # NOTE: might need to change if add support for other recorders
+        data = name.split("_", 1)
+        # TODO: add constants instead of
+        if self.options["recorder"] == "Auto-detect":
+            if len(data) == 1:
+                res["recorder"] = "Audiomoth"
+            else:
+                res["recorder"] = "SongMeter"
+        else:
+            res["recorder"] = self.options["recorder"]
+
+        # Extract date for all recorders
+        if res["recorder"] == "Audiomoth":
+            res["date"] = datetime.fromtimestamp(
+                int(int(data[0], 16))
+            )
+        elif res["recorder"] == "SongMeter":
+            res["date"] = datetime.strptime(data[1], "%Y%m%d_%H%S%M")
+
+        # TODO: validate info extraction
+        # Get data from folder hierarchy (only valid for folder import)
+        # Only retrieve info from path hierarchy if indexes fit
+        # TODO : catch errors on folder hierarchy
+        if self.options["folder_hierarchy"]:
+            res["site"] = path[self.options["site_info"]["site"]]
+            res["year"] = path[self.options["site_info"]["year"]]
+            res["plot"] = path[self.options["site_info"]["plot"]]
+        else:
+            res["site"] = self.options["site_info"]["site"]
+            res["year"] = self.options["site_info"]["year"]
+            res["plot"] = self.options["site_info"]["plot"]
+
+        res["name"] = res["site"] + res["plot"] + \
+            res["date"].strftime('%Y-%m-%d_%H:%M:%S')
+        return(res)
+
+    def extract_metadata(fullpath, recorder=None, use_hierarchy=True,
                          folder_idx={"plot": 1, "site": 2, "year": 3},
                          site_infos={"plot": None, "site": None, "year": None}):
+        # TODO: use data sources for file location to save path
         # Initialize result dict. Defaults added for table display
         res = {"error": 0, "site": None, "plot": None,
                "year": None, "name": None, "path": fullpath}
@@ -55,20 +137,20 @@ class FileManager:
         name = f[0]
         # Split file using underscore: only for difference between Audiomoth
         # and SongMeter
-        # NOTE: might need to change if add support for other recorder
+        # NOTE: might need to change if add support for other recorders
         data = name.split("_", 1)
-        if type is None and len(data) == 1:
-            res["type"] = "Audiomoth"
+        if recorder is None and len(data) == 1:
+            res["recorder"] = "Audiomoth"
         else:
-            res["type"] = "SongMeter"
-        res["type"] = type
+            res["recorder"] = "SongMeter"
+        res["recorder"] = recorder
 
-        # Extract date for all types
-        if type == "Audiomoth":
+        # Extract date for all recorders
+        if recorder == "Audiomoth":
             res["date"] = datetime.fromtimestamp(
                 int(int(data[0], 16))
             )
-        elif type == "SongMeter":
+        elif recorder == "SongMeter":
             res["date"] = datetime.strptime(data[1], "%Y%m%d_%H%S%M")
 
         # TODO: validate info extraction
