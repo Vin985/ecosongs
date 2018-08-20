@@ -1,7 +1,9 @@
 from db.models import RecordingModel
+from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dbmanager.fileimport import FileImport
-from gui.widgets.dbmanager.recordingsTableModel import RecordingsTableModel
 from gui.widgets.dbmanager.ui.dbexplorer_ui import Ui_DBExplorer
+from PySide2.QtCore import QSortFilterProxyModel
+from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QWidget
 
 
@@ -9,14 +11,13 @@ class DBExplorer(QWidget, Ui_DBExplorer):
     def __init__(self, recordings=None):
         super(self.__class__, self).__init__()
         self.setupUi(self)
-        if not recordings:
-            recordings = self.loadRecordings()
-
         self.file_import = FileImport()
+
+        recordings = qApp.get_recordings()
+        print(recordings is qApp.get_recordings())
 
         self.rowsFound.setText(
             "{0} recording(s) found!".format(len(recordings)))
-        self.tableModel = RecordingsTableModel(recordings)
         self.initTableView()
         self.linkEvents()
 
@@ -24,10 +25,15 @@ class DBExplorer(QWidget, Ui_DBExplorer):
         self.dbImportButton.clicked.connect(self.showImportWindow)
 
     def initTableView(self):
-        if not self.tableModel.rowCount():
+        if qApp.get_recordings().empty:
             self.dbTable.setEnabled(False)
         else:
-            self.dbTable.setModel(self.tableModel)
+            model = qApp.get_recordings()
+            model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
+            model = DataFrameTableModel(model)
+            proxyModel = QSortFilterProxyModel()
+            proxyModel.setSourceModel(model)
+            self.dbTable.setModel(proxyModel)
             self.dbTable.resizeColumnsToContents()
 
     def loadRecordings(self):

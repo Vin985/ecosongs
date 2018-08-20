@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from glob import glob
 
@@ -45,22 +44,13 @@ class FileManager:
             files.extend(glob(pattrn, recursive=True))
         self.file_paths = files
 
-    def set_overwrite(self):
-        pass
-        # self.file_manager.overwrite = self.checkbox_overwrite.isChecked()
-
-    def set_root(self, path):
-        pass
-        # self.file_manager.root_dir = path
-
-    def set_dest(self, path):
-        pass
-        # self.file_manager.dest_dir = path
-
     def extract_infos(self):
         file_infos = list(map(self.extract_info, self.file_paths))
         # TODO: oder of columns in config
-        self.file_infos = pd.DataFrame(file_infos, columns=["name", "year", "site", "plot", "date", "path", "ext", "recorder", "error"])
+        self.file_infos = pd.DataFrame(file_infos,
+                                       columns=["name", "year", "site",
+                                                "plot", "date", "path",
+                                                "ext", "recorder", "error"])
         self.log(self.file_infos)
 
     def extract_info(self, fullpath):

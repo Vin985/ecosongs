@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/tango">
-        <file alias="document-open">resources/icons/tango/scalable/document-open.svg</file>
-        <file alias="document-save">resources/icons/tango/scalable/document-save.svg</file>
-        <file alias="db_manager">resources/icons/tango/scalable/system-file-manager.svg</file>
-        <file alias="analysis">resources/icons/tango/scalable/accessories-calculator.svg</file>
-        <file alias="audio">resources/icons/tango/scalable/audio-x-generic.svg</file>
-    </qresource>
-</RCC>

@@ -605,7 +605,7 @@
       <x>0</x>
       <y>0</y>
       <width>861</width>
-      <height>461</height>
+      <height>451</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
@@ -661,18 +661,132 @@
    </widget>
   </widget>
   <widget class="QWizardPage" name="page3">
-   <widget class="QPushButton" name="pushButton_2">
+   <property name="title">
+    <string>File management options</string>
+   </property>
+   <property name="subTitle">
+    <string>Please select additional import options</string>
+   </property>
+   <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>250</y>
-      <width>80</width>
-      <height>26</height>
+      <x>0</x>
+      <y>10</y>
+      <width>851</width>
+      <height>451</height>
      </rect>
     </property>
-    <property name="text">
-     <string>PushButton</string>
-    </property>
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="1">
+      <widget class="QCheckBox" name="checkBox_2">
+       <property name="text">
+        <string>Overwrite existing files</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>Move and rename files</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="0" colspan="3">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Compression options</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="4" column="1">
+         <widget class="QRadioButton" name="radioButton_3">
+          <property name="text">
+           <string>tar</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">radio_compression</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QRadioButton" name="radioButton_2">
+          <property name="text">
+           <string>ZIP</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">radio_compression</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QRadioButton" name="radioButton">
+          <property name="text">
+           <string>7z (Recommended)</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">radio_compression</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Use the following compression format:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QCheckBox" name="checkBox_3">
+          <property name="text">
+           <string>Compress wav files to FLAC</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QCheckBox" name="checkBox_4">
+          <property name="text">
+           <string>Create a compressed archive of the files</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="3">
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QWizardPage" name="page4"/>
@@ -683,5 +797,6 @@
   <buttongroup name="radio_recorders"/>
   <buttongroup name="radio_is_folder"/>
   <buttongroup name="radio_site_info"/>
+  <buttongroup name="radio_compression"/>
  </buttongroups>
 </ui>

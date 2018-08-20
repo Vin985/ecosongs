@@ -141,7 +141,7 @@ QListView::text:selected {
        <bool>true</bool>
       </property>
       <property name="currentRow">
-       <number>0</number>
+       <number>-1</number>
       </property>
       <item>
        <property name="text">
@@ -157,8 +157,8 @@ QListView::text:selected {
         <set>AlignCenter</set>
        </property>
        <property name="icon">
-        <iconset resource="ecosongs.qrc">
-         <normaloff>:/tango/db_manager</normaloff>:/tango/db_manager</iconset>
+        <iconset resource="resources/ecosongs.qrc">
+         <normaloff>:/tango/db-manager</normaloff>:/tango/db-manager</iconset>
        </property>
        <property name="flags">
         <set>ItemIsSelectable|ItemIsEnabled</set>
@@ -178,7 +178,7 @@ QListView::text:selected {
         <set>AlignCenter</set>
        </property>
        <property name="icon">
-        <iconset resource="ecosongs.qrc">
+        <iconset resource="resources/ecosongs.qrc">
          <normaloff>:/tango/audio</normaloff>:/tango/audio</iconset>
        </property>
        <property name="flags">
@@ -199,7 +199,7 @@ QListView::text:selected {
         <set>AlignCenter</set>
        </property>
        <property name="icon">
-        <iconset resource="ecosongs.qrc">
+        <iconset resource="resources/ecosongs.qrc">
          <normaloff>:/tango/analysis</normaloff>:/tango/analysis</iconset>
        </property>
       </item>
@@ -253,7 +253,7 @@ QListView::text:selected {
 }</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="DBExplorer" name="db_page">
        <property name="autoFillBackground">
@@ -359,7 +359,7 @@ QListView::text:selected {
   </action>
   <action name="aSave">
    <property name="icon">
-    <iconset resource="ecosongs.qrc">
+    <iconset resource="resources/ecosongs.qrc">
      <normaloff>:/tango/document-save</normaloff>:/tango/document-save</iconset>
    </property>
    <property name="text">
@@ -376,7 +376,7 @@ QListView::text:selected {
   </action>
   <action name="aSetwd">
    <property name="icon">
-    <iconset resource="ecosongs.qrc">
+    <iconset resource="resources/ecosongs.qrc">
      <normaloff>:/tango/document-open</normaloff>:/tango/document-open</iconset>
    </property>
    <property name="text">
@@ -408,7 +408,7 @@ QListView::text:selected {
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="ecosongs.qrc"/>
+  <include location="resources/ecosongs.qrc"/>
  </resources>
  <connections/>
 </ui>

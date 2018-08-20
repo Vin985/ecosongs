@@ -25,13 +25,7 @@ class DataFrameTableModel(QAbstractTableModel):
             returning data, return None (PySide equivalent of QT's
             "invalid QVariant").
         """
-        if not index.isValid():
-            return None
-
-        if not 0 <= index.row() < self.df.shape[0]:
-            return None
-
-        if role == Qt.DisplayRole:
+        if index.isValid() and 0 <= index.row() < self.df.shape[0] and role == Qt.DisplayRole:
             return(self.df.iloc[index.row(), index.column()])
 
         return None
@@ -45,14 +39,6 @@ class DataFrameTableModel(QAbstractTableModel):
             return None
 
         return(self.df.columns.values[section])
-
-        if orientation == Qt.Horizontal:
-            if section == 0:
-                return "Name"
-            elif section == 1:
-                return "Recorder"
-
-        return None
 
     # def insertRows(self, position, rows=1, index=QModelIndex()):
     #     """ Insert a row into the model. """

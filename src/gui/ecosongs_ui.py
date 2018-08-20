@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'ecosongs.ui',
 # licensing of 'ecosongs.ui' applies.
 #
-# Created: Wed Aug  8 17:03:44 2018
+# Created: Sun Aug 19 13:19:35 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!
@@ -90,7 +90,7 @@ class Ui_Ecosongs(object):
         self.sidebar.setWordWrap(True)
         self.sidebar.setObjectName("sidebar")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/tango/db_manager"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/tango/db-manager"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         item = QtWidgets.QListWidgetItem(self.sidebar)
         item.setIcon(icon)
         item.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
@@ -227,8 +227,8 @@ class Ui_Ecosongs(object):
         self.toolBar.addAction(self.aSave)
 
         self.retranslateUi(Ecosongs)
-        self.sidebar.setCurrentRow(0)
-        self.pages.setCurrentIndex(0)
+        self.sidebar.setCurrentRow(-1)
+        self.pages.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Ecosongs)
 
     def retranslateUi(self, Ecosongs):

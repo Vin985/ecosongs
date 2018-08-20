@@ -14,7 +14,8 @@ INCLUDEPATH =
 
 RESOURCES += \
     gui/ecosongs.qrc \
-    src/gui/ecosongs.qrc
+    src/gui/ecosongs.qrc \
+    src/gui/resources/ecosongs.qrc
 
 FORMS += \
     gui/ecosongs.ui \

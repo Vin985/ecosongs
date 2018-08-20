@@ -4,7 +4,8 @@ from utils.filemanager import FileManager
 
 from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
-from PySide2.QtCore import QObject, Signal, Slot
+from PySide2.QtCore import QObject, QSortFilterProxyModel, Signal, Slot
+from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
 # TODO: put files in config
@@ -20,6 +21,7 @@ class QFileManager(QObject, FileManager):
         self.logging.emit(text, False)
 
     def files_loaded(self):
+        qApp.storage.put("recordings", self.file_infos, format="t")
         self.filesLoaded.emit()
 
 
@@ -116,7 +118,8 @@ class FileImport(QWizard, Ui_FileImport):
             self.site_manual.setVisible(False)
 
     def log(self, text, progress=False):
-        self.log_console.append(text)
+        # self.log_console.append(text)
+        print(text)
         if progress:
             self.progress_bar.setValue(self.progress_bar.value() + 1)
 
@@ -124,7 +127,7 @@ class FileImport(QWizard, Ui_FileImport):
 
     def browse_src(self):
         self.browse(self.input_src_path, self.radio_folder.isChecked())
-        #if self.radio_folder.isChecked() and self.input_src_path.text():
+        # if self.radio_folder.isChecked() and self.input_src_path.text():
         # Create automatically a default path to dest dir if src is a folder
         # if not self.input_dest_path.text():
         #     self.input_dest_path.setText(self.input_src_path.text())
@@ -160,17 +163,20 @@ class FileImport(QWizard, Ui_FileImport):
         text_input.setText(text)
 
     def show_files(self):
-        if not self.file_manager.file_infos.shape[0]:
+        if self.file_manager.file_infos.empty:
             self.table_files.setEnabled(False)
         else:
             model = self.file_manager.file_infos
             # TODO: date format in config/options
             model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
-            self.table_files.setModel(DataFrameTableModel(model))
+            model = DataFrameTableModel(model)
+            proxyModel = QSortFilterProxyModel()
+            proxyModel.setSourceModel(model)
+            self.table_files.setModel(proxyModel)
             self.table_files.resizeColumnsToContents()
         # self.log_console.clear()
         # self.log_console.append("\n".join(self.file_manager.file_paths))
-        # self.lbl_status.setText("%d file(s) found" % len(self.file_manager.file_paths))
+        self.lbl_status.setText("%d file(s) found" % len(self.file_manager.file_paths))
 
     @Slot()
     def import_files(self):
