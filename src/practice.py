@@ -6,6 +6,7 @@ import numpy as np
 
 import soundfile as sf
 from analyse.image import ImageGenerator
+from analyse.indexes import ACI
 from analyse.spectrogram import SpectrogramGenerator
 from audio.recording import Recording
 from db import models
@@ -20,8 +21,11 @@ imgen = ImageGenerator(config)
 
 #r = Recording(
 #    "../../data/acoustic/test/wav/test_real.wav", specgen, audio_type="")
+# r = Recording(
+#     "../../data/acoustic/test/audiomoth/outside park/16k_g5_rect_smallH_street.WAV",
+#     recorder="")
 r = Recording(
-    "../../data/acoustic/test/audiomoth/outside park/16k_g5_rect_smallH_street.WAV",
+    "/home/vin/Doctorat/data/acoustic/field/Hochstetter/2018/Plot1/5B536690.WAV",
     recorder="")
 
 
@@ -31,18 +35,22 @@ r = Recording(
 # res = librosa.effects.split(r.audio, top_db=10)
 # print(res)
 # print(r.get_SNR(activity_threshold_dB=5, N=1))
-sample = r.get_sample(20, 15)
+sample = r.get_sample(0, 60)
 # print(sample.has_bird(imgen))
 # for i in range(0, 600, 15):
 #     print(i)
 #     sample = r.getSample(i, i + 15)
 #     print(sample.has_bird())
 
+
 ## TODO: allow spec2img to accept a Spectrogram object
 ## NOTE: image might have to be resized to be viewed in fullscreen
 spec = sample.get_spectrogram(specgen, n_fft=512)
 im = imgen.spec2img(spec.spec, size=(int(299 * spec.duration / 1.5), 299))
 im.show()
+
+aci = ACI(spec)
+print(aci)
 
 # orig = np.asarray(im).copy()
 # # im.show()

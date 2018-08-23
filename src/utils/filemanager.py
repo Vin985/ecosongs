@@ -12,7 +12,12 @@ class FileManager:
     # TODO: put in config
     FILE_EXT = (".wac", ".wav", ".WAV")
 
-    def __init__(self, recorder=None, recursive=True):
+    def __init__(self, recorder=None, recursive=True, sites=None):
+        if sites:
+            self.sites = pd.read_csv(sites, sep=";")
+        else:
+            self.sites = None
+        print(self.sites)
         self.options = {"recursive": recursive, "recorder": recorder}
 
     def log(self, text):
@@ -102,62 +107,14 @@ class FileManager:
             res["year"] = self.options["site_info"]["year"]
             res["plot"] = self.options["site_info"]["plot"]
 
-        res["name"] = res["site"] + res["plot"] + \
-            res["date"].strftime('%Y-%m-%d_%H:%M:%S')
-        return(res)
+        site_name = res["site"]
+        if self.sites is not None:
+            tmp = self.sites.loc[self.sites["Site"] == res["site"], "Abbreviation"]
+            if not tmp.empty:
+                site_name = tmp.item()
 
-    def extract_metadata(fullpath, recorder=None, use_hierarchy=True,
-                         folder_idx={"plot": 1, "site": 2, "year": 3},
-                         site_infos={"plot": None, "site": None, "year": None}):
-        # TODO: use data sources for file location to save path
-        # Initialize result dict. Defaults added for table display
-        res = {"error": 0, "site": None, "plot": None,
-               "year": None, "name": None, "path": fullpath}
-        # Remove root directory to deduce info from hierarchy
-        path = fullpath.split("/")
-        path.reverse()
-        path = path[0:2]
-        print(path)
-
-        # Separate filename from extension
-        file = path[0]
-        f = file.split(".")
-        res["ext"] = f[len(f) - 1]
-        # Get filename
-        name = f[0]
-        # Split file using underscore: only for difference between Audiomoth
-        # and SongMeter
-        # NOTE: might need to change if add support for other recorders
-        data = name.split("_", 1)
-        if recorder is None and len(data) == 1:
-            res["recorder"] = "Audiomoth"
-        else:
-            res["recorder"] = "SongMeter"
-        res["recorder"] = recorder
-
-        # Extract date for all recorders
-        if recorder == "Audiomoth":
-            res["date"] = datetime.fromtimestamp(
-                int(int(data[0], 16))
-            )
-        elif recorder == "SongMeter":
-            res["date"] = datetime.strptime(data[1], "%Y%m%d_%H%S%M")
-
-        # TODO: validate info extraction
-        # Get data from folder hierarchy (only valid for folder import)
-        # Only retrieve info from path hierarchy if indexes fit
-        if use_hierarchy:
-            res["site"] = path[folder_idx["site"]]
-            res["year"] = path[folder_idx["year"]]
-            res["plot"] = path[folder_idx["plot"]]
-        else:
-            if all(site_infos.values()):
-                res["site"] = path[folder_idx["site"]]
-                res["year"] = path[folder_idx["year"]]
-                res["plot"] = path[folder_idx["plot"]]
-
-        res["name"] = res["site"] + res["plot"] + \
-            res["date"].strftime('%Y-%m-%d_%H:%M:%S')
+        res["name"] = (site_name + "_" + res["plot"]
+                       + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
 
         return(res)
 

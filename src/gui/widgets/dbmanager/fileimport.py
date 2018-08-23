@@ -4,7 +4,8 @@ from utils.filemanager import FileManager
 
 from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
-from PySide2.QtCore import QObject, QSortFilterProxyModel, Signal, Slot
+from PySide2.QtCore import (QObject, QSettings, QSortFilterProxyModel, Signal,
+                            Slot)
 from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
@@ -17,10 +18,23 @@ class QFileManager(QObject, FileManager):
     logging = Signal(str, bool)
     filesLoaded = Signal()
 
+    def __init__(self):
+        QObject.__init__(self)
+        settings = QSettings()
+        sites_path = settings.value("sites_path")
+        if sites_path:
+            sites_path = str(sites_path)
+        else:
+            # TODO: load from GUI
+            sites_path = "../conf/sites.csv"
+            settings.setValue("sites_path", sites_path)
+        FileManager.__init__(self, sites=sites_path)
+
     def log(self, text):
         self.logging.emit(text, False)
 
     def files_loaded(self):
+        # TODO: change to use persistence model
         qApp.storage.put("recordings", self.file_infos, format="t")
         self.filesLoaded.emit()
 
@@ -41,7 +55,6 @@ class FileImport(QWizard, Ui_FileImport):
         self.page1.registerField("src_path*", self.input_src_path)
 
     # Define callbacks when events happen
-
     def linkEvents(self):
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
