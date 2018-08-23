@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'fileimport.ui',
 # licensing of 'fileimport.ui' applies.
 #
-# Created: Wed Aug 22 22:51:20 2018
+# Created: Thu Aug 23 15:01:25 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!

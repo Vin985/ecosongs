@@ -9,10 +9,6 @@ class DBManager(ABC):
         raise NotImplementedError(
             "Function not implemented for this DB manager")
 
-    @abstractmethod
-    def add_audio_file(self):
-        pass
-
     def update(self):
         raise NotImplementedError(
             "Function not implemented for this DB manager")
@@ -22,9 +18,9 @@ class DBManager(ABC):
             "Function not implemented for this DB manager")
 
     @abstractmethod
-    def get(self):
+    def get_table(self, table):
         pass
 
     @abstractmethod
-    def terminate(self):
+    def save_data(self, table):
         pass

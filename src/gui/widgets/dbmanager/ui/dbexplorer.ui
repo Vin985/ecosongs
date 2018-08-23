@@ -10,6 +10,9 @@
     <height>564</height>
    </rect>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::ActionsContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -54,11 +57,17 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::AdjustToContents</enum>
      </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::ContiguousSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <property name="sortingEnabled">
       <bool>true</bool>
@@ -79,6 +88,22 @@
     </widget>
    </item>
   </layout>
+  <action name="action_ACI">
+   <property name="icon">
+    <iconset>
+     <normalon>:/tango/audio</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Calculate ACI</string>
+   </property>
+   <property name="toolTip">
+    <string>hello world!</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+A</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

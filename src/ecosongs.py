@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 import pandas as pd
 
+import db.dbutils as dbutils
 from gui.ecosongsUI import EcosongsUI
 from PySide2.QtWidgets import QApplication
 
 
 class Ecosongs(QApplication):
-    # TODO: externalize using persistence class
+    # TODO be more specific in name functions
     def load_data(self):
         try:
-            self.recordings = self.storage["recordings"]
+            self.recordings = self.dbmanager.get_table("recordings")
         except KeyError:
             self.recordings
+
+    def save_data(self, table, data, *args, **kwargs):
+        self.dbmanager.save_data(table, data, *args, **kwargs)
 
     def get_recordings(self):
         if self.recordings.empty:
@@ -24,7 +28,9 @@ class Ecosongs(QApplication):
         self.setOrganizationDomain("CRCEco")
         self.setApplicationName("ecosongs")
         self.recordings = pd.DataFrame()
-        self.storage = pd.HDFStore('db/ecosongs.h5')
+        # TODO : use QSettings for manager type
+        self.dbmanager = dbutils.get_db_manager(database="ecosongs",
+                                                type="hdf5", path="db")
 
 
 if __name__ == '__main__':

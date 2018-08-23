@@ -14,12 +14,12 @@ class DBExplorer(QWidget, Ui_DBExplorer):
         self.file_import = FileImport()
 
         recordings = qApp.get_recordings()
-        print(recordings is qApp.get_recordings())
 
         self.rowsFound.setText(
             "{0} recording(s) found!".format(len(recordings)))
         self.initTableView()
         self.linkEvents()
+        self.addAction(self.action_ACI)
 
     def linkEvents(self):
         self.dbImportButton.clicked.connect(self.showImportWindow)

@@ -35,7 +35,7 @@ class QFileManager(QObject, FileManager):
 
     def files_loaded(self):
         # TODO: change to use persistence model
-        qApp.storage.put("recordings", self.file_infos, format="t")
+        qApp.save_data("recordings", self.file_infos, format="t")
         self.filesLoaded.emit()
 
 

@@ -259,19 +259,9 @@ QListView::text:selected {
        <property name="autoFillBackground">
         <bool>true</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout"/>
       </widget>
-      <widget class="QWidget" name="audio_page">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>PushButton</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+      <widget class="AudioManager" name="audio_page"/>
+      <widget class="QWidget" name="page"/>
      </widget>
     </item>
    </layout>
@@ -404,6 +394,12 @@ QListView::text:selected {
    <class>DBExplorer</class>
    <extends>QWidget</extends>
    <header>gui/widgets/dbmanager/dbexplorer.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AudioManager</class>
+   <extends>QWidget</extends>
+   <header>gui/widgets/audio/audiomanager.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

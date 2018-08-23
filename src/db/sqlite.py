@@ -1,6 +1,6 @@
 import sqlite3
 
-from db.manager import DBManager
+from db.dbmanager import DBManager
 
 
 class SQLiteManager(DBManager):

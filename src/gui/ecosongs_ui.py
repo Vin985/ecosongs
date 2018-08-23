@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'ecosongs.ui',
 # licensing of 'ecosongs.ui' applies.
 #
-# Created: Sun Aug 19 13:19:35 2018
+# Created: Thu Aug 23 17:12:05 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!
@@ -149,17 +149,13 @@ class Ui_Ecosongs(object):
         self.db_page = DBExplorer()
         self.db_page.setAutoFillBackground(True)
         self.db_page.setObjectName("db_page")
-        self.gridLayout = QtWidgets.QGridLayout(self.db_page)
-        self.gridLayout.setObjectName("gridLayout")
         self.pages.addWidget(self.db_page)
-        self.audio_page = QtWidgets.QWidget()
+        self.audio_page = AudioManager()
         self.audio_page.setObjectName("audio_page")
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.audio_page)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.pushButton = QtWidgets.QPushButton(self.audio_page)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout_3.addWidget(self.pushButton)
         self.pages.addWidget(self.audio_page)
+        self.page = QtWidgets.QWidget()
+        self.page.setObjectName("page")
+        self.pages.addWidget(self.page)
         self.horizontalLayout.addWidget(self.pages)
         Ecosongs.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Ecosongs)
@@ -239,7 +235,6 @@ class Ui_Ecosongs(object):
         self.sidebar.item(1).setText(QtWidgets.QApplication.translate("Ecosongs", "Audio", None, -1))
         self.sidebar.item(2).setText(QtWidgets.QApplication.translate("Ecosongs", "Analysis", None, -1))
         self.sidebar.setSortingEnabled(__sortingEnabled)
-        self.pushButton.setText(QtWidgets.QApplication.translate("Ecosongs", "PushButton", None, -1))
         self.mFile.setTitle(QtWidgets.QApplication.translate("Ecosongs", "File", None, -1))
         self.mHelp.setTitle(QtWidgets.QApplication.translate("Ecosongs", "Help", None, -1))
         self.mTools.setTitle(QtWidgets.QApplication.translate("Ecosongs", "Tools", None, -1))
@@ -258,4 +253,5 @@ class Ui_Ecosongs(object):
         self.aExport_db.setText(QtWidgets.QApplication.translate("Ecosongs", "Export database", None, -1))
 
 from gui.widgets.dbmanager.dbexplorer import DBExplorer
+from gui.widgets.audio.audiomanager import AudioManager
 from . import ecosongs_rc

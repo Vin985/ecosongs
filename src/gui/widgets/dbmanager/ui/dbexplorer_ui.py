@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'dbexplorer.ui',
 # licensing of 'dbexplorer.ui' applies.
 #
-# Created: Wed Aug  8 17:17:37 2018
+# Created: Thu Aug 23 15:07:05 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,6 +14,7 @@ class Ui_DBExplorer(object):
     def setupUi(self, DBExplorer):
         DBExplorer.setObjectName("DBExplorer")
         DBExplorer.resize(1075, 564)
+        DBExplorer.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.gridLayout = QtWidgets.QGridLayout(DBExplorer)
         self.gridLayout.setObjectName("gridLayout")
         self.dbOptions = QtWidgets.QGroupBox(DBExplorer)
@@ -33,10 +34,11 @@ class Ui_DBExplorer(object):
         self.gridLayout.addWidget(self.dbOptions, 0, 0, 1, 1)
         self.dbTable = QtWidgets.QTableView(DBExplorer)
         self.dbTable.setEnabled(True)
+        self.dbTable.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.dbTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.dbTable.setSelectionMode(QtWidgets.QAbstractItemView.ContiguousSelection)
+        self.dbTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.dbTable.setSortingEnabled(True)
-        self.dbTable.setWordWrap(True)
         self.dbTable.setObjectName("dbTable")
         self.dbTable.horizontalHeader().setStretchLastSection(True)
         self.dbTable.verticalHeader().setVisible(False)
@@ -44,6 +46,11 @@ class Ui_DBExplorer(object):
         self.rowsFound = QtWidgets.QLabel(DBExplorer)
         self.rowsFound.setObjectName("rowsFound")
         self.gridLayout.addWidget(self.rowsFound, 1, 0, 1, 1)
+        self.action_ACI = QtWidgets.QAction(DBExplorer)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/tango/audio"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.action_ACI.setIcon(icon)
+        self.action_ACI.setObjectName("action_ACI")
 
         self.retranslateUi(DBExplorer)
         QtCore.QMetaObject.connectSlotsByName(DBExplorer)
@@ -53,4 +60,7 @@ class Ui_DBExplorer(object):
         self.dbOptions.setTitle(QtWidgets.QApplication.translate("DBExplorer", "Database Explorer", None, -1))
         self.dbImportButton.setText(QtWidgets.QApplication.translate("DBExplorer", "Import file(s) into database", None, -1))
         self.rowsFound.setText(QtWidgets.QApplication.translate("DBExplorer", "TextLabel", None, -1))
+        self.action_ACI.setText(QtWidgets.QApplication.translate("DBExplorer", "Calculate ACI", None, -1))
+        self.action_ACI.setToolTip(QtWidgets.QApplication.translate("DBExplorer", "hello world!", None, -1))
+        self.action_ACI.setShortcut(QtWidgets.QApplication.translate("DBExplorer", "Alt+A", None, -1))
 
