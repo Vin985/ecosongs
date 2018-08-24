@@ -3,30 +3,33 @@ from PySide2.QtGui import QStandardItem, QStandardItemModel
 
 
 class RecordingsTreeModel(QStandardItemModel):
-    def __init__(self, parent, recordings):
+    def __init__(self, parent, recordings, categories=["site", "plot", "year"]):
         super(self.__class__, self).__init__(1, 0, parent)
-        self.recordings = recordings
-        self.create_model()
+        self.create_model(categories, recordings)
 
-    def create_model(self):
+    def create_model(self, categories, recordings, parent=None):
         print("creating model!")
-        years = self.recordings.groupby(["year"])
-        last_entry = None
-        for (year, recordings) in years:
-            print(year)
-            last_entry = self.create_year(year)
-            self.appendRow(last_entry)
-        print(years)
-        print(years.groups)
-        pass
+        groups = recordings.groupby(categories[0])
+        for (entry, recs) in groups:
+            item = self.create_item(entry)
+            if len(categories) > 1:
+                self.create_model(categories[1:], recs, item)
+            else:
+                self.add_recordings(recordings, item)
+            if parent:
+                parent.appendRow(item)
+            else:
+                self.appendRow(item)
 
-    def create_year(self, year):
-        result = QStandardItem(year)
+    def create_item(self, name):
+        result = QStandardItem(name)
         result.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         return result
 
-    def create_site(self):
-        pass
+    def add_recordings(self, recordings, parent):
+        recordings.apply(self.add_recording, axis=1, parent=parent)
 
-    def create_recording(self):
-        pass
+    def add_recording(self, recording, parent):
+        item = self.create_item(recording["name"])
+        item.setData(recording)
+        parent.appendRow(item)
