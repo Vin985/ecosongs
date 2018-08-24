@@ -8,7 +8,6 @@ class RecordingsTreeModel(QStandardItemModel):
         self.create_model(categories, recordings)
 
     def create_model(self, categories, recordings, parent=None):
-        print("creating model!")
         groups = recordings.groupby(categories[0])
         for (entry, recs) in groups:
             item = self.create_item(entry)
@@ -27,9 +26,10 @@ class RecordingsTreeModel(QStandardItemModel):
         return result
 
     def add_recordings(self, recordings, parent):
-        recordings.apply(self.add_recording, axis=1, parent=parent)
+        for row in recordings.itertuples(index=False):
+            self.add_recording(row, parent)
 
     def add_recording(self, recording, parent):
-        item = self.create_item(recording["name"])
+        item = self.create_item(recording.name)
         item.setData(recording)
         parent.appendRow(item)
