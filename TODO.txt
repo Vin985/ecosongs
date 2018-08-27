@@ -6,6 +6,7 @@ wac2wav
 File management
 ----------------
 - convert wac to wav to flac
+- Extract info from wav header audiomoth? (test_wav_header.py)
 
 spectrograms
 -------------

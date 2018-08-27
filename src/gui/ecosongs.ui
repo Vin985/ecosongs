@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1299</width>
-    <height>659</height>
+    <width>1057</width>
+    <height>657</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+   <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -30,21 +30,65 @@
     <bool>true</bool>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
+    <item>
+     <widget class="QStackedWidget" name="pages">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>6</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QListView{
+  	show-decoration-selected: 1; 
+	outline:none;
+}
+QListView::item {
+	border: 1 outset rgb(136, 138, 133);
+	border-radius: 2;
+	background-color: rgb(238, 238, 236);
+	padding: 5 5 5 5;
+	margin:0 2 2 2;
+	width:75;
+/*background-color:blue;*/
+}
+
+
+QListView::item:selected:!active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #ABAFE5, stop: 1 #8588B2);
+}
+
+QListView::item:selected:active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #6a6ea9, stop: 1 #888dd9);
+	selection-background-color: green;
+}
+
+QListView::item:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);
+}
+
+QListView::text:selected {
+    border:none;
+}</string>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="DBExplorer" name="db_page">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="AudioManager" name="audio_page"/>
+      <widget class="QWidget" name="page"/>
+     </widget>
+    </item>
     <item>
      <widget class="QListWidget" name="sidebar">
       <property name="enabled">
@@ -205,65 +249,6 @@ QListView::text:selected {
       </item>
      </widget>
     </item>
-    <item>
-     <widget class="QStackedWidget" name="pages">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>6</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QListView{
-  	show-decoration-selected: 1; 
-	outline:none;
-}
-QListView::item {
-	border: 1 outset rgb(136, 138, 133);
-	border-radius: 2;
-	background-color: rgb(238, 238, 236);
-	padding: 5 5 5 5;
-	margin:0 2 2 2;
-	width:75;
-/*background-color:blue;*/
-}
-
-
-QListView::item:selected:!active {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #ABAFE5, stop: 1 #8588B2);
-}
-
-QListView::item:selected:active {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #6a6ea9, stop: 1 #888dd9);
-	selection-background-color: green;
-}
-
-QListView::item:hover {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);
-}
-
-QListView::text:selected {
-    border:none;
-}</string>
-      </property>
-      <property name="currentIndex">
-       <number>1</number>
-      </property>
-      <widget class="DBExplorer" name="db_page">
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="AudioManager" name="audio_page"/>
-      <widget class="QWidget" name="page"/>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -271,11 +256,11 @@ QListView::text:selected {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1299</width>
+     <width>1057</width>
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="mFile">
+   <widget class="QMenu" name="menu_file">
     <property name="title">
      <string>File</string>
     </property>
@@ -289,7 +274,7 @@ QListView::text:selected {
     <addaction name="separator"/>
     <addaction name="aExit"/>
    </widget>
-   <widget class="QMenu" name="mHelp">
+   <widget class="QMenu" name="menu_help">
     <property name="title">
      <string>Help</string>
     </property>
@@ -297,21 +282,37 @@ QListView::text:selected {
     <addaction name="separator"/>
     <addaction name="aAbout"/>
    </widget>
-   <widget class="QMenu" name="mTools">
+   <widget class="QMenu" name="menu_tools">
     <property name="title">
      <string>Tools</string>
     </property>
     <addaction name="wac2wav"/>
    </widget>
-   <widget class="QMenu" name="mAnalyses">
+   <widget class="QMenu" name="menu_analyses">
     <property name="title">
      <string>Analyses</string>
     </property>
    </widget>
-   <addaction name="mFile"/>
-   <addaction name="mAnalyses"/>
-   <addaction name="mTools"/>
-   <addaction name="mHelp"/>
+   <widget class="QMenu" name="menu_recording">
+    <property name="title">
+     <string>Recording</string>
+    </property>
+    <widget class="QMenu" name="menu_calculate">
+     <property name="title">
+      <string>Calculate...</string>
+     </property>
+     <addaction name="action_ACI"/>
+    </widget>
+    <addaction name="menu_calculate"/>
+    <addaction name="separator"/>
+    <addaction name="action_2wav"/>
+    <addaction name="action_details"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_analyses"/>
+   <addaction name="menu_recording"/>
+   <addaction name="menu_tools"/>
+   <addaction name="menu_help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -386,6 +387,21 @@ QListView::text:selected {
   <action name="aExport_db">
    <property name="text">
     <string>Export database</string>
+   </property>
+  </action>
+  <action name="action_ACI">
+   <property name="text">
+    <string>Acoustic Complexity Index (ACI)</string>
+   </property>
+  </action>
+  <action name="action_details">
+   <property name="text">
+    <string>Show Details</string>
+   </property>
+  </action>
+  <action name="action_2wav">
+   <property name="text">
+    <string>Convert to wav</string>
    </property>
   </action>
  </widget>
