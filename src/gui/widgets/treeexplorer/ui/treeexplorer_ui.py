@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'treeexplorer.ui',
 # licensing of 'treeexplorer.ui' applies.
 #
-# Created: Sun Aug 26 22:49:48 2018
+# Created: Tue Aug 28 10:14:07 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!

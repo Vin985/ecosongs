@@ -1,4 +1,3 @@
-from db.models import RecordingModel
 from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 
@@ -7,8 +6,6 @@ class RecordingsTableModel(QAbstractTableModel):
 
     def __init__(self, recordings=None, parent=None):
         super(RecordingsTableModel, self).__init__(parent)
-
-        print(RecordingModel().__data__)
 
         if recordings is None:
             self.recordings = []

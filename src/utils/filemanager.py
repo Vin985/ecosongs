@@ -3,6 +3,8 @@ from glob import glob
 
 import pandas as pd
 
+from audio.recording import Recording
+
 RECORDER_AM = "Audiomoth"
 RECORDER_SM2 = "SongMeter"
 RECORDER_AUTO = "Auto-detect"
@@ -14,10 +16,10 @@ class FileManager:
 
     def __init__(self, recorder=None, recursive=True, sites=None):
         if sites:
+            # TODO: load on demand!
             self.sites = pd.read_csv(sites, sep=";")
         else:
             self.sites = None
-        print(self.sites)
         self.options = {"recursive": recursive, "recorder": recorder}
 
     def log(self, text):
@@ -53,9 +55,7 @@ class FileManager:
         file_infos = list(map(self.extract_info, self.file_paths))
         # TODO: oder of columns in config
         self.file_infos = pd.DataFrame(file_infos,
-                                       columns=["name", "year", "site",
-                                                "plot", "date", "path",
-                                                "ext", "recorder", "error"])
+                                       columns=Recording.COLUMNS)
         self.log(self.file_infos)
 
     def extract_info(self, fullpath):
@@ -70,7 +70,7 @@ class FileManager:
         # Separate filename from extension
         file = path[0]
         f = file.split(".")
-        res["ext"] = f[len(f) - 1]
+        res["ext"] = f[len(f) - 1].lower()
         # Get filename
         name = f[0]
         # Split file using underscore: only for difference between Audiomoth

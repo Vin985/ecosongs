@@ -1,37 +1,45 @@
 import librosa
-from utils import metadata
+from utils.basemodel import BaseModel
 
 from audio import sample
-from db import models
 
 
-class Recording(sample.Sample):
+class Recording(BaseModel, sample.Sample):
 
-    def __init__(self, filepath, recorder=None, model=None):
-        self.filepath = filepath
-        if not model:
-            infos = metadata.extract_from_file(filepath, recorder)
-        self.model = models.RecordingModel(filepath=filepath, **infos)
+    COLUMNS = ["name", "year", "site",
+               "plot", "date", "path",
+               "ext", "recorder", "error"]
+    #
+    # def __init__(self, filepath, recorder=None, model=None):
+    #     self.filepath = filepath
+    #     if not model:
+    #         infos = metadata.extract_from_file(filepath, recorder)
+    #     self.model = models.RecordingModel(filepath=filepath, **infos)
+    #     self.audio = None
+
+    def __init__(self, *args, **kwargs):
+        # TODO: load from path
+        BaseModel.__init__(self, *args, **kwargs)
         self.audio = None
 
-    @property
-    def name(self):
-        """
-        Docstring for name property
-        """
-        return self.model.name
-
-    @name.setter
-    def name(self, name):
-        """
-        Docstring for name property
-        """
-        self.model.name = name
+    # @property
+    # def name(self):
+    #     """
+    #     Docstring for name property
+    #     """
+    #     return self.model.name
+    #
+    # @name.setter
+    # def name(self, name):
+    #     """
+    #     Docstring for name property
+    #     """
+    #     self.model.name = name
 
     def load_audio(self, sr):
         # TODO: externalize supported types
-        if self.model.type in ["wav", "flac"]:
-            (self.audio, self.sr) = (librosa.load(self.filepath, sr=sr))
+        if self.ext.lower() in ["wav", "flac"]:
+            (self.audio, self.sr) = (librosa.load(self.path, sr=sr))
         else:
             raise ValueError("Unsupported audio file type")
 

@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'audiomanager.ui',
 # licensing of 'audiomanager.ui' applies.
 #
-# Created: Sun Aug 26 13:59:40 2018
+# Created: Tue Aug 28 15:46:36 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,14 +19,14 @@ class Ui_AudioManager(object):
         self.splitter = QtWidgets.QSplitter(AudioManager)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
-        self.treeExplorer = TreeExplorer(self.splitter)
+        self.tree_explorer = TreeExplorer(self.splitter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.treeExplorer.sizePolicy().hasHeightForWidth())
-        self.treeExplorer.setSizePolicy(sizePolicy)
-        self.treeExplorer.setMinimumSize(QtCore.QSize(250, 0))
-        self.treeExplorer.setObjectName("treeExplorer")
+        sizePolicy.setHeightForWidth(self.tree_explorer.sizePolicy().hasHeightForWidth())
+        self.tree_explorer.setSizePolicy(sizePolicy)
+        self.tree_explorer.setMinimumSize(QtCore.QSize(250, 0))
+        self.tree_explorer.setObjectName("tree_explorer")
         self.details_pane = QtWidgets.QWidget(self.splitter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(2)
@@ -41,7 +41,7 @@ class Ui_AudioManager(object):
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 4, 0, 1, 1)
+        self.gridLayout.addItem(spacerItem, 5, 0, 1, 1)
         self.name = QtWidgets.QLabel(self.details_pane)
         self.name.setText("")
         self.name.setObjectName("name")
@@ -67,6 +67,19 @@ class Ui_AudioManager(object):
         self.pushButton = QtWidgets.QPushButton(self.details_pane)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 3, 1, 1, 1)
+        self.scrollArea = QtWidgets.QScrollArea(self.details_pane)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 692, 266))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.scrollAreaWidgetContents)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.spectrogram = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.spectrogram.setObjectName("spectrogram")
+        self.horizontalLayout.addWidget(self.spectrogram)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.gridLayout.addWidget(self.scrollArea, 4, 0, 1, 2)
         self.horizontalLayout_3.addWidget(self.splitter)
 
         self.retranslateUi(AudioManager)
@@ -79,5 +92,6 @@ class Ui_AudioManager(object):
         self.label_5.setText(QtWidgets.QApplication.translate("AudioManager", "Year", None, -1))
         self.year.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
         self.pushButton.setText(QtWidgets.QApplication.translate("AudioManager", "compute ACI", None, -1))
+        self.spectrogram.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
 
 from gui.widgets.treeexplorer.treeexplorer import TreeExplorer
