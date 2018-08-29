@@ -17,7 +17,7 @@ def filter_isolated_cells(array, struct):
 
 
 class Sample:
-    def __init__(self, audio, sr, start=0):
+    def __init__(self, audio=np.array([]), sr=None, start=0):
         self.audio = audio
         self.sr = sr
         self.start = start

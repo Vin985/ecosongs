@@ -5,10 +5,10 @@ class ACI:
     def __init__(self, spectro, time_step=None, unit="seconds"):
         spec = spectro.spec
         if time_step is None:
-            j_bin = len(spec)
+            times = 1
         else:
             if unit == "seconds":
-                j_bin = time_step * spectro.sr
+                j_bin = int(time_step * spec.shape[1] / spectro.duration)
             elif unit == "frames":
                 j_bin = time_step
 

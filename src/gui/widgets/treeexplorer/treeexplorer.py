@@ -33,6 +33,7 @@ class TreeExplorer(QWidget, Ui_TreeExplorer):
             # if file and not folder
             self.show_file_details.emit(item.data())
         print("item selected: ")
+        print(item.data())
 
     def compute_ACI(self):
         print(self.tree_view.selectedIndexes())

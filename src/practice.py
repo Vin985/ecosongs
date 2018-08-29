@@ -21,12 +21,12 @@ imgen = ImageGenerator(config)
 
 #r = Recording(
 #    "../../data/acoustic/test/wav/test_real.wav", specgen, audio_type="")
-r = Recording(
-    "../../data/acoustic/test/audiomoth/outside park/16k_g5_rect_smallH_street.WAV",
-    recorder="")
 # r = Recording(
-#     "/home/vin/Doctorat/data/acoustic/field/Hochstetter/2018/Plot1/5B536690.WAV",
+#     "../../data/acoustic/test/audiomoth/outside park/16k_g5_rect_smallH_street.WAV",
 #     recorder="")
+r = Recording(
+    "/home/vin/Doctorat/data/acoustic/field/Hochstetter/2018/Plot1/5B536690.WAV",
+    recorder="")
 
 
 # for record in models.RecordingModel.select():

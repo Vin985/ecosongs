@@ -1,6 +1,7 @@
 import librosa
 from utils.basemodel import BaseModel
 
+import analyse.compute_indice as idx
 from audio import sample
 
 
@@ -17,10 +18,12 @@ class Recording(BaseModel, sample.Sample):
     #     self.model = models.RecordingModel(filepath=filepath, **infos)
     #     self.audio = None
 
+    # TODO: load from file_path only
     def __init__(self, *args, **kwargs):
         # TODO: load from path
+        # super(self.__class__, self).__init__(*args, **kwargs)
         BaseModel.__init__(self, *args, **kwargs)
-        self.audio = None
+        sample.Sample.__init__(self)
 
     # @property
     # def name(self):
@@ -36,7 +39,7 @@ class Recording(BaseModel, sample.Sample):
     #     """
     #     self.model.name = name
 
-    def load_audio(self, sr):
+    def load_audio(self, sr=None):
         # TODO: externalize supported types
         if self.ext.lower() in ["wav", "flac"]:
             (self.audio, self.sr) = (librosa.load(self.path, sr=sr))
@@ -44,7 +47,7 @@ class Recording(BaseModel, sample.Sample):
             raise ValueError("Unsupported audio file type")
 
     def get_sample(self, start, duration, sr=None):
-        if not self.audio:
+        if not self.audio.size:
             self.load_audio(sr)
 
         # Convert starting time to frames

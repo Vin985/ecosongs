@@ -34,8 +34,11 @@ class ImageGenerator:
         # support float64
         spec = spec.astype("float32")
         # Normalize spectrogram in [0:1]
-        spec -= spec.min(axis=None)
-        spec /= spec.max(axis=None)
+        # TODO: use librosa normalize?
+        min = spec.min(axis=None)
+        max = spec.max(axis=None)
+        spec -= min
+        spec /= (max - min)
         if self.invert_colors:
             spec = 1 - spec
         spec = spec * 255
