@@ -3,6 +3,7 @@ import pandas as pd
 
 import db.dbutils as dbutils
 from gui.ecosongsUI import EcosongsUI
+from gui.utils.settings import Settings
 from PySide2.QtWidgets import QApplication
 
 
@@ -28,9 +29,10 @@ class Ecosongs(QApplication):
         self.setOrganizationDomain("CRCEco")
         self.setApplicationName("ecosongs")
         self.recordings = pd.DataFrame()
-        # TODO : use QSettings for manager type
-        self.dbmanager = dbutils.get_db_manager(database="ecosongs",
-                                                type="hdf5", path="db")
+        settings = Settings()
+        self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
+                                                type=settings.db_type,
+                                                path=settings.db_path)
 
 
 if __name__ == '__main__':

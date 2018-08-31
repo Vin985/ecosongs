@@ -18,7 +18,7 @@ class RecordingsTreeModel(QStandardItemModel):
             # item is a folder. add path to it
             item = self.create_item(entry, path, folder=True)
             if len(categories) > 1:
-                self.create_model(categories[1:], recs, path, item)
+                self.create_model(categories[1:], recs, path.copy(), item)
             else:
                 # item is a recording. No path as whole recording will be in data
                 self.add_recordings(recordings, item)

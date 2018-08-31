@@ -75,9 +75,10 @@ class FileManager:
         name = f[0]
         # Split file using underscore: only for difference between Audiomoth
         # and SongMeter
-        # NOTE: might need to change if add support for other recorders
+        # TODO: change if add support for other recorders and normal audio files
+        # use pattern matching
         data = name.split("_", 1)
-        # TODO: add constants instead of
+        # TODO: add constants
         if self.options["recorder"] == "Auto-detect":
             if len(data) == 1:
                 res["recorder"] = "Audiomoth"
@@ -113,6 +114,7 @@ class FileManager:
             if not tmp.empty:
                 site_name = tmp.item()
 
+        # TODO: extract info from wav header
         res["name"] = (site_name + "_" + res["plot"]
                        + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
 

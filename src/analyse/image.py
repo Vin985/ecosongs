@@ -9,18 +9,13 @@ from PIL import Image, ImageEnhance, ImageOps
 
 class ImageGenerator:
     def __init__(self, config):
-        self.__read_conf(config)
+        self.__read_config(config)
 
-    def __read_conf(self, config):
-        colors = json.loads(
-            config.get(
-                "image", "color_masks", fallback='["red", "lime", "blue"]'))
-        self.color_masks = list(map(self.__get_color_rgb, colors))
-        self.contrast = config.getint("image", "contrast", fallback=0)
-        self.invert_colors = config.getboolean(
-            "image", "invert_colors", fallback=False)
-        self.composite_ffts = json.loads(
-            config.get("image", "composite_ffts"))
+    def __read_config(self, config):
+        # TODO: add parent class?
+        for key in config:
+            setattr(self, key, config[key])
+        self.color_masks = [self.__get_color_rgb(col) for col in self.color_masks_str]
 
     def __get_color_rgb(self, color):
         if type(color) is tuple:
@@ -39,6 +34,7 @@ class ImageGenerator:
         max = spec.max(axis=None)
         spec -= min
         spec /= (max - min)
+        print(self.invert_colors)
         if self.invert_colors:
             spec = 1 - spec
         spec = spec * 255
