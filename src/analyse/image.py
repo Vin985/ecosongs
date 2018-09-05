@@ -34,7 +34,6 @@ class ImageGenerator:
         max = spec.max(axis=None)
         spec -= min
         spec /= (max - min)
-        print(self.invert_colors)
         if self.invert_colors:
             spec = 1 - spec
         spec = spec * 255

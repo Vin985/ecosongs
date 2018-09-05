@@ -16,6 +16,7 @@ class TreeExplorer(QWidget, Ui_TreeExplorer):
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)
         recordings = qApp.get_recordings()
+        # Change to treeview
         self.tree_view.setModel(RecordingsTreeModel(self.tree_view, recordings))
         self.link_events()
         self.tree_view.addAction(self.action_ACI)

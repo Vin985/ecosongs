@@ -38,6 +38,8 @@ class Sample:
         return round(self.length / self.sr, 2)
 
     def get_spectrogram(self, specgen, n_fft=None):
+        if not self.audio.size:
+            self.load_audio()
         if not self.spectrogram:
             self.spectrogram = specgen.create_spectrogram(self, n_fft)
         return (self.spectrogram)

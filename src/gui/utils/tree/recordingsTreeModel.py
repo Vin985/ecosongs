@@ -2,9 +2,18 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QIcon, QPixmap, QStandardItem, QStandardItemModel
 
 
+class RecordingItem(QStandardItem):
+    is_folder = False
+
+
+class FolderItem(QStandardItem):
+    is_folder = True
+
+
 class RecordingsTreeModel(QStandardItemModel):
     def __init__(self, parent, recordings, categories=["site", "plot", "year"]):
         super(self.__class__, self).__init__(1, 0, parent)
+        self.categories = categories
         self.clear()
         self.create_model(categories, recordings)
         # self.insertColumn(1)
@@ -28,28 +37,30 @@ class RecordingsTreeModel(QStandardItemModel):
                 self.appendRow(item)
 
     def create_item(self, name, path=None, folder=False):
-        result = QStandardItem(name)
-        result.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-        # If item is a folder, set path as Data
-        if path:
-            result.setData(path)
-        icon = QIcon()
         if folder:
+            item = FolderItem(name)
             icon_path = ":/tango/folder"
         else:
+            item = RecordingItem(name)
             icon_path = ":/tango/audio"
+        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        # If item is a folder, set path as Data
+        if path:
+            item.setData(path)
+        # set item icon
+        icon = QIcon()
         icon.addPixmap(QPixmap(icon_path), QIcon.Normal, QIcon.Off)
-        result.setIcon(icon)
-        return result
+        item.setIcon(icon)
+        return item
 
     def add_recordings(self, recordings, parent):
-        for row in recordings.itertuples(index=False):
+        for row in recordings.itertuples(index=True):
             self.add_recording(row, parent)
 
     def add_recording(self, recording, parent):
         item = self.create_item(recording.name)
         # set whole line as data
-        item.setData(recording)
+        item.setData(recording._asdict())
         # if we want to add another column in tree
         # path = self.create_item(recording.path)
         # parent.appendRow([item, path])

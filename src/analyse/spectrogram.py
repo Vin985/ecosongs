@@ -1,8 +1,6 @@
 import librosa
 import numpy as np
 
-import analyse.compute_indice as idx
-
 
 class Spectrogram:
     def __init__(self, spec, n_fft, duration, sr):

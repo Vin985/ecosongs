@@ -2,10 +2,14 @@ import numpy as np
 
 
 class ACI:
-    def __init__(self, spectro, time_step=None, unit="seconds"):
+    def __init__(self, spectro=None, time_step=None, unit="seconds", recording=None, specgen=None, n_fft=None):
+        if recording:
+            print(recording.path)
+        if not spectro:
+            spectro = recording.get_spectrogram(specgen, n_fft)
         spec = spectro.spec
         if time_step is None:
-            times = 1
+            j_bin = spec.shape[1]
         else:
             if unit == "seconds":
                 j_bin = int(time_step * spec.shape[1] / spectro.duration)

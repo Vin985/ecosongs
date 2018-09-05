@@ -15,7 +15,7 @@ config = configparser.ConfigParser()
 config.read("ecosongs.conf")
 
 specgen = SpectrogramGenerator(config)
-imgen = ImageGenerator(config)
+# imgen = ImageGenerator(config)
 
 # TODO
 
@@ -25,7 +25,7 @@ imgen = ImageGenerator(config)
 #     "../../data/acoustic/test/audiomoth/outside park/16k_g5_rect_smallH_street.WAV",
 #     recorder="")
 r = Recording(
-    "/home/vin/Doctorat/data/acoustic/field/Hochstetter/2018/Plot1/5B536690.WAV",
+    "/mnt/win/UMoncton/Doctorat/data/acoustic/field/Hochstetter/2018/Plot1/5B53D710.WAV",
     recorder="")
 
 
@@ -45,11 +45,12 @@ sample = r.get_sample(0, 60)
 
 ## TODO: allow spec2img to accept a Spectrogram object
 ## NOTE: image might have to be resized to be viewed in fullscreen
-spec = sample.get_spectrogram(specgen, n_fft=512)
-im = imgen.spec2img(spec.spec, size=(int(299 * spec.duration / 1.5), 299))
-im.show()
+r.get_spectrogram(specgen, n_fft=512)
+# spec = sample.get_spectrogram(specgen, n_fft=512)
+# im = imgen.spec2img(spec.spec, size=(int(299 * spec.duration / 1.5), 299))
+# im.show()
 
-aci = ACI(spec)
+aci = ACI(r, specgen)
 print(aci)
 
 # orig = np.asarray(im).copy()
