@@ -1,12 +1,21 @@
+import itertools
+from multiprocessing import Pool, Queue
+
 import pandas as pd
 from PIL import ImageQt
 
+from analyse.indexes import ACI
 from audio.recording import Recording
-from gui.utils.settings import Settings
+from gui.threads.QIndexThread import QIndexThread
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
+from PySide2.QtConcurrent import QtConcurrent
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
+
+
+def get_ACI(self, rec):
+    return ACI(recording=rec)
 
 
 class AudioManager(QWidget, Ui_AudioManager):
@@ -14,6 +23,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         super(self.__class__, self).__init__()
         self.setupUi(self)
         self.init_tree()
+        self.index_thread = QIndexThread()
         self.link_events()
         self.add_actions()
 
@@ -31,6 +41,17 @@ class AudioManager(QWidget, Ui_AudioManager):
     def link_events(self):
         self.tree_view.selectionModel().selectionChanged.connect(self.tree_selection_changed)
         self.action_ACI.triggered.connect(self.compute_ACI)
+        self.index_thread.progression.connect(self.update_progression)
+        self.index_thread.finished.connect(self.get_results)
+
+    def get_results(self):
+        print("finished")
+        for item in self.index_thread.res:
+            print(item)
+        print(self.index_thread.res)
+
+    def update_progression(self, progress):
+        print(progress)
 
     def tree_selection_changed(self, new, old):
         # TODO: handle multiple selection
@@ -74,10 +95,12 @@ class AudioManager(QWidget, Ui_AudioManager):
         return()
 
     def compute_ACI(self):
-        idxs = self.tree_view.selectedIndexes()
-        sel_folders = []
-        sel_recs = []
+        # default value for result containers
         res = None
+        sel_recs = []
+        sel_folders = []
+        # get selected indexes
+        idxs = self.tree_view.selectedIndexes()
         for idx in idxs:
             item = idx.model().itemFromIndex(idx)
             data = item.data()
@@ -85,10 +108,24 @@ class AudioManager(QWidget, Ui_AudioManager):
                 sel_folders.append(data)
             else:
                 sel_recs.append(data["Index"])
+        # If folders are selected, selected all recordings inside
         tmp = [qApp.recordings.query(self.folder_query(folder)) for folder in sel_folders]
+        # Get individually selected recordings
         tmp.append(qApp.get_recordings().iloc[sel_recs])
+        # Get one list of unique selected files
         res = pd.concat(tmp).drop_duplicates()
-        qApp.recordings.compute_ACI(res.index.values, qApp.specgen)
+        # Load files if not already in memory
+        recs = qApp.load_recordings(res.index.values)
+        # Get list of all loaded recordings
+        print(recs)
+        # Compute ACIs
+        # TODO: clean up!
+        self.index_thread.recordings = recs
+        self.index_thread.start()
+        # pool = Pool(5)
+        # acis = pool.map(ACI, recs)
+        # pool.close()
+        # print(acis)
 
         # folder_query = {key: [] for key in idx.model().categories}
         # for dic in sel_folders:

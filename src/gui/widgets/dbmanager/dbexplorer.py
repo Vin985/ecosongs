@@ -11,8 +11,6 @@ class DBExplorer(QWidget, Ui_DBExplorer):
     def __init__(self, recordings=None):
         super(self.__class__, self).__init__()
         self.setupUi(self)
-        self.file_import = FileImport()
-
         recordings = qApp.get_recordings()
 
         self.rowsFound.setText(
@@ -23,6 +21,9 @@ class DBExplorer(QWidget, Ui_DBExplorer):
 
     def linkEvents(self):
         self.dbImportButton.clicked.connect(self.showImportWindow)
+
+    def import_files(self):
+        print("importing files")
 
     def initTableView(self):
         if qApp.get_recordings().empty:
@@ -40,4 +41,6 @@ class DBExplorer(QWidget, Ui_DBExplorer):
         return(RecordingModel.select())
 
     def showImportWindow(self):
+        self.file_import = FileImport()
+        self.file_import.accepted.connect(self.import_files)
         self.file_import.show()

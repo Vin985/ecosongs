@@ -28,7 +28,7 @@ class QFileManager(QObject, FileManager):
 
     def files_loaded(self):
         # TODO: change to use persistence model
-        qApp.save_data("recordings", self.file_infos, format="t")
+        # qApp.save_data("recordings", self.file_infos, format="t")
         self.filesLoaded.emit()
 
 
@@ -70,17 +70,17 @@ class FileImport(QWizard, Ui_FileImport):
         # self.wacConverter.finished.connect(self.end_conversion)
 
     def initializePage(self, id):
-        if id == 1:
-            self.initialize_page1()
-            # getattr(self, "initialize_page" + str(id))()
+        print(id)
+        getattr(self, "initialize_page" + str(id), lambda: None)()
 
     # TODO : Validate manual entries
 
     def initialize_page1(self):
         site_info = {}
+        # get information about site from comboboxes
         if (self.radio_site_auto.isChecked()):
             for i in range(1, 4):
-                tmp = getattr(self, "idx_" + str(i)).currentText().lower()
+                tmp = getattr(self, "combo_idx_" + str(i)).currentText().lower()
                 site_info[tmp] = i
         else:
             site_info["site"] = self.input_site
@@ -93,6 +93,15 @@ class FileImport(QWizard, Ui_FileImport):
                                      "folder_hierarchy": self.radio_site_auto.isChecked(),
                                      "site_info": site_info}
         self.file_manager.get_files()
+
+    def initialize_page3(self):
+        df = self.file_manager.file_infos
+        self.to_wav = df.loc[df.ext == "wac", 'path'].tolist()
+        print(self.to_wav)
+        print("page4")
+
+    def initialize_page4(self):
+        print("page4")
 
     # Called when any radio button for folder or file is selected
 

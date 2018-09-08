@@ -17,11 +17,12 @@ def filter_isolated_cells(array, struct):
 
 
 class Sample:
-    def __init__(self, audio=np.array([]), sr=None, start=0):
+    def __init__(self, audio=np.array([]), sr=None, start=0, specgen=None):
         self.audio = audio
         self.sr = sr
         self.start = start
         self.spectrogram = None
+        self.specgen = specgen
 
     @property
     def length(self):
@@ -37,11 +38,13 @@ class Sample:
         """
         return round(self.length / self.sr, 2)
 
-    def get_spectrogram(self, specgen, n_fft=None):
+    def get_spectrogram(self, n_fft=None):
+        if not self.specgen:
+            raise AttributeError("No spectrogram generator provided.")
         if not self.audio.size:
             self.load_audio()
         if not self.spectrogram:
-            self.spectrogram = specgen.create_spectrogram(self, n_fft)
+            self.spectrogram = self.specgen.create_spectrogram(self, n_fft)
         return (self.spectrogram)
 
     # def get_ACI(self, time_step=None, unit="seconds"):

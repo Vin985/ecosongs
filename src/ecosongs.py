@@ -13,8 +13,14 @@ class Ecosongs(QApplication):
     def save_data(self, table, data, *args, **kwargs):
         self.dbmanager.save_data(table, data, *args, **kwargs)
 
-    def get_recordings(self):
-        return self.recordings.df
+    def get_recordings(self, df=True):
+        if df:
+            return self.recordings.df
+        else:
+            return self.recordings.recordings
+
+    def load_recordings(self, indexes):
+        return self.recordings.load_recordings(indexes, self.specgen)
 
     def __init__(self, argv):
         super(self.__class__, self).__init__(argv)

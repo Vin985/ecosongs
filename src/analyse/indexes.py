@@ -2,11 +2,11 @@ import numpy as np
 
 
 class ACI:
-    def __init__(self, spectro=None, time_step=None, unit="seconds", recording=None, specgen=None, n_fft=None):
+    def __init__(self, recording=None, spectro=None, time_step=None, unit="seconds", n_fft=None):
         if recording:
-            print(recording.path)
+            print("Computing ACI for:" + recording.path)
         if not spectro:
-            spectro = recording.get_spectrogram(specgen, n_fft)
+            spectro = recording.get_spectrogram(n_fft)
         spec = spectro.spec
         if time_step is None:
             j_bin = spec.shape[1]

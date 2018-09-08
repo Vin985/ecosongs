@@ -2,7 +2,6 @@ import librosa
 import pandas as pd
 from utils.basemodel import BaseModel
 
-from analyse.indexes import ACI
 from audio import sample
 
 
@@ -32,20 +31,12 @@ class Recordings():
     def query(self, query):
         return self.df.query(query)
 
-    def compute_ACI(self, indexes, specgen):
-        # load spectrograms instead?
-        self.specgen = specgen
-        self.load_recordings(indexes)
-        res = [ACI(recording=self.recordings[idx], specgen=specgen) for idx in indexes]
-        print(res)
-        # for idx in indexes:
-        #     self.recordings[idx].compute_ACI()
-
-    def load_recordings(self, indexes):
+    def load_recordings(self, indexes, specgen):
         to_load = [idx for idx in indexes if idx not in self.recordings]
         if to_load:
             to_load = self.df.iloc[indexes]
-            self.recordings.update({row.Index: Recording(row._asdict(), specgen=self.specgen) for row in to_load.itertuples(index=True)})
+            self.recordings.update({row.Index: Recording(row._asdict(), specgen=specgen) for row in to_load.itertuples(index=True)})
+        return [self.recordings[idx] for idx in indexes]
 
 
 class Recording(BaseModel, sample.Sample):
@@ -66,8 +57,7 @@ class Recording(BaseModel, sample.Sample):
         # TODO: load from path
         # super(self.__class__, self).__init__(*args, **kwargs)
         BaseModel.__init__(self, attrs)
-        self.specgen = specgen
-        sample.Sample.__init__(self)
+        sample.Sample.__init__(self, specgen=specgen)
 
     # @property
     # def name(self):
@@ -110,7 +100,8 @@ class Recording(BaseModel, sample.Sample):
         return sample.Sample(
             self.audio[start_frame:end_frame],
             self.sr,
-            start=start_frame)
+            start=start_frame,
+            specgen=self.specgen)
 
     def __str__(self):
         string = "Audio file of type {0.ext}, with id {0.id} recorded on {0.date}".format(
