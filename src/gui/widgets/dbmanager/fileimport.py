@@ -2,6 +2,7 @@ import os
 
 from utils.filemanager import FileManager
 
+from gui.threads.QWCThread import QWCThread
 from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.utils.settings import Settings
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
@@ -40,7 +41,7 @@ class FileImport(QWizard, Ui_FileImport):
         self.setupUi(self)
         self.site_manual.setVisible(not self.radio_site_auto.isChecked())
         self.file_manager = QFileManager()
-        # self.wacConverter = QWCThread(self.logConsole)
+        self.wac_converter = QWCThread()
         self.registerFields()
         self.linkEvents()
 
@@ -62,12 +63,16 @@ class FileImport(QWizard, Ui_FileImport):
         self.radio_site_info.buttonToggled.connect(self.site_info_options)
         # Checkbox
         self.checkbox_subfolders.toggled.connect(self.subfolders_options)
+        self.checkbox_move.toggled.connect(self.display_move_options)
         # #Thread
         self.file_manager.logging.connect(self.log)
         self.file_manager.filesLoaded.connect(self.show_files)
-        # self.wacConverter.started.connect(self.start_thread)
-        # self.wacConverter.converting.connect(self.log)
-        # self.wacConverter.finished.connect(self.end_conversion)
+        # self.wac_converter.started.connect(self.start_thread)
+        self.wac_converter.converting.connect(self.log)
+        # self.wac_converter.finished.connect(self.end_conversion)
+
+    def display_move_options(self):
+        self.move_options.setVisible(self.checkbox_move.isChecked())
 
     def initializePage(self, id):
         print(id)
@@ -94,14 +99,22 @@ class FileImport(QWizard, Ui_FileImport):
                                      "site_info": site_info}
         self.file_manager.get_files()
 
+    def initialize_page2(self):
+        self.move_options.setVisible(self.checkbox_move.isChecked())
+        # TODO : add compression options
+        self.compression_options.setEnabled(False)
+
     def initialize_page3(self):
         df = self.file_manager.file_infos
         self.to_wav = df.loc[df.ext == "wac", 'path'].tolist()
-        print(self.to_wav)
+        if self.to_wav:
+            print(self.to_wav)
         print("page4")
 
     def initialize_page4(self):
-        print("page4")
+        print("page5")
+        self.wac_converter.set_args(root=self.input_src_path.text(), dest="", files=self.to_wav)
+        self.wac_converter.start()
 
     # Called when any radio button for folder or file is selected
 
