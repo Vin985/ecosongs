@@ -19,7 +19,9 @@ class Ecosongs(QApplication):
         else:
             return self.recordings.recordings
 
-    def load_recordings(self, indexes):
+    def load_recordings(self, indexes, specgen=None):
+        if not specgen:
+            specgen = self.specgen
         return self.recordings.load_recordings(indexes, self.specgen)
 
     def __init__(self, argv):

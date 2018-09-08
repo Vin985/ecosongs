@@ -1,3 +1,4 @@
+import copy
 import itertools
 from multiprocessing import Pool, Queue
 
@@ -70,10 +71,10 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: add generators to qApp?
 
         # TODO: add recording object somewhere
-        recording = Recording(file_info)
+        recording = Recording(file_info, specgen=qApp.specgen)
         # TODO: add slider to select duration and see complete spectrogram
         sample = recording.get_sample(0, 15)
-        spec = sample.get_spectrogram(qApp.specgen, n_fft=512)
+        spec = sample.get_spectrogram()
         # TODO: externalize ratio pixel/duration
         # TODO: save image somewhere
         im = qApp.imgen.spec2img(spec.spec, size=(int(299 * spec.duration / 1.5), 299))
@@ -120,6 +121,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         print(recs)
         # Compute ACIs
         # TODO: clean up!
+        self.index_thread.spec_opts = {'to_db': False, 'remove_noise': False}
         self.index_thread.recordings = recs
         self.index_thread.start()
         # pool = Pool(5)

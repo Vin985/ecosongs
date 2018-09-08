@@ -25,12 +25,12 @@ class QIndexThread(QtCore.QThread):
         start = time.time()
         futures = []
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            futures = executor.map(ACI, self.recordings)
-            self.res = [self.get_result_map(aci) for aci in futures]
+            # futures = executor.map(ACI, self.recordings)
+            # self.res = [self.get_result_map(aci) for aci in futures]
             # submit solution
-            # for rec in self.recordings:
-            #     futures.append(executor.submit(ACI, rec))
-            # self.res = [self.get_result_submit(aci) for aci in concurrent.futures.as_completed(futures)]
+            for rec in self.recordings:
+                futures.append(executor.submit(ACI, recording=rec, spec_opts=self.spec_opts))
+            self.res = [self.get_result_submit(aci) for aci in concurrent.futures.as_completed(futures)]
         end = time.time()
         print("time elapsed: {}".format(end-start))
 

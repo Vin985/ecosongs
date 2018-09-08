@@ -38,22 +38,36 @@ class SpectrogramGenerator:
 
         # TODO : add other params to spectrogram
 
-    def create_spectrogram(self, sample, n_fft):
+    def create_spectrogram(self, sample, n_fft=None, to_db=None,
+                           remove_noise=None, normalize=None,
+                           spec_hop_length=None, spec_window=None):
         if not n_fft:
             n_fft = self.default_fft
+        if to_db is None:
+            to_db = self.to_db
+        if remove_noise is None:
+            remove_noise = self.remove_noise
+        if normalize is None:
+            normalize = self.normalize
+        if not spec_hop_length:
+            spec_hop_length = self.spec_hop_length
+        if not spec_window:
+            spec_window = self.spec_window
+
         spectro = librosa.stft(
-            sample.audio, n_fft, hop_length=self.spec_hop_length, window=self.spec_window)
+            sample.audio, n_fft, hop_length=spec_hop_length, window=spec_window)
 
         spec = np.abs(spectro)
 
-        if self.remove_noise:
+        if remove_noise:
+            # TODO: check SNR to remove noise?
             spec = self.__remove_noise(spec)
             spec = spec.astype("float32")
 
-        if self.normalize:
+        if normalize:
             spec = librosa.util.normalize(spec)
 
-        if self.to_db:
+        if to_db:
             spec = librosa.amplitude_to_db(spec, ref=np.max)
 
         #specdb = librosa.feature.melspectrogram(S=specdb, n_mels=128)

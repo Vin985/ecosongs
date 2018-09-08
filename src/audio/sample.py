@@ -38,13 +38,13 @@ class Sample:
         """
         return round(self.length / self.sr, 2)
 
-    def get_spectrogram(self, n_fft=None):
+    def get_spectrogram(self, spec_opts={}):
         if not self.specgen:
             raise AttributeError("No spectrogram generator provided.")
         if not self.audio.size:
             self.load_audio()
         if not self.spectrogram:
-            self.spectrogram = self.specgen.create_spectrogram(self, n_fft)
+            self.spectrogram = self.specgen.create_spectrogram(self, **spec_opts)
         return (self.spectrogram)
 
     # def get_ACI(self, time_step=None, unit="seconds"):
