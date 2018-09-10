@@ -2,11 +2,12 @@ import os
 
 from utils.filemanager import FileManager
 
-from gui.threads.QWCThread import QWCThread
+from gui.threads.FileHandler import FileHandler
 from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.utils.settings import Settings
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
-from PySide2.QtCore import QObject, QSortFilterProxyModel, Signal, Slot
+from PySide2.QtCore import (QObject, QSortFilterProxyModel, QThread, Signal,
+                            Slot)
 from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
@@ -39,19 +40,26 @@ class FileImport(QWizard, Ui_FileImport):
         super(self.__class__, self).__init__()
         # Initialize UI
         self.setupUi(self)
-        self.site_manual.setVisible(not self.radio_site_auto.isChecked())
+        self.init_ui()
         self.file_manager = QFileManager()
-        self.wac_converter = QWCThread()
+        self.thread = QThread()
+        self.file_handler = FileHandler()
         self.registerFields()
         self.linkEvents()
 
+    def init_ui(self):
+        self.site_manual.setVisible(not self.radio_site_auto.isChecked())
+        self.checkbox_done.setVisible(False)
+
     def registerFields(self):
         self.page1.registerField("src_path*", self.input_src_path)
+        self.page5.registerField("done*", self.checkbox_done)
 
     # Define callbacks when events happen
     def linkEvents(self):
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
+        #self.btn_start_import.clicked.connect(self.import_files)
         # self.btn_browse_dest.clicked.connect(self.browse_dest)
         # self.btn_import.clicked.connect(self.import_files)
         # self.btn_cancel.clicked.connect(self.wacConverter.requestInterruption)
@@ -64,18 +72,20 @@ class FileImport(QWizard, Ui_FileImport):
         # Checkbox
         self.checkbox_subfolders.toggled.connect(self.subfolders_options)
         self.checkbox_move.toggled.connect(self.display_move_options)
-        # #Thread
+        # File manager
         self.file_manager.logging.connect(self.log)
         self.file_manager.filesLoaded.connect(self.show_files)
-        # self.wac_converter.started.connect(self.start_thread)
-        self.wac_converter.converting.connect(self.log)
-        # self.wac_converter.finished.connect(self.end_conversion)
+        # Wac conversion
+        self.thread.started.connect(self.thread_started)
+        # self.thread.finished.connect(self.thread_finished)
+        self.file_handler.logging.connect(self.log)
+        self.file_handler.update_progress.connect(self.update_progress)
+        # self.file_handler.finished.connect(self.end_conversion)
 
     def display_move_options(self):
         self.move_options.setVisible(self.checkbox_move.isChecked())
 
     def initializePage(self, id):
-        print(id)
         getattr(self, "initialize_page" + str(id), lambda: None)()
 
     # TODO : Validate manual entries
@@ -109,12 +119,13 @@ class FileImport(QWizard, Ui_FileImport):
         self.to_wav = df.loc[df.ext == "wac", 'path'].tolist()
         if self.to_wav:
             print(self.to_wav)
-        print("page4")
 
     def initialize_page4(self):
-        print("page5")
-        self.wac_converter.set_args(root=self.input_src_path.text(), dest="", files=self.to_wav)
-        self.wac_converter.start()
+        # Convert files to wac
+        self.file_handler.set_args(root=self.input_src_path.text(), dest="",
+                                   files=self.to_wav)
+        self.file_handler.moveToThread(self.thread)
+        self.thread.start()
 
     # Called when any radio button for folder or file is selected
 
@@ -144,12 +155,6 @@ class FileImport(QWizard, Ui_FileImport):
             self.radio_site_auto.setChecked(True)
             self.site_auto.setVisible(True)
             self.site_manual.setVisible(False)
-
-    def log(self, text, progress=False):
-        # self.log_console.append(text)
-        print(text)
-        if progress:
-            self.progress_bar.setValue(self.progress_bar.value() + 1)
 
     # Browse source directory
 
@@ -206,31 +211,40 @@ class FileImport(QWizard, Ui_FileImport):
         # self.log_console.append("\n".join(self.file_manager.file_paths))
         self.lbl_status.setText("%d file(s) found" % len(self.file_manager.file_paths))
 
+    # @Slot()
+    # def import_files(self):
+    #     # Convert files to wac
+    #     self.file_handler.set_args(root=self.input_src_path.text(), dest="",
+    #                                files=self.to_wav)
+    #     self.file_handler.moveToThread(self.thread)
+    #     self.thread.start()
+
     @Slot()
-    def import_files(self):
-        try:
-            if not self.file_manager.files:
-                self.showAlert(
-                    "No files are selected, please select at least one file")
-                return ()
-            if not self.file_manager.destDir:
-                self.showAlert(
-                    "No destination folder has been selected, please select one"
-                )
-                return ()
-            ret = self.showConfirmBox(
-                "Convert selected files to wav?",
-                "{0} file(s) will be converted and saved in {1}".format(
-                    len(self.file_manager.files), self.file_manager.dest_dir))
-            if ret == QMessageBox.Ok:
-                self.startConversion()
+    def thread_started(self):
+        self.convert_to_wac()
+        self.remove_files()
 
-        except AttributeError:
-            self.showAlert(
-                "No files are selected, please select at least one file")
+        self.log_console.clear()
+        self.checkbox_done.setChecked(True)
 
-    def start_thread(self):
-        self.logConsole.clear()
+    def convert_to_wac(self):
+        self.log_console.clear()
+        self.file_handler.files_to_wav()
+
+    def remove_files(self):
+        self.lbl_converting.setEnabled(False)
+        self.lbl_removing.setEnabled(True)
+        self.progress_bar.setValue(0)
+        self.file_handler.remove_wac()
+
+    @Slot()
+    def update_progress(self, progress):
+        self.progress_bar.setValue(progress)
+
+    @Slot()
+    def log(self, text):
+        print(text)
+        self.log_console.append(text)
 
     def start_conversion(self):
         print("start")

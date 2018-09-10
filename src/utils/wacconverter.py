@@ -8,6 +8,7 @@ from wac2wav import wac2wav
 
 class WacConverter:
     def __init__(self, *args, **kwargs):
+        print("init wacconverter")
         self.set_args(*args, **kwargs)
         self.archive = None
 
@@ -40,7 +41,7 @@ class WacConverter:
                     archive.write(fn)
 
     def remove_wac(self):
-        print("removing file")
+        self.log("removing files")
         for fn in self.files:
             os.remove(fn)
 
