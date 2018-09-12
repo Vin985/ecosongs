@@ -1,7 +1,11 @@
+import os
+import re
+import zipfile
 from datetime import datetime
 from glob import glob
 
 import pandas as pd
+from wac2wav import wac2wav
 
 from audio.recording import Recording
 
@@ -21,21 +25,23 @@ class FileManager:
         else:
             self.sites = None
         self.options = {"recursive": recursive, "recorder": recorder}
+        self.archive = None
 
     def log(self, text):
         print(text)
-
-    def wac2wav(self, path):
-        pass
-
-    def wac2flac(self, path):
-        pass
 
     def get_files(self):
         if self.options["folder"]:
             self.get_files_from_folder()
         self.extract_infos()
         self.files_loaded()
+        return self.file_infos
+
+    def get_files_to_convert(self):
+        df = self.file_infos
+        self.to_wav = df.loc[df.ext == "wac", 'path'].tolist()
+        if self.to_wav:
+            print(self.to_wav)
 
     def files_loaded(self):
         self.log("\n".join(self.file_paths))
@@ -54,8 +60,7 @@ class FileManager:
     def extract_infos(self):
         file_infos = list(map(self.extract_info, self.file_paths))
         # TODO: oder of columns in config
-        self.file_infos = pd.DataFrame(file_infos,
-                                       columns=Recording.COLUMNS)
+        self.file_infos = pd.DataFrame(file_infos)
         self.log(self.file_infos)
 
     def extract_info(self, fullpath):
@@ -71,6 +76,8 @@ class FileManager:
         file = path[0]
         f = file.split(".")
         res["ext"] = f[len(f) - 1].lower()
+        res["old_name"] = ''.join(f[:len(f) - 1])
+
         # Get filename
         name = f[0]
         # Split file using underscore: only for difference between Audiomoth
@@ -120,9 +127,46 @@ class FileManager:
 
         return(res)
 
+    # TODO: set options as arguments like everywhere else
+    def set_args(self, dest="", compress_old=True):
+        self.dest_dir = dest
+        self.compress_old = compress_old
+        # Only compile regex if we need to move
+        if dest:
+            self.regex = re.compile(r"^" + self.root_dir + "(.*)\.wac$")
 
-# convert batch from wac to wav
+    def open_archive(self, filename="backup_wac.zip"):
+        if self.compress_old and self.root_dir:
+            self.archive = zipfile.ZipFile(self.root_dir + "/" + filename, 'w')
 
-# convert wav to flac?
+    def close_archive(self):
+        if self.archive:
+            self.archive.close()
 
-# create database
+    def files_to_wav(self, files):
+        for filename in files:
+            self.file_to_wav(filename)
+
+    def file_to_wav(self, filename):
+        if self.dest_dir:
+            new = self.regex.sub(self.dest_dir + "\\1.wav", filename)
+            dirname = os.path.dirname(new)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+        else:
+            new = filename.replace(".wac", ".wav")
+        self.log("Converting {0} in {1}".format(filename, new))
+        wac2wav(filename, new)
+        if self.archive:
+            print("adding file to archive")
+            self.archive.write(filename, filename.replace(self.root_dir, ""))
+
+    def remove_files(self):
+        self.log("removing files")
+        for fn in self.files:
+            os.remove(fn)
+
+    def rename_file_tuple(self, tuple):
+        (old, new) = tuple
+        if old != new:
+            os.rename(old, new)

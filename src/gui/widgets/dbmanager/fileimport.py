@@ -1,37 +1,14 @@
 import os
 
-from utils.filemanager import FileManager
-
-from gui.threads.FileHandler import FileHandler
 from gui.utils.dataframeTableModel import DataFrameTableModel
-from gui.utils.settings import Settings
+from gui.widgets.dbmanager.QFileManager import QFileManager
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
-from PySide2.QtCore import (QObject, QSortFilterProxyModel, QThread, Signal,
-                            Slot)
-from PySide2.QtGui import qApp
+from PySide2.QtCore import QSortFilterProxyModel, QThread, Slot
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
 # TODO: put files in config
 
 DEST_DIR = "wav"
-
-
-class QFileManager(QObject, FileManager):
-    logging = Signal(str, bool)
-    filesLoaded = Signal()
-
-    def __init__(self):
-        QObject.__init__(self)
-        settings = Settings()
-        FileManager.__init__(self, sites=settings.sites_path)
-
-    def log(self, text):
-        self.logging.emit(text, False)
-
-    def files_loaded(self):
-        # TODO: change to use persistence model
-        # qApp.save_data("recordings", self.file_infos, format="t")
-        self.filesLoaded.emit()
 
 
 class FileImport(QWizard, Ui_FileImport):
@@ -43,7 +20,6 @@ class FileImport(QWizard, Ui_FileImport):
         self.init_ui()
         self.file_manager = QFileManager()
         self.thread = QThread()
-        self.file_handler = FileHandler()
         self.registerFields()
         self.linkEvents()
 
@@ -75,11 +51,11 @@ class FileImport(QWizard, Ui_FileImport):
         # File manager
         self.file_manager.logging.connect(self.log)
         self.file_manager.filesLoaded.connect(self.show_files)
+        self.file_manager.update_progress.connect(self.update_progress)
         # Wac conversion
         self.thread.started.connect(self.thread_started)
         # self.thread.finished.connect(self.thread_finished)
-        self.file_handler.logging.connect(self.log)
-        self.file_handler.update_progress.connect(self.update_progress)
+
         # self.file_handler.finished.connect(self.end_conversion)
 
     def display_move_options(self):
@@ -115,16 +91,12 @@ class FileImport(QWizard, Ui_FileImport):
         self.compression_options.setEnabled(False)
 
     def initialize_page3(self):
-        df = self.file_manager.file_infos
-        self.to_wav = df.loc[df.ext == "wac", 'path'].tolist()
-        if self.to_wav:
-            print(self.to_wav)
+        self.file_manager.get_files_to_convert()
 
     def initialize_page4(self):
         # Convert files to wac
-        self.file_handler.set_args(root=self.input_src_path.text(), dest="",
-                                   files=self.to_wav)
-        self.file_handler.moveToThread(self.thread)
+        self.file_manager.set_args(dest="")
+        self.file_manager.moveToThread(self.thread)
         self.thread.start()
 
     # Called when any radio button for folder or file is selected
@@ -223,19 +195,27 @@ class FileImport(QWizard, Ui_FileImport):
     def thread_started(self):
         self.convert_to_wac()
         self.remove_files()
+        self.rename_files()
 
-        self.log_console.clear()
+        #self.log_console.clear()
         self.checkbox_done.setChecked(True)
 
     def convert_to_wac(self):
         self.log_console.clear()
-        self.file_handler.files_to_wav()
+        self.file_manager.files_to_wav()
 
     def remove_files(self):
         self.lbl_converting.setEnabled(False)
         self.lbl_removing.setEnabled(True)
         self.progress_bar.setValue(0)
-        self.file_handler.remove_wac()
+        self.file_manager.remove_wac()
+
+    def rename_files(self):
+        self.lbl_removing.setEnabled(False)
+        self.lbl_renaming.setEnabled(True)
+        self.progress_bar.setValue(0)
+        self.file_manager.rename_files()
+        pass
 
     @Slot()
     def update_progress(self, progress):

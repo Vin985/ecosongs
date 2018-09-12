@@ -12,38 +12,32 @@ class WacConverter:
         self.set_args(*args, **kwargs)
         self.archive = None
 
-    def set_args(self, root="", dest="", files=[], compress_old=True):
+    def set_args(self, root="", dest="", compress_old=True):
         self.root_dir = root
         self.dest_dir = dest
-        self.files = files
         self.compress_old = compress_old
         # Only compile regex if we need to move
         if dest:
             self.regex = re.compile(r"^" + self.root_dir + "(.*)\.wac$")
 
-    def files_to_wav(self):
-        for fn in self.files:
-            self.file_to_wav(fn)
-
-    def open_archive(self):
+    def open_archive(self, filename="backup_wac.zip"):
         if self.compress_old and self.root_dir:
-            self.archive = zipfile.ZipFile(self.root_dir + "/backup_wac.zip", 'w')
+            self.archive = zipfile.ZipFile(self.root_dir + "/" + filename, 'w')
 
     def close_archive(self):
         if self.archive:
             self.archive.close()
 
-    def backup_wac(self):
-        if self.compress_old and self.root_dir:
-            with zipfile.ZipFile(self.root_dir + "/backup_wac.zip", 'w') as archive:
-                for fn in self.files:
-                    print("compressing")
-                    archive.write(fn)
+    # def backup_wac(self, files):
+    #     if self.compress_old and self.root_dir:
+    #         with zipfile.ZipFile(self.root_dir + "/backup_wac.zip", 'w') as archive:
+    #             for filename in files:
+    #                 print("compressing")
+    #                 archive.write(filename)
 
-    def remove_wac(self):
-        self.log("removing files")
-        for fn in self.files:
-            os.remove(fn)
+    def files_to_wav(self, files):
+        for filename in files:
+            self.file_to_wav(filename)
 
     def file_to_wav(self, filename):
         if self.dest_dir:
@@ -58,6 +52,11 @@ class WacConverter:
         if self.archive:
             print("adding file to archive")
             self.archive.write(filename, filename.replace(self.root_dir, ""))
+
+    def remove_file(self):
+        self.log("removing files")
+        for fn in self.files:
+            os.remove(fn)
 
     def log(self, text):
         print(text)
