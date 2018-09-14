@@ -1,6 +1,4 @@
-import copy
-import itertools
-from multiprocessing import Pool, Queue
+import datetime
 
 import pandas as pd
 from PIL import ImageQt
@@ -10,7 +8,6 @@ from audio.recording import Recording
 from gui.threads.QIndexThread import QIndexThread
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
-from PySide2.QtConcurrent import QtConcurrent
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
 
@@ -87,7 +84,22 @@ class AudioManager(QWidget, Ui_AudioManager):
     def show_folder_details(self, folder_info):
         query = self.folder_query(folder_info)
         res = qApp.recordings.query(query)
-        self.spectrogram.setText("{} recordings found!".format(res.shape[0]))
+        total_secs = int(res["duration"].sum())
+        minutes, seconds = divmod(total_secs, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+        duration = ""
+        if days > 0:
+            duration += "{} days ".format(days)
+        if hours > 0:
+            duration += "{} hours ".format(hours)
+        if minutes > 0:
+            duration += "{} minutes ".format(minutes)
+        if seconds > 0:
+            duration += "{} seconds ".format(seconds)
+
+        # total_duration = str(datetime.timedelta(seconds=total_secs))
+        self.spectrogram.setText("{} recordings representing {}of audio found!".format(res.shape[0], duration))
 
     def folder_query(self, folder_info):
         return(' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()]))

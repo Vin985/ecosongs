@@ -5,6 +5,7 @@ from datetime import datetime
 from glob import glob
 
 import pandas as pd
+from utils.wav_headers import get_wav_headers
 from wac2wav import wac2wav
 
 from audio.recording import Recording
@@ -59,8 +60,10 @@ class FileManager:
 
     def extract_infos(self):
         file_infos = list(map(self.extract_info, self.file_paths))
+        print(file_infos)
         # TODO: oder of columns in config
         self.file_infos = pd.DataFrame(file_infos)
+        print(self.file_infos.dtypes)
         self.log(self.file_infos)
 
     def extract_info(self, fullpath):
@@ -124,6 +127,13 @@ class FileManager:
         # TODO: extract info from wav header
         res["name"] = (site_name + "_" + res["plot"]
                        + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
+        res["duration"] = 0
+        res["sample_rate"] = 0
+
+        if (res["ext"] == "wav"):
+            headers = get_wav_headers(fullpath)
+            res["duration"] = headers["Duration"]
+            res["sample_rate"] = headers["SampleRate"]
 
         return(res)
 
@@ -157,6 +167,14 @@ class FileManager:
             new = filename.replace(".wac", ".wav")
         self.log("Converting {0} in {1}".format(filename, new))
         wac2wav(filename, new)
+
+        # Update file info with information about the wav file
+        headers = get_wav_headers(new)
+        mask = self.file_infos.path == filename
+        cols = ["duration", "sample_rate", "path", "ext"]
+        self.file_infos.loc[mask, cols] = [headers["Duration"], headers["SampleRate"], new, "wav"]
+        print(self.file_infos.dtypes)
+
         if self.archive:
             print("adding file to archive")
             self.archive.write(filename, filename.replace(self.root_dir, ""))
@@ -169,4 +187,7 @@ class FileManager:
     def rename_file_tuple(self, tuple):
         (old, new) = tuple
         if old != new:
+            # TODO: error catching
             os.rename(old, new)
+            mask = self.file_infos.path == old
+            self.file_infos.loc[mask, "path"] = new

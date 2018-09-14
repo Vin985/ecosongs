@@ -1,10 +1,13 @@
 
 import os
 
+import pandas as pd
 from utils.filemanager import FileManager
 
+from audio.recording import Recording
 from gui.utils.settings import Settings
 from PySide2.QtCore import QObject, Signal
+from PySide2.QtGui import qApp
 
 
 class QFileManager(QObject, FileManager):
@@ -52,6 +55,12 @@ class QFileManager(QObject, FileManager):
         print(tmp)
         self.apply_with_progress(tmp,
                                  self.rename_file_tuple)
+
+    def save_recordings(self):
+        # TODO: append to existing recordings
+        to_save = self.file_infos.loc[:, Recording.COLUMNS]
+        to_save["date"] = pd.to_datetime(to_save["date"])
+        qApp.save_data("recordings", to_save, format="table")
 
     def get_new_path(self, path, old, new):
         new_path = path.replace(old, new)

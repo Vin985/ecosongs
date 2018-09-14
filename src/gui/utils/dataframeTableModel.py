@@ -26,7 +26,7 @@ class DataFrameTableModel(QAbstractTableModel):
             "invalid QVariant").
         """
         if index.isValid() and 0 <= index.row() < self.df.shape[0] and role == Qt.DisplayRole:
-            return(self.df.iloc[index.row(), index.column()])
+            return(str(self.df.iloc[index.row(), index.column()]))
 
         return None
 

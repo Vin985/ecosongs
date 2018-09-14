@@ -15,6 +15,7 @@ class Recordings():
     def load_data(self):
         try:
             self._df = self.dbmanager.get_table("recordings")
+            # self._df["date"] = pd.to_datetime(self._df["date"])
         except KeyError:
             self._df
 
@@ -43,7 +44,7 @@ class Recording(BaseModel, sample.Sample):
 
     COLUMNS = ["idx", "name", "year", "site",
                "plot", "date", "path",
-               "ext", "recorder", "error"]
+               "ext", "recorder", "duration", "sample_rate"]
     #
     # def __init__(self, filepath, recorder=None, model=None):
     #     self.filepath = filepath
@@ -101,7 +102,8 @@ class Recording(BaseModel, sample.Sample):
             self.audio[start_frame:end_frame],
             self.sr,
             start=start_frame,
-            specgen=self.specgen)
+            specgen=self.specgen,
+            duration=duration)
 
     def __str__(self):
         string = "Audio file of type {0.ext}, with id {0.id} recorded on {0.date}".format(

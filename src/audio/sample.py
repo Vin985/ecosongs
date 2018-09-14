@@ -17,12 +17,14 @@ def filter_isolated_cells(array, struct):
 
 
 class Sample:
-    def __init__(self, audio=np.array([]), sr=None, start=0, specgen=None):
+    def __init__(self, audio=np.array([]), sr=None, start=0, specgen=None, duration=None):
         self.audio = audio
         self.sr = sr
         self.start = start
         self.spectrogram = None
         self.specgen = specgen
+        if duration:
+            self.duration = duration
 
     @property
     def length(self):
@@ -31,12 +33,12 @@ class Sample:
         """
         return len(self.audio)
 
-    @property
-    def duration(self):
-        """
-        Duration is length divided by sample rate
-        """
-        return round(self.length / self.sr, 2)
+    # @property
+    # def duration(self):
+    #     """
+    #     Duration is length divided by sample rate
+    #     """
+    #     return round(self.length / self.sr, 2)
 
     def get_spectrogram(self, spec_opts={}):
         if not self.specgen:

@@ -4,6 +4,8 @@ class BaseModel:
     COLUMNS = []
 
     def __init__(self, from_collection):
+        print(from_collection)
+        print(type(from_collection))
         if type(from_collection) is list:
             if len(from_collection) == len(self.COLUMNS):
                 from_collection = dict(zip(self.COLUMNS, from_collection))
@@ -17,4 +19,6 @@ class BaseModel:
                                                                  self.COLUMNS))
                 raise ValueError(message)
         for key in from_collection:
+            print("key: " + key)
+            print(from_collection[key])
             setattr(self, key, from_collection[key])

@@ -10,5 +10,5 @@ class HDF5Manager (DBManager):
     def get_table(self, table):
         return self.store[table]
 
-    def save_data(self, table, data, format):
+    def save_data(self, table, data, format="fixed"):
         self.store.put(table, data, format=format)

@@ -30,7 +30,8 @@ class DBExplorer(QWidget, Ui_DBExplorer):
             self.dbTable.setEnabled(False)
         else:
             model = qApp.get_recordings()
-            model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
+            print(model.dtypes)
+            # model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
             model = DataFrameTableModel(model)
             proxyModel = QSortFilterProxyModel()
             proxyModel.setSourceModel(model)

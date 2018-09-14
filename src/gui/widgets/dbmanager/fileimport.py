@@ -196,6 +196,7 @@ class FileImport(QWizard, Ui_FileImport):
         self.convert_to_wac()
         self.remove_files()
         self.rename_files()
+        self.save_recordings()
 
         #self.log_console.clear()
         self.checkbox_done.setChecked(True)
@@ -215,7 +216,12 @@ class FileImport(QWizard, Ui_FileImport):
         self.lbl_renaming.setEnabled(True)
         self.progress_bar.setValue(0)
         self.file_manager.rename_files()
-        pass
+
+    def save_recordings(self):
+        self.lbl_renaming.setEnabled(False)
+        self.lbl_saving.setEnabled(True)
+        self.progress_bar.setValue(0)
+        self.file_manager.save_recordings()
 
     @Slot()
     def update_progress(self, progress):
