@@ -8,6 +8,7 @@ from audio.recording import Recording
 from gui.threads.QIndexThread import QIndexThread
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
+from PySide2.QtCore import QSortFilterProxyModel
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
 
@@ -31,7 +32,10 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     def init_tree(self):
         recordings = qApp.get_recordings()
-        self.tree_view.setModel(RecordingsTreeModel(self, recordings))
+
+        model = RecordingsTreeModel(self, recordings)
+        self.tree_view.setModel(model)
+        self.show_folder_details()
 
     def add_actions(self):
         self.tree_view.addAction(self.action_ACI)
@@ -53,6 +57,8 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     def tree_selection_changed(self, new, old):
         # TODO: handle multiple selection
+        if not new.indexes():
+            self.show_folder_details()
         index = new.indexes()[0]
         item = index.model().itemFromIndex(index)
         if item.is_folder:
@@ -81,22 +87,28 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.spectrogram.setPixmap(pixmap)
         # im.show()
 
-    def show_folder_details(self, folder_info):
-        query = self.folder_query(folder_info)
-        res = qApp.recordings.query(query)
-        total_secs = int(res["duration"].sum())
-        minutes, seconds = divmod(total_secs, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-        duration = ""
-        if days > 0:
-            duration += "{} days ".format(days)
-        if hours > 0:
-            duration += "{} hours ".format(hours)
-        if minutes > 0:
-            duration += "{} minutes ".format(minutes)
-        if seconds > 0:
-            duration += "{} seconds ".format(seconds)
+    def show_folder_details(self, folder_info=None):
+        if folder_info is not None:
+            query = self.folder_query(folder_info)
+            res = qApp.recordings.query(query)
+        else:
+            res = qApp.recordings.df
+        if not res.empty:
+            total_secs = int(res["duration"].sum())
+            minutes, seconds = divmod(total_secs, 60)
+            hours, minutes = divmod(minutes, 60)
+            days, hours = divmod(hours, 24)
+            duration = ""
+            if days > 0:
+                duration += "{} days ".format(days)
+            if hours > 0:
+                duration += "{} hours ".format(hours)
+            if minutes > 0:
+                duration += "{} minutes ".format(minutes)
+            if seconds > 0:
+                duration += "{} seconds ".format(seconds)
+        else:
+            duration = "0 seconds "
 
         # total_duration = str(datetime.timedelta(seconds=total_secs))
         self.spectrogram.setText("{} recordings representing {}of audio found!".format(res.shape[0], duration))
@@ -130,7 +142,6 @@ class AudioManager(QWidget, Ui_AudioManager):
         # Load files if not already in memory
         recs = qApp.load_recordings(res.index.values)
         # Get list of all loaded recordings
-        print(recs)
         # Compute ACIs
         # TODO: clean up!
         self.index_thread.spec_opts = {'to_db': False, 'remove_noise': False}

@@ -22,26 +22,28 @@ class DBExplorer(QWidget, Ui_DBExplorer):
     def linkEvents(self):
         self.dbImportButton.clicked.connect(self.showImportWindow)
 
-    def import_files(self):
-        print("importing files")
-
     def initTableView(self):
         if qApp.get_recordings().empty:
             self.dbTable.setEnabled(False)
         else:
-            model = qApp.get_recordings()
-            print(model.dtypes)
             # model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
-            model = DataFrameTableModel(model)
-            proxyModel = QSortFilterProxyModel()
-            proxyModel.setSourceModel(model)
-            self.dbTable.setModel(proxyModel)
+            self.setTableModel(qApp.get_recordings())
             self.dbTable.resizeColumnsToContents()
+
+    def setTableModel(self, data):
+        model = DataFrameTableModel(data)
+        proxyModel = QSortFilterProxyModel()
+        proxyModel.setSourceModel(model)
+        self.dbTable.setModel(proxyModel)
 
     def loadRecordings(self):
         return(RecordingModel.select())
 
+    def refresh_table(self):
+        self.setTableModel(qApp.get_recordings())
+        print("aaaah refreshing!!!")
+
     def showImportWindow(self):
         self.file_import = FileImport()
-        self.file_import.accepted.connect(self.import_files)
+        self.file_import.finished.connect(self.refresh_table)
         self.file_import.show()

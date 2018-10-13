@@ -215,7 +215,9 @@ class FileImport(QWizard, Ui_FileImport):
         self.lbl_removing.setEnabled(False)
         self.lbl_renaming.setEnabled(True)
         self.progress_bar.setValue(0)
-        self.file_manager.rename_files()
+        if self.checkbox_rename.isChecked():
+            pass
+            # self.file_manager.rename_files()
 
     def save_recordings(self):
         self.lbl_renaming.setEnabled(False)

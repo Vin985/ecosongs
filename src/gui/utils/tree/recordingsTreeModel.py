@@ -19,22 +19,24 @@ class RecordingsTreeModel(QStandardItemModel):
         # self.insertColumn(1)
 
     def create_model(self, categories, recordings, path={}, parent=None):
-        category = categories[0]
-        groups = recordings.groupby(category)
-        for (entry, recs) in groups:
-            # Create path to the folder in a dict
-            path[category] = entry
-            # item is a folder. add path to it
-            item = self.create_item(entry, path, folder=True)
-            if len(categories) > 1:
-                self.create_model(categories[1:], recs, path.copy(), item)
-            else:
-                # item is a recording. No path as whole recording will be in data
-                self.add_recordings(recordings, item)
-            if parent:
-                parent.appendRow(item)
-            else:
-                self.appendRow(item)
+        if not recordings.empty:
+            category = categories[0]
+            groups = recordings.groupby(category)
+            for (entry, recs) in groups:
+                print(entry)
+                # Create path to the folder in a dict
+                path[category] = entry
+                # item is a folder. add path to it
+                item = self.create_item(entry, path, folder=True)
+                if len(categories) > 1:
+                    self.create_model(categories[1:], recs, path.copy(), item)
+                else:
+                    # item is a recording. No path as whole recording will be in data
+                    self.add_recordings(recordings, item)
+                if parent:
+                    parent.appendRow(item)
+                else:
+                    self.appendRow(item)
 
     def create_item(self, name, path=None, folder=False):
         if folder:

@@ -19,7 +19,7 @@
     - flac compression
 
 ## FileImport
-- add to own widget
+- Propose option for duplicate files
 
 ## Tree view
 

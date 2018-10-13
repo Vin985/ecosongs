@@ -98,7 +98,7 @@ def get_wav_headers(strWAVFile):
     # DumpHeaderOutput(fields)
     # Close file
     fileIn.close()
-    print(fields)
+    #print(fields)
     return (fields)
 
 

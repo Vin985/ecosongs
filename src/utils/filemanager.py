@@ -60,14 +60,13 @@ class FileManager:
 
     def extract_infos(self):
         file_infos = list(map(self.extract_info, self.file_paths))
-        print(file_infos)
         # TODO: oder of columns in config
         self.file_infos = pd.DataFrame(file_infos)
-        print(self.file_infos.dtypes)
         self.log(self.file_infos)
 
     def extract_info(self, fullpath):
         # Initialize result dict. Defaults added for table display
+        print("Extract information from: " + fullpath)
         res = {"error": 0, "site": None, "plot": None,
                "year": None, "name": None, "path": fullpath}
         # Remove root directory to deduce info from hierarchy
@@ -119,13 +118,13 @@ class FileManager:
             res["plot"] = self.options["site_info"]["plot"]
 
         site_name = res["site"]
-        if self.sites is not None:
-            tmp = self.sites.loc[self.sites["Site"] == res["site"], "Abbreviation"]
-            if not tmp.empty:
-                site_name = tmp.item()
+        # if self.sites is not None:
+        #     tmp = self.sites.loc[self.sites["Site"] == res["site"], "Abbreviation"]
+        #     if not tmp.empty:
+        #         site_name = tmp.item()
 
         # TODO: extract info from wav header
-        res["name"] = (site_name + "_" + res["plot"]
+        res["name"] = (res["plot"]
                        + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
         res["duration"] = 0
         res["sample_rate"] = 0
@@ -173,7 +172,6 @@ class FileManager:
         mask = self.file_infos.path == filename
         cols = ["duration", "sample_rate", "path", "ext"]
         self.file_infos.loc[mask, cols] = [headers["Duration"], headers["SampleRate"], new, "wav"]
-        print(self.file_infos.dtypes)
 
         if self.archive:
             print("adding file to archive")

@@ -6,6 +6,8 @@ from audio import sample
 
 
 class Recordings():
+    TABLE_NAME = "recordings"
+
     def __init__(self, df=pd.DataFrame(), dbmanager=None):
         self._df = df
         # TODO: Change to externalize dbmanager
@@ -14,7 +16,10 @@ class Recordings():
 
     def load_data(self):
         try:
-            self._df = self.dbmanager.get_table("recordings")
+            self._df = self.dbmanager.get_table(self.TABLE_NAME)
+            print(self._df.dtypes)
+            print(self._df)
+            return(self._df.loc[:, self._df.columns.intersection(Recording.COLUMNS)])
             # self._df["date"] = pd.to_datetime(self._df["date"])
         except KeyError:
             self._df
@@ -30,21 +35,44 @@ class Recordings():
         return self._df.empty
 
     def query(self, query):
-        return self.df.query(query)
+        return self._df.query(query)
+
+    def append(self, new, save=False):
+        # TODO: check duplicates
+        # TODO: add idx column?
+        self._df = self._df.append(new, ignore_index=True, sort=True)
+        if save:
+            self.dbmanager.save_data(self.TABLE_NAME, self._df, format="table")
 
     def load_recordings(self, indexes, specgen):
+        """Create Recording objects from indexes if they had not been loaded
+        in memory before.
+
+        Parameters
+        ----------
+        indexes : type
+            Description of parameter `indexes`.
+        specgen : spectogram generator
+            Description of parameter `specgen`.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
+        """
         to_load = [idx for idx in indexes if idx not in self.recordings]
         if to_load:
-            to_load = self.df.iloc[indexes]
+            to_load = self._df.iloc[indexes]
             self.recordings.update({row.Index: Recording(row._asdict(), specgen=specgen) for row in to_load.itertuples(index=True)})
         return [self.recordings[idx] for idx in indexes]
 
 
 class Recording(BaseModel, sample.Sample):
 
-    COLUMNS = ["idx", "name", "year", "site",
+    COLUMNS = ["name", "year", "site",
                "plot", "date", "path",
-               "ext", "recorder", "duration", "sample_rate"]
+               "ext", "recorder", "duration", "sample_rate"]  # , "old_name"]
     #
     # def __init__(self, filepath, recorder=None, model=None):
     #     self.filepath = filepath

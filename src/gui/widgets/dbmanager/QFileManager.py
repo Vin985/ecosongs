@@ -30,7 +30,6 @@ class QFileManager(QObject, FileManager):
         self.filesLoaded.emit()
 
     def apply_with_progress(self, collection, func, *args, **kwargs):
-        print(collection)
         nitems = len(collection)
         current = 0
         for item in collection:
@@ -52,15 +51,15 @@ class QFileManager(QObject, FileManager):
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
         new_paths = [self.get_new_path(*row) for row in cols.itertuples(index=False)]
         tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
-        print(tmp)
         self.apply_with_progress(tmp,
                                  self.rename_file_tuple)
 
     def save_recordings(self):
         # TODO: append to existing recordings
-        to_save = self.file_infos.loc[:, Recording.COLUMNS]
+        to_save = self.file_infos.loc[:, self.file_infos.columns.intersection(Recording.COLUMNS)]
         to_save["date"] = pd.to_datetime(to_save["date"])
-        qApp.save_data("recordings", to_save, format="table")
+        # TODO: check duplicates
+        qApp.recordings.append(to_save, save=True)
 
     def get_new_path(self, path, old, new):
         new_path = path.replace(old, new)
