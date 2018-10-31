@@ -3,3 +3,6 @@ __pycache__
 .ropeproject
 test/*
 *.h5
+results
+*.log
+*.Rhistory

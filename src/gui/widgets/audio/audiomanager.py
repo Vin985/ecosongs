@@ -48,9 +48,13 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     def get_results(self):
         print("finished")
-        for item in self.index_thread.res:
-            print(item)
-        print(self.index_thread.res)
+
+        acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
+        print(acis)
+        acis.to_csv("aci.csv")
+        # for item in self.index_thread.res:
+        #     print(item)
+        # print(self.index_thread.res)
 
     def update_progression(self, progress):
         print(progress)
@@ -139,6 +143,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         tmp.append(qApp.get_recordings().iloc[sel_recs])
         # Get one list of unique selected files
         res = pd.concat(tmp).drop_duplicates()
+        res = res[res["duration"] > 0]
         # Load files if not already in memory
         recs = qApp.load_recordings(res.index.values)
         # Get list of all loaded recordings

@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import logging
+
 import db.dbutils as dbutils
 from analyse.image import ImageGenerator
 from analyse.spectrogram import SpectrogramGenerator
@@ -40,6 +42,8 @@ class Ecosongs(QApplication):
 
 if __name__ == '__main__':
     import sys
+    #logging.basicConfig(filename='example.log', level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
     app = Ecosongs(sys.argv)
     ui = EcosongsUI()
     ui.showMaximized()
