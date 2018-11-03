@@ -3,7 +3,6 @@ import os
 import re
 import zipfile
 from datetime import datetime
-from glob import glob
 
 import pandas as pd
 from utils.wav_headers import get_wav_headers
@@ -29,9 +28,11 @@ class FileManager:
 
     """
     # TODO: put in config
-    FILE_EXT = (".wac", ".wav", ".WAV")
+    FILE_EXT = ("wac", "wav")
     # TODO: put in config
-    PATTERNS = {"Audiomoth": "([A-F0-9]{8})", "SongMeter": "(.+)_(\d{8}_\d{6})"}
+    PATTERNS = {"Audiomoth": "([A-F0-9]{8})",
+                "SongMeter": "(.+)_(\d{8}_\d{6})",
+                "Ecosongs": "(.+)_(.+)_(\d{4}-\d{2}-\d{2})_(\d{2}:\d{2}:\d{2})"}
 
     def __init__(self, sites=None):
         self.sites = sites
@@ -49,21 +50,29 @@ class FileManager:
 
     def get_files(self):
         if self.options["folder"]:
-            self.get_files_from_folder()
-        self.extract_infos()
+            file_infos = self.get_files_from_folder()
+        else:
+            file_infos = self.extract_infos(None, self.file_paths)
+        self.file_infos = pd.DataFrame(file_infos)
         self.files_loaded()
         return self.file_infos
 
     def get_files_from_folder(self):
-        self.log("get files from folder: " + self.root_dir)
-        pattern = self.root_dir
-        if self.options["recursive"]:
-            pattern += "/**"
-        files = []
-        for ext in self.FILE_EXT:
-            pattrn = pattern + "/*" + ext
-            files.extend(glob(pattrn, recursive=True))
-        self.file_paths = files
+        self.log("Retrieving files from folder: " + self.root_dir)
+        # Listing all files and folders in root directory
+        file_infos = []
+        for (dirpath, dirnames, filenames) in os.walk(self.root_dir):
+            # if files are present
+            if filenames:
+                # TODO: check for a conf file in order to update configurations
+                if (os.path.exists("info.txt")):
+                    print("file exists")
+                # TODO add extra information
+                # extract information from files
+                file_infos += self.extract_infos(dirpath, filenames)
+            if not self.options["recursive"]:
+                break
+        return file_infos
 
     def get_files_to_convert(self):
         df = self.file_infos
@@ -74,11 +83,79 @@ class FileManager:
     def files_loaded(self):
         self.log("\n".join(self.file_paths))
 
-    def extract_infos(self):
-        file_infos = list(map(self.extract_info, self.file_paths))
-        # TODO: oder of columns in config
-        self.file_infos = pd.DataFrame(file_infos)
-        self.log(self.file_infos)
+    def extract_infos(self, path, files):
+        file_infos = [self.extract_info(path, file) for file in files]
+        return file_infos
+
+    def extract_info(self, dirpath, file):
+        if not dirpath:
+            # Path to parent drectory not provided, extract it from filename
+            fullpath = file
+            dirpath = os.path.dirname(file)
+            file = os.path.basename(file)
+        else:
+            fullpath = os.path.join(dirpath, file)
+
+        # Initialize result dict. Defaults added for table display
+        logging.info("Extracting information from: " + fullpath)
+
+        # Get extension
+        f = file.split(".")
+        ext = f[len(f) - 1].lower()
+        # Check if file is a supported audio file
+        if ext not in self.FILE_EXT:
+            logging.warning("File is not a supported audio file")
+            return None
+        # Get name
+        name = ''.join(f[:len(f) - 1])
+
+        res = {"error": 0, "site": None, "plot": None, "date": None,
+               "year": None, "name": None, "path": dirpath, "recorder": None}
+        res["ext"] = ext
+        res["old_name"] = file
+
+        # Split path and reverse it
+        path = dirpath.split("/")
+        path.reverse()
+
+        # Detect recorder based on pattern matching
+        match = None
+        if self.options["recorder"] != RECORDER_AUTO:
+            recorder = self.options["recorder"]
+            match = self.regex[recorder].match(name)
+        else:
+            recorder, match = self.recorder_from_name(name, dirpath)
+
+        res["date"] = self.extract_date(recorder, match)
+        res["recorder"] = recorder
+
+        if self.options["folder_hierarchy"]:
+            if len(path) < 4:
+                error = "Cannot extrapolate information from hierarchy, not enough folders"
+            else:
+                res["site"] = path[self.options["site_info"]["site"]]
+                res["year"] = path[self.options["site_info"]["year"]]
+                res["plot"] = path[self.options["site_info"]["plot"]]
+        else:
+            res["site"] = self.options["site_info"]["site"]
+            res["year"] = self.options["site_info"]["year"]
+            res["plot"] = self.options["site_info"]["plot"]
+
+        res["name"] = (res["plot"]
+                       + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
+        res["duration"] = 0
+        res["sample_rate"] = 0
+
+        if (res["ext"] == "wav"):
+            headers = get_wav_headers(fullpath)
+            if headers:
+                res["duration"] = headers["Duration"]
+                res["sample_rate"] = headers["SampleRate"]
+            else:
+                # TODO: add an error instead?
+                return None
+
+        return(res)
 
     def recorder_from_name(self, file, path):
         for key, reg in self.regex.items():
@@ -99,85 +176,8 @@ class FileManager:
         logging.debug("extracting date SM2: " + str(date))
         return date
 
-    def extract_info(self, fullpath):
-        # Initialize result dict. Defaults added for table display
-        logging.debug("Extracting information from: " + fullpath)
-        res = {"error": 0, "site": None, "plot": None, "date": None,
-               "year": None, "name": None, "path": fullpath, "recorder": None}
-
-        # Split path and reverse it
-        path = fullpath.split("/")
-        path.reverse()
-
-        # Get file name
-        file = path[0]
-        res["old_name"] = file
-        # Get extension
-        f = file.split(".")
-        name = ''.join(f[:len(f) - 1])
-        res["ext"] = f[len(f) - 1].lower()
-
-        # Detect recorder based on pattern matching
-        match = None
-        if self.options["recorder"] != RECORDER_AUTO:
-            recorder = self.options["recorder"]
-            match = self.regex[recorder].match(name)
-        else:
-            recorder, match = self.recorder_from_name(name, os.path.dirname(fullpath))
-
-        res["date"] = self.extract_date(recorder, match)
-        res["recorder"] = recorder
-
-        # Split file using underscore: only for difference between Audiomoth
-        # and SongMeter
-        # TODO: change if add support for other recorders and normal audio files
-        # use pattern matching
-        # data = name.split("_", 1)
-        # # TODO: add constants
-        # if self.options["recorder"] == "Auto-detect":
-        #     if len(data) == 1:
-        #         res["recorder"] = "Audiomoth"
-        #     else:
-        #         res["recorder"] = "SongMeter"
-        # else:
-        #     res["recorder"] = self.options["recorder"]
-
-        # TODO: validate info extraction
-        # Get data from folder hierarchy (only valid for folder import)
-        # Only retrieve info from path hierarchy if indexes fit
-        # TODO : catch errors on folder hierarchy
-        if self.options["folder_hierarchy"]:
-            if len(path) < 4:
-                error = "Cannot extrapolate information from hierarchy, not enough folders"
-            else:
-                res["site"] = path[self.options["site_info"]["site"]]
-                res["year"] = path[self.options["site_info"]["year"]]
-                res["plot"] = path[self.options["site_info"]["plot"]]
-        else:
-            res["site"] = self.options["site_info"]["site"]
-            res["year"] = self.options["site_info"]["year"]
-            res["plot"] = self.options["site_info"]["plot"]
-
-        # site_name = res["site"]
-        # if self.sites is not None:
-        #     tmp = self.sites.loc[self.sites["Site"] == res["site"], "Abbreviation"]
-        #     if not tmp.empty:
-        #         site_name = tmp.item()
-
-        # TODO: extract info from wav header
-        res["name"] = (res["plot"]
-                       + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
-        res["duration"] = 0
-        res["sample_rate"] = 0
-
-        if (res["ext"] == "wav"):
-            headers = get_wav_headers(fullpath)
-            res["duration"] = headers["Duration"]
-            res["sample_rate"] = headers["SampleRate"]
-
-        return(res)
-
     # TODO: set options as arguments like everywhere else
+
     def set_args(self, dest="", compress_old=True):
         self.dest_dir = dest
         self.compress_old = compress_old

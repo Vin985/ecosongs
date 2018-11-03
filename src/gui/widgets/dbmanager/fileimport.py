@@ -181,7 +181,7 @@ class FileImport(QWizard, Ui_FileImport):
             self.table_files.resizeColumnsToContents()
         # self.log_console.clear()
         # self.log_console.append("\n".join(self.file_manager.file_paths))
-        self.lbl_status.setText("%d file(s) found" % len(self.file_manager.file_paths))
+        self.lbl_status.setText("%d file(s) found" % self.file_manager.file_infos.shape[0])
 
     # @Slot()
     # def import_files(self):

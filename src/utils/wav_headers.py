@@ -29,7 +29,7 @@ def get_wav_headers(strWAVFile):
         fileIn = open(strWAVFile, 'rb')
     except IOError:
         logging.debug("Could not open input file %s" % (strWAVFile))
-        return
+        return None
     # end try
     # Read in all data
     bufHeader = fileIn.read(38)
@@ -37,7 +37,7 @@ def get_wav_headers(strWAVFile):
     if (bufHeader[0:4] != b"RIFF") or \
        (bufHeader[12:16] != b"fmt "):
         logging.debug("Input file not a standard WAV file")
-        return
+        return None
     # endif
     fields = {'ChunkSize': 0, 'Format': '',
               'Subchunk1Size': 0, 'AudioFormat': 0,
