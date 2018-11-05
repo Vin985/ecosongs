@@ -53,6 +53,8 @@ class FileManager:
             file_infos = self.get_files_from_folder()
         else:
             file_infos = self.extract_infos(None, self.file_paths)
+        file_infos = list(filter(None, file_infos))
+        print(file_infos)
         self.file_infos = pd.DataFrame(file_infos)
         self.files_loaded()
         return self.file_infos
@@ -97,7 +99,7 @@ class FileManager:
             fullpath = os.path.join(dirpath, file)
 
         # Initialize result dict. Defaults added for table display
-        logging.info("Extracting information from: " + fullpath)
+        self.log("Extracting information from: " + fullpath)
 
         # Get extension
         f = file.split(".")
@@ -105,12 +107,12 @@ class FileManager:
         # Check if file is a supported audio file
         if ext not in self.FILE_EXT:
             logging.warning("File is not a supported audio file")
-            return None
+            return
         # Get name
         name = ''.join(f[:len(f) - 1])
 
         res = {"error": 0, "site": None, "plot": None, "date": None,
-               "year": None, "name": None, "path": dirpath, "recorder": None}
+               "year": None, "name": None, "path": fullpath, "recorder": None}
         res["ext"] = ext
         res["old_name"] = file
 

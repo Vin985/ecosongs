@@ -3,7 +3,7 @@ import os
 from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dbmanager.QFileManager import QFileManager
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
-from PySide2.QtCore import QSortFilterProxyModel, QThread, Slot
+from PySide2.QtCore import QSortFilterProxyModel, Qt, QThread, Signal, Slot
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
 # TODO: put files in config
@@ -12,6 +12,9 @@ DEST_DIR = "wav"
 
 
 class FileImport(QWizard, Ui_FileImport):
+    get_infos = Signal()
+    import_files = Signal()
+    list_files_convert = Signal()
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -19,9 +22,17 @@ class FileImport(QWizard, Ui_FileImport):
         self.setupUi(self)
         self.init_ui()
         self.file_manager = QFileManager()
-        self.thread = QThread()
+
+        self.init_thread()
         self.registerFields()
         self.linkEvents()
+
+    def init_thread(self):
+        self.worker_thread = QThread()
+        self.file_manager.moveToThread(self.worker_thread)
+        self.finished.connect(self.worker_thread.quit)
+        self.worker_thread.finished.connect(self.file_manager.deleteLater)
+        self.worker_thread.start()
 
     def init_ui(self):
         self.site_manual.setVisible(not self.radio_site_auto.isChecked())
@@ -33,30 +44,28 @@ class FileImport(QWizard, Ui_FileImport):
 
     # Define callbacks when events happen
     def linkEvents(self):
+        # Signals emitted
+        self.get_infos.connect(self.file_manager.get_files, type=Qt.QueuedConnection)
+        self.import_files.connect(self.file_manager.import_files, type=Qt.QueuedConnection)
+        self.list_files_convert.connect(self.file_manager.get_files_to_convert, type=Qt.QueuedConnection)
+
+        # Signals received
+        # File manager
+        self.file_manager.converting.connect(self.converting_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.removing.connect(self.removing_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.renaming.connect(self.renaming_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.saving.connect(self.saving_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
+        self.file_manager.filesLoaded.connect(self.show_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.update_progress.connect(self.update_progress, type=Qt.BlockingQueuedConnection)
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
-        #self.btn_start_import.clicked.connect(self.import_files)
-        # self.btn_browse_dest.clicked.connect(self.browse_dest)
-        # self.btn_import.clicked.connect(self.import_files)
-        # self.btn_cancel.clicked.connect(self.wacConverter.requestInterruption)
-        # Input fields
-        # self.input_src_path.textChanged.connect(self.set_root)
-        # self.input_dest_path.textChanged.connect(self.set_dest)
         # Radio
         self.radio_is_folder.buttonToggled.connect(self.folder_options)
         self.radio_site_info.buttonToggled.connect(self.site_info_options)
         # Checkbox
         self.checkbox_subfolders.toggled.connect(self.subfolders_options)
         self.checkbox_move.toggled.connect(self.display_move_options)
-        # File manager
-        self.file_manager.logging.connect(self.log)
-        self.file_manager.filesLoaded.connect(self.show_files)
-        self.file_manager.update_progress.connect(self.update_progress)
-        # Wac conversion
-        self.thread.started.connect(self.thread_started)
-        # self.thread.finished.connect(self.thread_finished)
-
-        # self.file_handler.finished.connect(self.end_conversion)
 
     def display_move_options(self):
         self.move_options.setVisible(self.checkbox_move.isChecked())
@@ -83,7 +92,8 @@ class FileImport(QWizard, Ui_FileImport):
                                      "recorder": self.radio_recorders.button(self.radio_recorders.checkedId()).text(),
                                      "folder_hierarchy": self.radio_site_auto.isChecked(),
                                      "site_info": site_info}
-        self.file_manager.get_files()
+        self.get_infos.emit()
+        #self.file_manager.get_files()
 
     def initialize_page2(self):
         self.move_options.setVisible(self.checkbox_move.isChecked())
@@ -91,13 +101,20 @@ class FileImport(QWizard, Ui_FileImport):
         self.compression_options.setEnabled(False)
 
     def initialize_page3(self):
-        self.file_manager.get_files_to_convert()
+        self.list_files_convert.emit()
 
     def initialize_page4(self):
+        print(self.worker_thread.isRunning())
         # Convert files to wac
         self.file_manager.set_args(dest="")
-        self.file_manager.moveToThread(self.thread)
-        self.thread.start()
+        self.import_files.emit()
+        print("est")
+        # self.convert_to_wac()
+        # self.remove_files()
+        # self.rename_files()
+        # self.save_recordings()
+        # self.file_manager.moveToThread(self.thread)
+        # self.thread.start()
 
     # Called when any radio button for folder or file is selected
 
@@ -201,38 +218,46 @@ class FileImport(QWizard, Ui_FileImport):
         #self.log_console.clear()
         self.checkbox_done.setChecked(True)
 
-    def convert_to_wac(self):
+    def converting_files(self):
+        print("converting")
+        self.lbl_converting.setText("toto")
         self.log_console.clear()
-        self.file_manager.files_to_wav()
+        # self.wac2wav.emit()
+        # self.file_manager.files_to_wav()
 
-    def remove_files(self):
+    def removing_files(self):
         self.lbl_converting.setEnabled(False)
         self.lbl_removing.setEnabled(True)
         self.progress_bar.setValue(0)
-        self.file_manager.remove_wac()
+        # self.remove_wac.emit()
 
-    def rename_files(self):
+    def renaming_files(self):
         self.lbl_removing.setEnabled(False)
         self.lbl_renaming.setEnabled(True)
         self.progress_bar.setValue(0)
         if self.checkbox_rename.isChecked():
             pass
+            # self.rename.emit()
             # self.file_manager.rename_files()
 
-    def save_recordings(self):
+    def saving_files(self):
         self.lbl_renaming.setEnabled(False)
         self.lbl_saving.setEnabled(True)
         self.progress_bar.setValue(0)
-        self.file_manager.save_recordings()
+        # self.save.emit()
+        #self.file_manager.save_recordings()
 
     @Slot()
     def update_progress(self, progress):
+        print(progress)
         self.progress_bar.setValue(progress)
 
     @Slot()
     def log(self, text):
-        print(text)
-        self.log_console.append(text)
+        if self.currentId() == 1:
+            self.lbl_status.setText(text)
+        else:
+            self.log_console.append(text)
 
     def start_conversion(self):
         print("start")

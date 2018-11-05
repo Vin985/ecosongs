@@ -1,53 +1,64 @@
 
 import os
+import time
 
 import pandas as pd
 from utils.filemanager import FileManager
 
 from audio.recording import Recording
+from gui.threads.QThreadWorker import QThreadWorker
 from gui.utils.settings import Settings
-from PySide2.QtCore import QObject, Signal
+from PySide2.QtCore import Signal
 from PySide2.QtGui import qApp
 
 
-class QFileManager(QObject, FileManager):
-    logging = Signal(str, bool)
+class QFileManager(QThreadWorker, FileManager):
     filesLoaded = Signal()
-    logging = Signal(str)
-    update_progress = Signal(int)
+
+    converting = Signal()
+    removing = Signal()
+    renaming = Signal()
+    saving = Signal()
 
     def __init__(self):
-        QObject.__init__(self)
+        QThreadWorker.__init__(self)
         settings = Settings()
         FileManager.__init__(self, sites=settings.sites_path)
+        print(self.thread())
 
-    def log(self, text):
-        self.logging.emit(text)
+    def import_files(self):
+        time.sleep(1)
+        print(self.thread())
+        self.converting.emit()
+        self.files_to_wav()
+        # self.remove_wac()
+        # self.rename_files()
+        # self.save_recordings()
+
+    def remove():
+        print("removing")
 
     def files_loaded(self):
         # TODO: change to use persistence model
         # qApp.save_data("recordings", self.file_infos, format="t")
         self.filesLoaded.emit()
 
-    def apply_with_progress(self, collection, func, *args, **kwargs):
-        nitems = len(collection)
-        current = 0
-        for item in collection:
-            if self.thread().isInterruptionRequested():
-                return (1)
-            func(item, *args, **kwargs)
-            current += 1
-            self.update_progress.emit(current/nitems * 100)
-
     def files_to_wav(self):
+        # self.converting.emit()
+        print(self.to_wav)
         # self.open_archive()
         self.apply_with_progress(self.to_wav, self.file_to_wav)
         # self.close_archive()
 
     def remove_wac(self):
+        self.removing.emit()
+        return
         self.apply_with_progress(self.to_wav, os.remove)
 
     def rename_files(self):
+        # TODO: add checkbox test in option files
+        self.renaming.emit()
+        return
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
         new_paths = [self.get_new_path(*row) for row in cols.itertuples(index=False)]
         tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
@@ -55,6 +66,8 @@ class QFileManager(QObject, FileManager):
                                  self.rename_file_tuple)
 
     def save_recordings(self):
+        self.saving.emit()
+        return
         # TODO: append to existing recordings
         to_save = self.file_infos.loc[:, self.file_infos.columns.intersection(Recording.COLUMNS)]
         to_save["date"] = pd.to_datetime(to_save["date"])
