@@ -3,11 +3,12 @@ import numpy as np
 
 
 class Spectrogram:
-    def __init__(self, spec, n_fft, duration, sr):
+    def __init__(self, spec, n_fft, duration, sr, denoised):
         self.spec = spec
         self.fft = n_fft
         self.duration = duration
         self.sr = sr
+        self.denoised = denoised
 
     def __str__(self):
         string = "Spectrogram with fft: {0.fft}, shape {1} and value \n {0.spec}".format(
@@ -72,7 +73,7 @@ class SpectrogramGenerator:
 
         #specdb = librosa.feature.melspectrogram(S=specdb, n_mels=128)
 
-        return Spectrogram(spec, n_fft, sample.duration, sample.sr)
+        return Spectrogram(spec, n_fft, sample.duration, sample.sr, remove_noise)
 
     def __remove_noise(self, spectro):
         """

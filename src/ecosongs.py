@@ -11,9 +11,6 @@ from PySide2.QtWidgets import QApplication
 
 class Ecosongs(QApplication):
 
-    def save_data(self, table, data, *args, **kwargs):
-        self.dbmanager.save_data(table, data, *args, **kwargs)
-
     def get_recordings(self, df=True):
         if df:
             return self.recordings.df

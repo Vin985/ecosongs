@@ -104,17 +104,9 @@ class FileImport(QWizard, Ui_FileImport):
         self.list_files_convert.emit()
 
     def initialize_page4(self):
-        print(self.worker_thread.isRunning())
         # Convert files to wac
         self.file_manager.set_args(dest="")
         self.import_files.emit()
-        print("est")
-        # self.convert_to_wac()
-        # self.remove_files()
-        # self.rename_files()
-        # self.save_recordings()
-        # self.file_manager.moveToThread(self.thread)
-        # self.thread.start()
 
     # Called when any radio button for folder or file is selected
 
@@ -200,52 +192,29 @@ class FileImport(QWizard, Ui_FileImport):
         # self.log_console.append("\n".join(self.file_manager.file_paths))
         self.lbl_status.setText("%d file(s) found" % self.file_manager.file_infos.shape[0])
 
-    # @Slot()
-    # def import_files(self):
-    #     # Convert files to wac
-    #     self.file_handler.set_args(root=self.input_src_path.text(), dest="",
-    #                                files=self.to_wav)
-    #     self.file_handler.moveToThread(self.thread)
-    #     self.thread.start()
+    @Slot()
+    def converting_files(self):
+        self.log_console.clear()
 
     @Slot()
-    def thread_started(self):
-        self.convert_to_wac()
-        self.remove_files()
-        self.rename_files()
-        self.save_recordings()
-
-        #self.log_console.clear()
-        self.checkbox_done.setChecked(True)
-
-    def converting_files(self):
-        print("converting")
-        self.lbl_converting.setText("toto")
-        self.log_console.clear()
-        # self.wac2wav.emit()
-        # self.file_manager.files_to_wav()
-
     def removing_files(self):
         self.lbl_converting.setEnabled(False)
         self.lbl_removing.setEnabled(True)
         self.progress_bar.setValue(0)
-        # self.remove_wac.emit()
 
+    @Slot()
     def renaming_files(self):
         self.lbl_removing.setEnabled(False)
         self.lbl_renaming.setEnabled(True)
         self.progress_bar.setValue(0)
         if self.checkbox_rename.isChecked():
             pass
-            # self.rename.emit()
-            # self.file_manager.rename_files()
 
+    @Slot()
     def saving_files(self):
         self.lbl_renaming.setEnabled(False)
         self.lbl_saving.setEnabled(True)
         self.progress_bar.setValue(0)
-        # self.save.emit()
-        #self.file_manager.save_recordings()
 
     @Slot()
     def update_progress(self, progress):

@@ -1,48 +1,16 @@
 import librosa
 import pandas as pd
-from utils.basemodel import BaseModel
 
 from audio import sample
+from db.models import BaseModel, TableModel
 
 
-class Recordings():
+class Recordings(TableModel):
     TABLE_NAME = "recordings"
 
     def __init__(self, df=pd.DataFrame(), dbmanager=None):
-        self._df = df
-        # TODO: Change to externalize dbmanager
-        self.dbmanager = dbmanager
+        TableModel.__init__(self, Recording.COLUMNS, df, dbmanager)
         self.recordings = {}
-
-    def load_data(self):
-        try:
-            self._df = self.dbmanager.get_table(self.TABLE_NAME)
-            print(self._df.dtypes)
-            print(self._df)
-            return(self._df.loc[:, self._df.columns.intersection(Recording.COLUMNS)])
-            # self._df["date"] = pd.to_datetime(self._df["date"])
-        except KeyError:
-            self._df
-
-    @property
-    def df(self):
-        if self._df.empty:
-            self.load_data()
-        return self._df
-
-    @property
-    def empty(self):
-        return self._df.empty
-
-    def query(self, query):
-        return self._df.query(query)
-
-    def append(self, new, save=False):
-        # TODO: check duplicates
-        # TODO: add idx column?
-        self._df = self._df.append(new, ignore_index=True, sort=True)
-        if save:
-            self.dbmanager.save_data(self.TABLE_NAME, self._df, format="table")
 
     def load_recordings(self, indexes, specgen):
         """Create Recording objects from indexes if they had not been loaded

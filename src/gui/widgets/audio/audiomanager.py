@@ -5,6 +5,7 @@ from PIL import ImageQt
 
 from analyse.indexes import ACI
 from audio.recording import Recording
+from db.models import TableModel
 from gui.threads.QIndexThread import QIndexThread
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
@@ -25,6 +26,8 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.index_thread = QIndexThread()
         self.link_events()
         self.add_actions()
+        acis = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
+        print(acis.df)
 
         # self.treeView.setRootIsDecorated(False)
         # self.treeView.setUniformRowHeights(True)
@@ -49,7 +52,11 @@ class AudioManager(QWidget, Ui_AudioManager):
     def get_results(self):
         print("finished")
 
-        acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
+        print(self.index_thread.res)
+        acis = pd.DataFrame(self.index_thread.res)
+        aci_table = TableModel(ACI.COLUMNS, df=acis, dbmanager=qApp.dbmanager, table="ACI")
+        aci_table.append(acis, save=True)
+        #acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
         print(acis)
         acis.to_csv("aci.csv")
         # for item in self.index_thread.res:

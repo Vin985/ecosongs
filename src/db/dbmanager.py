@@ -5,22 +5,18 @@ class DBManager(ABC):
     def __init__(self, config):
         pass
 
-    def add(self):
+    def create(self):
         raise NotImplementedError(
             "Function not implemented for this DB manager")
 
-    def update(self):
+    def update(self, table, data):
         raise NotImplementedError(
             "Function not implemented for this DB manager")
 
-    def delete(self):
+    def delete(self, table, data):
         raise NotImplementedError(
             "Function not implemented for this DB manager")
 
     @abstractmethod
     def get_table(self, table):
-        pass
-
-    @abstractmethod
-    def save_data(self, table):
         pass

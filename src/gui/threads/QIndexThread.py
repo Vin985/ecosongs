@@ -1,7 +1,7 @@
 import concurrent.futures
 import time
 
-from analyse.indexes import ACI
+import analyse.indexes as indexes
 from PySide2 import QtCore
 
 
@@ -29,15 +29,27 @@ class QIndexThread(QtCore.QThread):
             # self.res = [self.get_result_map(aci) for aci in futures]
             # submit solution
             for rec in self.recordings:
-                futures.append(executor.submit(ACI, recording=rec, spec_opts=self.spec_opts))
+                try:
+                    futures.append(executor.submit(indexes.compute_index,
+                                                   type="ACI",
+                                                   recording=rec,
+                                                   spec_opts=self.spec_opts))
+                except Exception as exc:
+                    print("Oh no! An exception occured! " + str(exc))
             self.res = [self.get_result_submit(aci) for aci in concurrent.futures.as_completed(futures)]
+            self.res = list(filter(None, self.res))
         end = time.time()
         print("time elapsed: {}".format(end-start))
 
     def get_result_submit(self, item):
         self.progress += 1
         self.progression.emit(int(self.progress/self.max * 100))
-        return item.result()
+        try:
+            res = item.result()
+        except Exception as e:
+            print("Oh no! An exception occured! " + str(e))
+            return None
+        return res
 
     def get_result_map(self, item):
         self.progress += 1

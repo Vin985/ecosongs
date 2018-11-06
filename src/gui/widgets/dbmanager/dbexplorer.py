@@ -1,4 +1,3 @@
-from db.models import RecordingModel
 from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dbmanager.fileimport import FileImport
 from gui.widgets.dbmanager.ui.dbexplorer_ui import Ui_DBExplorer
@@ -35,9 +34,6 @@ class DBExplorer(QWidget, Ui_DBExplorer):
         proxyModel = QSortFilterProxyModel()
         proxyModel.setSourceModel(model)
         self.dbTable.setModel(proxyModel)
-
-    def loadRecordings(self):
-        return(RecordingModel.select())
 
     def refresh_table(self):
         self.setTableModel(qApp.get_recordings())
