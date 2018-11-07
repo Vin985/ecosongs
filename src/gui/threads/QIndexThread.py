@@ -14,9 +14,6 @@ class QIndexThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
 
-    def __del__(self):
-        self.wait()
-
     def run(self):
         self.started.emit()
         self.max = len(self.recordings)

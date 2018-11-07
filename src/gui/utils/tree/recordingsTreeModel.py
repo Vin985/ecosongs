@@ -15,15 +15,17 @@ class RecordingsTreeModel(QStandardItemModel):
         super(self.__class__, self).__init__(1, 0, parent)
         self.categories = categories
         self.clear()
-        self.create_model(categories, recordings)
+        root = FolderItem("Audio")
+        self.appendRow(root)
+        recordings = recordings.sort_values(categories + ["date"])
+        self.create_model(categories, recordings, parent=root)
         # self.insertColumn(1)
 
     def create_model(self, categories, recordings, path={}, parent=None):
         if not recordings.empty:
             category = categories[0]
-            groups = recordings.groupby(category)
+            groups = recordings.groupby(category, sort=False)
             for (entry, recs) in groups:
-                print(entry)
                 # Create path to the folder in a dict
                 path[category] = entry
                 # item is a folder. add path to it
@@ -35,6 +37,7 @@ class RecordingsTreeModel(QStandardItemModel):
                     self.add_recordings(recordings, item)
                 if parent:
                     parent.appendRow(item)
+                    # print(parent.child(0, 0).text())
                 else:
                     self.appendRow(item)
 
