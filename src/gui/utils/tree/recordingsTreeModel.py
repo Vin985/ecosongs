@@ -18,6 +18,7 @@ class RecordingsTreeModel(QStandardItemModel):
         root = FolderItem("Audio")
         self.appendRow(root)
         recordings = recordings.sort_values(categories + ["date"])
+
         self.create_model(categories, recordings, parent=root)
         # self.insertColumn(1)
 

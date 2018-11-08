@@ -19,24 +19,19 @@ class QFileManager(QThreadWorker, FileManager):
     removing = Signal()
     renaming = Signal()
     saving = Signal()
+    tosave = Signal()
 
     def __init__(self):
         QThreadWorker.__init__(self)
         settings = Settings()
         FileManager.__init__(self, sites=settings.sites_path)
-        print(self.thread())
 
     def import_files(self):
-        time.sleep(1)
-        print(self.thread())
         self.converting.emit()
         self.files_to_wav()
-        # self.remove_wac()
-        # self.rename_files()
-        # self.save_recordings()
-
-    def remove():
-        print("removing")
+        self.remove_wac()
+        self.rename_files()
+        self.save_recordings()
 
     def files_loaded(self):
         # TODO: change to use persistence model
@@ -44,8 +39,7 @@ class QFileManager(QThreadWorker, FileManager):
         self.filesLoaded.emit()
 
     def files_to_wav(self):
-        # self.converting.emit()
-        print(self.to_wav)
+        self.converting.emit()
         # self.open_archive()
         self.apply_with_progress(self.to_wav, self.file_to_wav)
         # self.close_archive()
@@ -67,12 +61,14 @@ class QFileManager(QThreadWorker, FileManager):
 
     def save_recordings(self):
         self.saving.emit()
-        return
+        print("saving")
         # TODO: append to existing recordings
         to_save = self.file_infos.loc[:, self.file_infos.columns.intersection(Recording.COLUMNS)]
         to_save["date"] = pd.to_datetime(to_save["date"])
+        self.to_save = to_save
+        self.tosave.emit()
         # TODO: check duplicates
-        qApp.recordings.append(to_save, save=True)
+        #qApp.recordings.append(to_save, save=True)
 
     def get_new_path(self, path, old, new):
         new_path = path.replace(old, new)

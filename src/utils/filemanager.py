@@ -131,13 +131,15 @@ class FileManager:
         res["date"] = self.extract_date(recorder, match)
         res["recorder"] = recorder
 
+        print(path)
+        print(self.options["site_info"]["site"])
         if self.options["folder_hierarchy"]:
             if len(path) < 4:
                 error = "Cannot extrapolate information from hierarchy, not enough folders"
             else:
-                res["site"] = path[self.options["site_info"]["site"]]
-                res["year"] = path[self.options["site_info"]["year"]]
-                res["plot"] = path[self.options["site_info"]["plot"]]
+                res["site"] = path[self.options["site_info"]["site"] - 1]
+                res["year"] = path[self.options["site_info"]["year"] - 1]
+                res["plot"] = path[self.options["site_info"]["plot"] - 1]
         else:
             res["site"] = self.options["site_info"]["site"]
             res["year"] = self.options["site_info"]["year"]

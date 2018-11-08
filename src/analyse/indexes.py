@@ -1,6 +1,6 @@
 import numpy as np
 
-from db.models import BaseModel
+from db.models import BaseModel, TableModel
 
 
 def compute_index(type, *args, **kwargs):
@@ -22,9 +22,16 @@ class AudioIndex (BaseModel):
         pass
 
 
+class ACITable(TableModel):
+    TABLE_NAME = "ACI"
+
+    def __init__(self, df=None, dbmanager=None):
+        TableModel.__init__(self, ACI.COLUMNS, df=df, dbmanager=dbmanager)
+
+
 class ACI(AudioIndex):
 
-    COLUMNS = ["ACI", "recording_id", "year", "site",
+    COLUMNS = ["recording_id", "ACI", "year", "site",
                "plot", "date", "duration", "time_step", "denoised"]
 
     def __init__(self, values=None, recording=None, spectro=None, time_step=5, unit="seconds", spec_opts={}):
@@ -36,7 +43,7 @@ class ACI(AudioIndex):
                 spectro = recording.get_spectrogram(spec_opts)
             self.unit = unit
             self.time_step = time_step
-            self.recording_id = 1
+            self.recording_id = recording.id
             self.date = recording.date
             self.site = recording.site
             self.plot = recording.plot

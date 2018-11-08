@@ -1,21 +1,23 @@
-import datetime
-
 import pandas as pd
 from PIL import ImageQt
 
-from analyse.indexes import ACI
+from analyse.indexes import ACI, ACITable
 from audio.recording import Recording
 from db.models import TableModel
 from gui.threads.QIndexThread import QIndexThread
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
-from PySide2.QtCore import QSortFilterProxyModel
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
 
 
 def get_ACI(self, rec):
     return ACI(recording=rec)
+
+
+def update_path(path):
+    new = path.replace("Seagate Backup Plus Drive", "Backup")
+    return(new)
 
 
 class AudioManager(QWidget, Ui_AudioManager):
@@ -26,18 +28,31 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.index_thread = QIndexThread()
         self.link_events()
         self.add_actions()
-        acis = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
-        print(acis.df)
 
-        # self.treeView.setRootIsDecorated(False)
+        # aci_table = TableModel(ACI.COLUMNS, df=pd.DataFrame(),dbmanager=qApp.dbmanager, table="ACI")
+        aci_table = ACITable(dbmanager=qApp.dbmanager)
+        print(aci_table.df)
+        # aci_table.save()
+
+        # recs = qApp.get_recordings()
+        # recs = recs[recs.site != "2018"]
+        # qApp.recordings.create(recs, save=True)
+        # recs["path"] = recs["path"].map(update_path)
+        # print(recs["path"])
+        # qApp.recordings.create(recs, save=True)
+        # aci_table.save()
+
+        self.tree_view.setRootIsDecorated(True)
         # self.treeView.setUniformRowHeights(True)
         # self.treeView.setHeaderHidden(True)
 
     def init_tree(self):
         recordings = qApp.get_recordings()
+        categories = ["year", "site", "plot"]
 
-        model = RecordingsTreeModel(self, recordings)
+        model = RecordingsTreeModel(self, recordings, categories=categories)
         self.tree_view.setModel(model)
+        self.tree_view.expand(model.item(0, 0).index())
         self.show_folder_details()
 
     def add_actions(self):
@@ -54,11 +69,10 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         print(self.index_thread.res)
         acis = pd.DataFrame(self.index_thread.res)
-        aci_table = TableModel(ACI.COLUMNS, df=acis, dbmanager=qApp.dbmanager, table="ACI")
-        aci_table.append(acis, save=True)
+        if not acis.empty:
+            aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
+            aci_table.add(acis, save=True)
         #acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
-        print(acis)
-        acis.to_csv("aci.csv")
         # for item in self.index_thread.res:
         #     print(item)
         # print(self.index_thread.res)
@@ -153,6 +167,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         res = res[res["duration"] > 0]
         # Load files if not already in memory
         recs = qApp.load_recordings(res.index.values)
+
         # Get list of all loaded recordings
         # Compute ACIs
         # TODO: clean up!

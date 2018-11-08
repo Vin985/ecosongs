@@ -10,6 +10,7 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
+
 class Ui_AudioManager(object):
     def setupUi(self, AudioManager):
         AudioManager.setObjectName("AudioManager")
@@ -27,7 +28,7 @@ class Ui_AudioManager(object):
         self.tree_view.setSizePolicy(sizePolicy)
         self.tree_view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.tree_view.setUniformRowHeights(True)
-        self.tree_view.setSortingEnabled(True)
+        self.tree_view.setSortingEnabled(False)
         self.tree_view.setObjectName("tree_view")
         self.tree_view.header().setVisible(False)
         self.details_pane = QtWidgets.QWidget(self.splitter)
@@ -99,4 +100,3 @@ class Ui_AudioManager(object):
         self.label.setText(QtWidgets.QApplication.translate("AudioManager", "Name", None, -1))
         self.label_3.setText(QtWidgets.QApplication.translate("AudioManager", "Path", None, -1))
         self.action_ACI.setText(QtWidgets.QApplication.translate("AudioManager", "Compute ACI", None, -1))
-

@@ -4,6 +4,7 @@ from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dbmanager.QFileManager import QFileManager
 from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
 from PySide2.QtCore import QSortFilterProxyModel, Qt, QThread, Signal, Slot
+from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
 # TODO: put files in config
@@ -58,6 +59,7 @@ class FileImport(QWizard, Ui_FileImport):
         self.file_manager.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
         self.file_manager.filesLoaded.connect(self.show_files, type=Qt.BlockingQueuedConnection)
         self.file_manager.update_progress.connect(self.update_progress, type=Qt.BlockingQueuedConnection)
+        self.file_manager.tosave.connect(self.save_files)
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
         # Radio
@@ -215,6 +217,11 @@ class FileImport(QWizard, Ui_FileImport):
         self.lbl_renaming.setEnabled(False)
         self.lbl_saving.setEnabled(True)
         self.progress_bar.setValue(0)
+
+    def save_files(self):
+        print("saving for real")
+        qApp.recordings.add(self.file_manager.to_save, save=True)
+        self.checkbox_done.setChecked(True)
 
     @Slot()
     def update_progress(self, progress):

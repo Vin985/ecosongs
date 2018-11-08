@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'dbexplorer.ui',
 # licensing of 'dbexplorer.ui' applies.
 #
-# Created: Thu Aug 23 15:07:05 2018
+# Created: Wed Nov  7 23:14:36 2018
 #      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,9 +28,29 @@ class Ui_DBExplorer(object):
         sizePolicy.setHeightForWidth(self.dbImportButton.sizePolicy().hasHeightForWidth())
         self.dbImportButton.setSizePolicy(sizePolicy)
         self.dbImportButton.setObjectName("dbImportButton")
-        self.gridLayout_2.addWidget(self.dbImportButton, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.dbImportButton, 0, 1, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_2.addItem(spacerItem, 0, 1, 1, 1)
+        self.gridLayout_2.addItem(spacerItem, 0, 3, 1, 1)
+        self.btn_export = QtWidgets.QPushButton(self.dbOptions)
+        self.btn_export.setObjectName("btn_export")
+        self.gridLayout_2.addWidget(self.btn_export, 0, 4, 1, 1)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.lbl_table = QtWidgets.QLabel(self.dbOptions)
+        self.lbl_table.setObjectName("lbl_table")
+        self.horizontalLayout.addWidget(self.lbl_table)
+        self.comboBox_table = QtWidgets.QComboBox(self.dbOptions)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.comboBox_table.sizePolicy().hasHeightForWidth())
+        self.comboBox_table.setSizePolicy(sizePolicy)
+        self.comboBox_table.setMinimumSize(QtCore.QSize(200, 0))
+        self.comboBox_table.setObjectName("comboBox_table")
+        self.horizontalLayout.addWidget(self.comboBox_table)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem1)
+        self.gridLayout_2.addLayout(self.horizontalLayout, 1, 0, 1, 5)
         self.gridLayout.addWidget(self.dbOptions, 0, 0, 1, 1)
         self.dbTable = QtWidgets.QTableView(DBExplorer)
         self.dbTable.setEnabled(True)
@@ -59,6 +79,8 @@ class Ui_DBExplorer(object):
         DBExplorer.setWindowTitle(QtWidgets.QApplication.translate("DBExplorer", "Form", None, -1))
         self.dbOptions.setTitle(QtWidgets.QApplication.translate("DBExplorer", "Database Explorer", None, -1))
         self.dbImportButton.setText(QtWidgets.QApplication.translate("DBExplorer", "Import file(s) into database", None, -1))
+        self.btn_export.setText(QtWidgets.QApplication.translate("DBExplorer", "Export database", None, -1))
+        self.lbl_table.setText(QtWidgets.QApplication.translate("DBExplorer", "Select table to display", None, -1))
         self.rowsFound.setText(QtWidgets.QApplication.translate("DBExplorer", "TextLabel", None, -1))
         self.action_ACI.setText(QtWidgets.QApplication.translate("DBExplorer", "Calculate ACI", None, -1))
         self.action_ACI.setToolTip(QtWidgets.QApplication.translate("DBExplorer", "hello world!", None, -1))

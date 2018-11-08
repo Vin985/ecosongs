@@ -8,9 +8,12 @@ from db.models import BaseModel, TableModel
 class Recordings(TableModel):
     TABLE_NAME = "recordings"
 
-    def __init__(self, df=pd.DataFrame(), dbmanager=None):
-        TableModel.__init__(self, Recording.COLUMNS, df, dbmanager)
+    def __init__(self, df=None, dbmanager=None):
+        TableModel.__init__(self, Recording.COLUMNS, df=df, dbmanager=dbmanager)
         self.recordings = {}
+
+    def check_duplicates(self, new, replace):
+        pass
 
     def load_recordings(self, indexes, specgen):
         """Create Recording objects from indexes if they had not been loaded
