@@ -5,7 +5,7 @@ from audio import sample
 from db.models import BaseModel, TableModel
 
 
-class Recordings(TableModel):
+class RecordingTable(TableModel):
     TABLE_NAME = "recordings"
 
     def __init__(self, df=None, dbmanager=None):

@@ -3,7 +3,7 @@ import logging
 import db.dbutils as dbutils
 from analyse.image import ImageGenerator
 from analyse.spectrogram import SpectrogramGenerator
-from audio.recording import Recordings
+from audio.recording import RecordingTable
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings
 from PySide2.QtWidgets import QApplication
@@ -31,7 +31,7 @@ class Ecosongs(QApplication):
         self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
                                                 type=settings.db_type,
                                                 path=settings.db_path)
-        self.recordings = Recordings(dbmanager=self.dbmanager)
+        self.recordings = RecordingTable(dbmanager=self.dbmanager)
         self.specgen = SpectrogramGenerator(settings.spectrogram_settings())
         self.imgen = ImageGenerator(settings.image_settings())
 
