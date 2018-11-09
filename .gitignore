@@ -6,3 +6,5 @@ test/*
 results
 *.log
 *.Rhistory
+*.feather
+src/plots/figs

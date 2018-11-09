@@ -171,7 +171,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         # Get list of all loaded recordings
         # Compute ACIs
         # TODO: clean up!
-        self.index_thread.spec_opts = {'to_db': False, 'remove_noise': False}
+        self.index_thread.spec_opts = {'to_db': False, 'remove_noise': True}
         self.index_thread.recordings = recs
         self.index_thread.start()
         # pool = Pool(5)
