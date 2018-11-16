@@ -8,3 +8,4 @@ results
 *.Rhistory
 *.feather
 src/plots/figs
+*.csv
