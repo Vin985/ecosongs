@@ -20,6 +20,9 @@ class SpectrogramGenerator:
     def __init__(self, config):
         # spectrogram parameters
         self.__read_config(config)
+        self.nr_N = 0.1
+        self.nr_hist_rel_size = 2
+        self.nr_window_smoothing = 5
 
     def __read_config(self, config):
         for key in config:
@@ -41,7 +44,7 @@ class SpectrogramGenerator:
 
     def create_spectrogram(self, sample, n_fft=None, to_db=None,
                            remove_noise=None, normalize=None,
-                           spec_hop_length=None, spec_window=None):
+                           spec_hop_length=-1, spec_window=-1, mel=False):
         if not n_fft:
             n_fft = self.default_fft
         if to_db is None:
@@ -50,13 +53,17 @@ class SpectrogramGenerator:
             remove_noise = self.remove_noise
         if normalize is None:
             normalize = self.normalize
-        if not spec_hop_length:
+        if spec_hop_length == -1:
             spec_hop_length = self.spec_hop_length
-        if not spec_window:
+        if spec_window == -1:
             spec_window = self.spec_window
 
         spectro = librosa.stft(
             sample.audio, n_fft, hop_length=spec_hop_length, window=spec_window)
+
+        if mel:
+            spectro = librosa.feature.melspectrogram(
+                S=spectro)
 
         spec = np.abs(spectro)
 

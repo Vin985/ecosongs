@@ -287,6 +287,7 @@ QListView::text:selected {
      <string>Tools</string>
     </property>
     <addaction name="wac2wav"/>
+    <addaction name="aSettings"/>
    </widget>
    <widget class="QMenu" name="menu_analyses">
     <property name="title">
@@ -327,6 +328,7 @@ QListView::text:selected {
    </attribute>
    <addaction name="aSetwd"/>
    <addaction name="aSave"/>
+   <addaction name="aSpecScale"/>
   </widget>
   <action name="aAbout">
    <property name="text">
@@ -402,6 +404,19 @@ QListView::text:selected {
   <action name="action_2wav">
    <property name="text">
     <string>Convert to wav</string>
+   </property>
+  </action>
+  <action name="aSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="aSpecScale">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select spectrogram scale</string>
    </property>
   </action>
  </widget>

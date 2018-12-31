@@ -102,6 +102,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         recording = Recording(file_info, specgen=qApp.specgen)
         # TODO: add slider to select duration and see complete spectrogram
         sample = recording.get_sample(0, 15)
+        # TODO: add spectrogram options
         spec = sample.get_spectrogram()
         # TODO: externalize ratio pixel/duration
         # TODO: save image somewhere

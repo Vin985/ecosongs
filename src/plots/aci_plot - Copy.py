@@ -9,7 +9,7 @@ import feather
 from plotnine import (aes, annotate, facet_grid, facet_wrap, geom_errorbar,
                       geom_line, geom_point, geom_rect, geom_smooth, ggplot,
                       scale_colour_manual, scale_x_continuous, xlab, xlim,
-                      ylab)
+                      ylab, theme)
 
 
 def join_tuple(tuple, sep):
@@ -39,8 +39,8 @@ plot_excl = ["BARW_8"]
 # The palette with black:
 cbbPalette = ["#000000", "#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"]
 
-site_data = pd.read_excel("/home/vin/Doctorat/data/datasheet/2018/sites_deployment_2018.xlsx")
-#site_data = pd.read_excel("C:\\UMoncton\\Doctorat\\data\\datasheet\\2018\\sites_deployment_2018.xlsx")
+# site_data = pd.read_excel("/home/vin/Doctorat/data/datasheet/2018/sites_deployment_2018.xlsx")
+site_data = pd.read_excel("C:\\UMoncton\\Doctorat\\data\\datasheet\\2018\\sites_deployment_2018.xlsx")
 
 # aci = feather.read_dataframe("src/plots/ACI.feather")
 aci = feather.read_dataframe("ACI.feather")
@@ -69,41 +69,13 @@ def label_x(dates):
     print(res)
     return res
 
-
-(ggplot(data=res, mapping=aes(x='julian', y='ACI_mean', colour='site'))
-    + xlab("Day")
-    + ylab("Mean daily ACI (standardized)")
-    # + facet_grid("site~", scales="free")
-	+ facet_wrap("site", nrow=2, ncol=3)
-    + geom_point()
-    + geom_errorbar(aes(ymin="ACI_mean - ACI_std", ymax="ACI_mean + ACI_std"))
-    + geom_smooth(method="mavg", se=False, method_args={"window": 4, "center": True, "min_periods": 1})
-	+ scale_colour_manual(values=cbbPalette, guide=False)
-    + scale_x_continuous(labels=label_x)).save("figs/ACI_all_testfacet3.png", height=10, width=16, dpi=150)
-
-
-#################
-### Denoising ###
-#################
-
-# Test sans bruit
-aci2 = aci.loc[aci["site"] == "East Bay"]
-res2 = aci2.groupby(["denoised", "julian"]).mean()
-res2 = res2.reset_index()
-# res2 = aci2
-
-(ggplot(data=res2, mapping=aes(x='julian', y='ACI', colour='denoised'))
-    + facet_grid("denoised~", scales="free")
-    # + geom_line()
-    + geom_smooth(method="mavg", se=False, method_args={"window": 3, "center": True, "min_periods": 1})
-    + scale_x_continuous(labels=label_x)).save("figs/ACI_EABA_denoising.png", height=10, width=8, dpi=150)
-
-
 ################
 ### Igloolik ###
 ################
 iglo = res[res.site == "Igloolik"]
-iglo_nest = pd.read_excel("/home/vin/Doctorat/data/datasheet/2018/IGLO/nest_IGLO_2018.xlsx")
+# iglo_nest = pd.read_excel("/home/vin/Doctorat/data/datasheet/2018/IGLO/nest_IGLO_2018.xlsx")
+iglo_nest = pd.read_excel("C:\\UMoncton\\Doctorat\\data\\datasheet\\2018\\IGLO\\nest_IGLO_2018.xlsx")
+
 iglo_nest.columns
 iglo_nest["julian"] = iglo_nest.date.dt.dayofyear
 iglo_nest.loc[iglo_nest.type == "incubation", "julian"] += 4
@@ -123,6 +95,7 @@ xmax = min(iglo_nest[iglo_nest.type == "hatch"].julian.max(), iglo.julian.max() 
  + xlab("Day")
  + ylab("Mean daily ACI (standardized)")
  + geom_point()
+ + theme(legend_position="none")
  # + geom_errorbar(aes(ymin="ACI_mean - ACI_std", ymax="ACI_mean + ACI_std"))
  + geom_smooth(method="mavg", se=False, method_args={"window": 4, "center": True, "min_periods": 1})
  + annotate("rect", xmin=[inc_start, hatch_start], xmax=[inc_end, hatch_end],
@@ -130,7 +103,7 @@ xmax = min(iglo_nest[iglo_nest.type == "hatch"].julian.max(), iglo.julian.max() 
  + annotate("text", x=[inc_lbl_pos, hatch_lbl_pos], y=1.8, label=["Incubation end", "Hatch"])
  # + geom_line(data = inc, mapping=aes(x="julian", y="uniqueID"), colour="black")
  #    + geom_smooth(data=inc, mapping=aes(x="julian", y="uniqueID"), colour="black", method="mavg", se=False, method_args={"window": 4, "center": True, "min_periods": 1})
- + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/ACI_IGLO_endinc_noerr.png", height=8, width=8, dpi=150)
+ + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/ACI_IGLO_endinc_noerr2.png", height=8, width=8, dpi=150)
 
 iglo_inc = iglo_nest.groupby("julian", as_index=False).uniqueID.count().reset_index()
 
@@ -141,7 +114,7 @@ iglo_inc = iglo_nest.groupby("julian", as_index=False).uniqueID.count().reset_in
     + annotate("rect", xmin=[inc_start, hatch_start], xmax=[inc_end, hatch_end],
                ymin=-math.inf, ymax=math.inf, alpha=0.1, fill=["red", "blue"])
     + annotate("text", x=[inc_lbl_pos, hatch_lbl_pos], y=11, label=["incubation", "hatch"])
-    + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/Nest_IGLO_endinc.png", height=8, width=8, dpi=150)
+    + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/Nest_IGLO_endinc2.png", height=8, width=8, dpi=150)
 
 
 #############
@@ -150,7 +123,8 @@ iglo_inc = iglo_nest.groupby("julian", as_index=False).uniqueID.count().reset_in
 
 
 barw = res[res.site == "Barrow"]
-barw_nest = pd.read_excel("/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_incubation_hatch_dates_2018.xlsx", sheet_name=1)
+# barw_nest = pd.read_excel("/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_incubation_hatch_dates_2018.xlsx", sheet_name=1)
+barw_nest = pd.read_excel("C:\\UMoncton\\Doctorat\\data\\datasheet\\2018\\BARW\\BARW_incubation_hatch_dates_2018.xlsx", sheet_name=1)
 barw_nest["julian"] = barw_nest.date.dt.dayofyear
 barw_nest.loc[barw_nest.type == "incubation", "julian"] += 4
 
@@ -164,11 +138,12 @@ hatch_lbl_pos = hatch_start + (hatch_end - hatch_start)/2
 xmin = min(inc_start, barw.julian.min())
 xmax = min(barw_nest[barw_nest.type == "hatch"].julian.max(), barw.julian.max() + 2)
 
-(ggplot(data=res2, mapping=aes(x='julian', y='ACI_mean', colour='site'))
+(ggplot(data=barw, mapping=aes(x='julian', y='ACI_mean', colour='site'))
  #+ facet_grid("panel~", scales="free")
  + xlab("Day")
  + ylab("Mean daily ACI (standardized)")
  + geom_point()
+ + theme(legend_position="none")
  # + geom_errorbar(aes(ymin="ACI_mean - ACI_std", ymax="ACI_mean + ACI_std"))
  + geom_smooth(method="mavg", se=False, method_args={"window": 4, "center": True, "min_periods": 1})
  + annotate("rect", xmin=[inc_start, hatch_start], xmax=[inc_end, hatch_end],
@@ -176,7 +151,7 @@ xmax = min(barw_nest[barw_nest.type == "hatch"].julian.max(), barw.julian.max() 
  + annotate("text", x=[inc_lbl_pos, hatch_lbl_pos], y=2.1, label=["Incubation end", "Hatch"])
  # + geom_line(data = inc, mapping=aes(x="julian", y="uniqueID"), colour="black")
  #    + geom_smooth(data=inc, mapping=aes(x="julian", y="uniqueID"), colour="black", method="mavg", se=False, method_args={"window": 4, "center": True, "min_periods": 1})
- + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/ACI_BARW_incend.png", height=8, width=8, dpi=150)
+ + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/ACI_BARW_incend2.png", height=8, width=8, dpi=150)
 
 inc = barw_nest.groupby("julian", as_index=False).uniqueID.count().reset_index()
 
@@ -187,20 +162,5 @@ inc = barw_nest.groupby("julian", as_index=False).uniqueID.count().reset_index()
     + annotate("rect", xmin=[inc_start, hatch_start], xmax=[inc_end, hatch_end],
                ymin=-math.inf, ymax=math.inf, alpha=0.1, fill=["red", "blue"])
     + annotate("text", x=[inc_lbl_pos, hatch_lbl_pos], y=4.5, label=["incubation", "hatch"])
-    + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/Nest_BARW_incend.png", height=8, width=8, dpi=150)
+    + scale_x_continuous(labels=label_x, limits=[xmin, xmax])).save("figs/Nest_BARW_incend2.png", height=8, width=8, dpi=150)
 
-
-res3 = aci.loc[aci.site == "Barrow"]
-res3 = res3.groupby(["plot"], as_index=False).apply(check_dates, site_data)
-res3.reset_index()
-res3 = res3.groupby(["plot", "julian"], as_index=False).agg({"ACI": ["mean", "std"], "lat": "mean", "lon": "mean"})
-res3.columns = pd.Index(join_tuple(i, "_") for i in res3.columns)
-res3
-(ggplot(data=res3, mapping=aes(x='julian', y='ACI_mean', colour='plot'))
-    + xlab("Day")
-    + ylab("Mean daily ACI (standardized)")
-    + facet_grid("plot~", scales="free")
-    + geom_point()
-    + geom_errorbar(aes(ymin="ACI_mean - ACI_std", ymax="ACI_mean + ACI_std"))
-    + geom_smooth(method="mavg", se=False, method_args={"window": 4, "center": True, "min_periods": 1})
-    + scale_x_continuous(labels=label_x))  # .save("figs/ACI_BARW_plots2.png", height=12, width=8, dpi=150)

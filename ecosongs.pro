@@ -43,7 +43,11 @@ FORMS += \
     src/gui/widgets/wacConverter/ecosongs.ui \
     src/gui/widgets/wacConverter/qwacconverter.ui \
     src/gui/widgets/treeexplorer/ui/treeexplorer.ui \
-    src/gui/widgets/audio/ui/audiomanager.ui
+    src/gui/widgets/audio/ui/audiomanager.ui \
+    src/gui/widgets/menus/settings.ui \
+    src/gui/widgets/menus/spectrosettings.ui \
+    src/gui/widgets/menus/ui/spectrogramsettings.ui \
+    src/gui/widgets/menus/ui/settingsmenu.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \
@@ -66,5 +70,11 @@ DISTFILES += \
     src/gui/widgets/dbmanager/dbexplorer.py \
     src/gui/widgets/dbmanager/fileimport.py \
     src/gui/widgets/wacConverter/QWacConverter.py \
-    src/gui/widgets/wacConverter/QWacConverterUI.py
+    src/gui/widgets/wacConverter/QWacConverterUI.py \
+    src/gui/widgets/testqml/TestForm.ui.qml \
+    src/gui/widgets/testqml/Test.qml \
+    src/gui/widgets/testqml/TestForm.ui.qml \
+    src/gui/widgets/testqml/Test.qml \
+    src/gui/widgets/menus/ui/settings_ui.py \
+    src/gui/widgets/menus/ui/spectrosettings_ui.py
 

@@ -3,17 +3,12 @@
 # Form implementation generated from reading ui file 'ecosongs.ui',
 # licensing of 'ecosongs.ui' applies.
 #
-# Created: Sun Aug 26 14:28:36 2018
-#      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
+# Created: Mon Dec 31 14:53:44 2018
+#      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
-from gui.widgets.audio.audiomanager import AudioManager
-from gui.widgets.dbmanager.dbexplorer import DBExplorer
 from PySide2 import QtCore, QtGui, QtWidgets
-
-from . import ecosongs_rc
-
 
 class Ui_Ecosongs(object):
     def setupUi(self, Ecosongs):
@@ -42,39 +37,39 @@ class Ui_Ecosongs(object):
         self.pages.setSizePolicy(sizePolicy)
         self.pages.setAutoFillBackground(False)
         self.pages.setStyleSheet("QListView{\n"
-                                 "      show-decoration-selected: 1; \n"
-                                 "    outline:none;\n"
-                                 "}\n"
-                                 "QListView::item {\n"
-                                 "    border: 1 outset rgb(136, 138, 133);\n"
-                                 "    border-radius: 2;\n"
-                                 "    background-color: rgb(238, 238, 236);\n"
-                                 "    padding: 5 5 5 5;\n"
-                                 "    margin:0 2 2 2;\n"
-                                 "    width:75;\n"
-                                 "/*background-color:blue;*/\n"
-                                 "}\n"
-                                 "\n"
-                                 "\n"
-                                 "QListView::item:selected:!active {\n"
-                                 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-                                 "                                stop: 0 #ABAFE5, stop: 1 #8588B2);\n"
-                                 "}\n"
-                                 "\n"
-                                 "QListView::item:selected:active {\n"
-                                 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-                                 "                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
-                                 "    selection-background-color: green;\n"
-                                 "}\n"
-                                 "\n"
-                                 "QListView::item:hover {\n"
-                                 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-                                 "                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);\n"
-                                 "}\n"
-                                 "\n"
-                                 "QListView::text:selected {\n"
-                                 "    border:none;\n"
-                                 "}")
+"      show-decoration-selected: 1; \n"
+"    outline:none;\n"
+"}\n"
+"QListView::item {\n"
+"    border: 1 outset rgb(136, 138, 133);\n"
+"    border-radius: 2;\n"
+"    background-color: rgb(238, 238, 236);\n"
+"    padding: 5 5 5 5;\n"
+"    margin:0 2 2 2;\n"
+"    width:75;\n"
+"/*background-color:blue;*/\n"
+"}\n"
+"\n"
+"\n"
+"QListView::item:selected:!active {\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #ABAFE5, stop: 1 #8588B2);\n"
+"}\n"
+"\n"
+"QListView::item:selected:active {\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
+"    selection-background-color: green;\n"
+"}\n"
+"\n"
+"QListView::item:hover {\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);\n"
+"}\n"
+"\n"
+"QListView::text:selected {\n"
+"    border:none;\n"
+"}")
         self.pages.setObjectName("pages")
         self.db_page = DBExplorer()
         self.db_page.setAutoFillBackground(True)
@@ -101,39 +96,39 @@ class Ui_Ecosongs(object):
         self.sidebar.setFont(font)
         self.sidebar.setAutoFillBackground(False)
         self.sidebar.setStyleSheet("QListView{\n"
-                                   "      show-decoration-selected: 1; \n"
-                                   "    outline:none;\n"
-                                   "}\n"
-                                   "QListView::item {\n"
-                                   "    border: 1 outset rgb(136, 138, 133);\n"
-                                   "    border-radius: 2;\n"
-                                   "    background-color: rgb(238, 238, 236);\n"
-                                   "    padding: 5 5 5 5;\n"
-                                   "    margin:0 2 2 2;\n"
-                                   "    width:75;\n"
-                                   "/*background-color:blue;*/\n"
-                                   "}\n"
-                                   "\n"
-                                   "\n"
-                                   "QListView::item:selected:!active {\n"
-                                   "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-                                   "                                stop: 0 #ABAFE5, stop: 1 #8588B2);\n"
-                                   "}\n"
-                                   "\n"
-                                   "QListView::item:selected:active {\n"
-                                   "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-                                   "                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
-                                   "    selection-background-color: green;\n"
-                                   "}\n"
-                                   "\n"
-                                   "QListView::item:hover {\n"
-                                   "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-                                   "                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);\n"
-                                   "}\n"
-                                   "\n"
-                                   "QListView::text:selected {\n"
-                                   "    border:none;\n"
-                                   "}")
+"      show-decoration-selected: 1; \n"
+"    outline:none;\n"
+"}\n"
+"QListView::item {\n"
+"    border: 1 outset rgb(136, 138, 133);\n"
+"    border-radius: 2;\n"
+"    background-color: rgb(238, 238, 236);\n"
+"    padding: 5 5 5 5;\n"
+"    margin:0 2 2 2;\n"
+"    width:75;\n"
+"/*background-color:blue;*/\n"
+"}\n"
+"\n"
+"\n"
+"QListView::item:selected:!active {\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #ABAFE5, stop: 1 #8588B2);\n"
+"}\n"
+"\n"
+"QListView::item:selected:active {\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
+"    selection-background-color: green;\n"
+"}\n"
+"\n"
+"QListView::item:hover {\n"
+"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);\n"
+"}\n"
+"\n"
+"QListView::text:selected {\n"
+"    border:none;\n"
+"}")
         self.sidebar.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.sidebar.setLineWidth(0)
         self.sidebar.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -149,12 +144,12 @@ class Ui_Ecosongs(object):
         icon.addPixmap(QtGui.QPixmap(":/tango/db-manager"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         item = QtWidgets.QListWidgetItem(self.sidebar)
         item.setIcon(icon)
-        item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        item.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/tango/audio"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         item = QtWidgets.QListWidgetItem(self.sidebar)
         item.setIcon(icon1)
-        item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        item.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap(":/tango/analysis"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         item = QtWidgets.QListWidgetItem(self.sidebar)
@@ -215,6 +210,11 @@ class Ui_Ecosongs(object):
         self.action_details.setObjectName("action_details")
         self.action_2wav = QtWidgets.QAction(Ecosongs)
         self.action_2wav.setObjectName("action_2wav")
+        self.aSettings = QtWidgets.QAction(Ecosongs)
+        self.aSettings.setObjectName("aSettings")
+        self.aSpecScale = QtWidgets.QAction(Ecosongs)
+        self.aSpecScale.setCheckable(True)
+        self.aSpecScale.setObjectName("aSpecScale")
         self.menu_file.addAction(self.aSetwd)
         self.menu_file.addAction(self.aOpen)
         self.menu_file.addAction(self.aSave)
@@ -228,6 +228,7 @@ class Ui_Ecosongs(object):
         self.menu_help.addSeparator()
         self.menu_help.addAction(self.aAbout)
         self.menu_tools.addAction(self.wac2wav)
+        self.menu_tools.addAction(self.aSettings)
         self.menu_calculate.addAction(self.action_ACI)
         self.menu_recording.addAction(self.menu_calculate.menuAction())
         self.menu_recording.addSeparator()
@@ -240,6 +241,7 @@ class Ui_Ecosongs(object):
         self.menubar.addAction(self.menu_help.menuAction())
         self.toolBar.addAction(self.aSetwd)
         self.toolBar.addAction(self.aSave)
+        self.toolBar.addAction(self.aSpecScale)
 
         self.retranslateUi(Ecosongs)
         self.pages.setCurrentIndex(1)
@@ -275,3 +277,9 @@ class Ui_Ecosongs(object):
         self.action_ACI.setText(QtWidgets.QApplication.translate("Ecosongs", "Acoustic Complexity Index (ACI)", None, -1))
         self.action_details.setText(QtWidgets.QApplication.translate("Ecosongs", "Show Details", None, -1))
         self.action_2wav.setText(QtWidgets.QApplication.translate("Ecosongs", "Convert to wav", None, -1))
+        self.aSettings.setText(QtWidgets.QApplication.translate("Ecosongs", "Settings", None, -1))
+        self.aSpecScale.setText(QtWidgets.QApplication.translate("Ecosongs", "Select spectrogram scale", None, -1))
+
+from gui.widgets.audio.audiomanager import AudioManager
+from gui.widgets.dbmanager.dbexplorer import DBExplorer
+from . import ecosongs_rc
