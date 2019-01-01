@@ -1,11 +1,14 @@
 import utils.commons as utils
 
+import bidict
 from PySide2.QtCore import QSettings
 
 
 class Settings(QSettings):
     # def __init__(self):
     #     super(self.__class__, self).__init__()
+
+    spec_window = bidict.bidict({"Hanning": "hann"})
 
     @property
     def spec_fft(self):
@@ -31,12 +34,13 @@ class Settings(QSettings):
         res = {}
         # Spectrogram settings
         self.beginGroup("spectrogram")
-        res["spec_window"] = self.value("window", "hann")
+        res["spec_window"] = self.value("window", "Hanning")
         res["default_fft"] = int(self.value("default_fft", 512))
         res["to_db"] = utils.str2bool(self.value("to_db", True))
         res["normalize"] = utils.str2bool(self.value("normalize", True))
         hop_length = self.value("hop_length")
         res["spec_hop_length"] = int(hop_length) if hop_length else None
+        res["scale"] = self.value("scale", "Linear")
         self.endGroup()
         # Noise removal settings
         self.beginGroup("noise_removal")
