@@ -1,5 +1,5 @@
 from gui.ecosongs_ui import Ui_Ecosongs
-from gui.widgets.menus.settingsmenu import SettingsMenu
+from gui.widgets.menus.settingsdialog import SettingsDialog
 from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QApplication, QMainWindow
 
@@ -35,8 +35,8 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
     @Slot()
     def show_settings(self):
         print("show settings menu")
-        self.settingsMenu = SettingsMenu()
-        self.settingsMenu.show()
+        self.settingsDialog = SettingsDialog()
+        self.settingsDialog.show()
 
     @Slot()
     def exit(self):

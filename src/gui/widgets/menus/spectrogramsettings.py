@@ -2,11 +2,11 @@ from functools import partial
 
 import bidict
 from gui.utils.settings import Settings
+from gui.widgets.menus.settingspage import SettingsPage
 from gui.widgets.menus.ui.spectrogramsettings_ui import Ui_SpectrogramSettings
-from PySide2.QtWidgets import QWidget
 
 
-class SpectrogramSettings(QWidget, Ui_SpectrogramSettings):
+class SpectrogramSettings(SettingsPage, Ui_SpectrogramSettings):
 
     GROUP = "spectrogram"
 
@@ -22,7 +22,7 @@ class SpectrogramSettings(QWidget, Ui_SpectrogramSettings):
         settings = Settings()
         spec_opts = settings.spectrogram_settings()
         self.combobox_scale.setCurrentIndex(self.combobox_scale.findText(spec_opts["scale"]))
-        self.combobox_fft.setCurrentIndex(self.combobox_fft.findText(str(spec_opts["default_fft"])))
+        self.combobox_fft.setCurrentIndex(self.combobox_fft.findText(str(spec_opts["n_fft"])))
         spec_window = self.spec_window.inv[spec_opts["spec_window"]]
         self.combobox_spec_window.setCurrentIndex(self.combobox_spec_window.findText(spec_window))
         self.checkbox_to_db.setChecked(spec_opts["to_db"])
@@ -34,7 +34,7 @@ class SpectrogramSettings(QWidget, Ui_SpectrogramSettings):
 
     def link_events(self):
         self.combobox_scale.currentTextChanged.connect(partial(self.update_setting, key="scale"))
-        self.combobox_fft.currentTextChanged.connect(partial(self.update_setting, key="default_fft"))
+        self.combobox_fft.currentTextChanged.connect(partial(self.update_setting, key="n_fft"))
         self.combobox_spec_window.currentTextChanged.connect(self.update_spec_window)
         self.checkbox_to_db.toggled.connect(partial(self.update_setting, key="to_db"))
         self.checkbox_normalize.toggled.connect(partial(self.update_setting, key="normalize"))

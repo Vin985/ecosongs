@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'settingsmenu.ui',
-# licensing of 'settingsmenu.ui' applies.
+# Form implementation generated from reading ui file 'settingsdialog.ui',
+# licensing of 'settingsdialog.ui' applies.
 #
-# Created: Mon Dec 31 15:38:31 2018
+# Created: Wed Jan  2 14:34:46 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-class Ui_SettingsMenu(object):
-    def setupUi(self, SettingsMenu):
-        SettingsMenu.setObjectName("SettingsMenu")
-        SettingsMenu.resize(776, 703)
-        self.gridLayout = QtWidgets.QGridLayout(SettingsMenu)
+class Ui_SettingsDialog(object):
+    def setupUi(self, SettingsDialog):
+        SettingsDialog.setObjectName("SettingsDialog")
+        SettingsDialog.resize(776, 703)
+        self.gridLayout = QtWidgets.QGridLayout(SettingsDialog)
         self.gridLayout.setObjectName("gridLayout")
-        self.widget = QtWidgets.QWidget(SettingsMenu)
+        self.widget = QtWidgets.QWidget(SettingsDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(3)
         sizePolicy.setVerticalStretch(0)
@@ -41,12 +41,12 @@ class Ui_SettingsMenu(object):
         self.gridLayout.addWidget(self.widget, 0, 1, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
         self.gridLayout.addItem(spacerItem, 1, 0, 1, 2)
-        self.buttonBox = QtWidgets.QDialogButtonBox(SettingsMenu)
+        self.buttonBox = QtWidgets.QDialogButtonBox(SettingsDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
-        self.menu_categories = QtWidgets.QListWidget(SettingsMenu)
+        self.menu_categories = QtWidgets.QListWidget(SettingsDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
@@ -58,19 +58,19 @@ class Ui_SettingsMenu(object):
         QtWidgets.QListWidgetItem(self.menu_categories)
         self.gridLayout.addWidget(self.menu_categories, 0, 0, 1, 1)
 
-        self.retranslateUi(SettingsMenu)
+        self.retranslateUi(SettingsDialog)
         self.menu_pages.setCurrentIndex(1)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), SettingsMenu.accept)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), SettingsMenu.reject)
-        QtCore.QMetaObject.connectSlotsByName(SettingsMenu)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), SettingsDialog.accept)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), SettingsDialog.reject)
+        QtCore.QMetaObject.connectSlotsByName(SettingsDialog)
 
-    def retranslateUi(self, SettingsMenu):
-        SettingsMenu.setWindowTitle(QtWidgets.QApplication.translate("SettingsMenu", "Dialog", None, -1))
+    def retranslateUi(self, SettingsDialog):
+        SettingsDialog.setWindowTitle(QtWidgets.QApplication.translate("SettingsDialog", "Dialog", None, -1))
         __sortingEnabled = self.menu_categories.isSortingEnabled()
         self.menu_categories.setSortingEnabled(False)
-        self.menu_categories.item(0).setText(QtWidgets.QApplication.translate("SettingsMenu", "General", None, -1))
-        self.menu_categories.item(1).setText(QtWidgets.QApplication.translate("SettingsMenu", "Spectrogram", None, -1))
-        self.menu_categories.item(2).setText(QtWidgets.QApplication.translate("SettingsMenu", "Indexes", None, -1))
+        self.menu_categories.item(0).setText(QtWidgets.QApplication.translate("SettingsDialog", "General", None, -1))
+        self.menu_categories.item(1).setText(QtWidgets.QApplication.translate("SettingsDialog", "Spectrogram", None, -1))
+        self.menu_categories.item(2).setText(QtWidgets.QApplication.translate("SettingsDialog", "Indexes", None, -1))
         self.menu_categories.setSortingEnabled(__sortingEnabled)
 
 from gui.widgets.menus.spectrogramsettings import SpectrogramSettings

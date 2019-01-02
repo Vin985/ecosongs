@@ -32,7 +32,7 @@ class Settings(QSettings):
         # Spectrogram settings
         self.beginGroup("spectrogram")
         res["spec_window"] = self.value("window", "Hanning")
-        res["default_fft"] = int(self.value("default_fft", 512))
+        res["n_fft"] = int(self.value("n_fft", 512))
         res["to_db"] = utils.str2bool(self.value("to_db", "True"))
         res["normalize"] = utils.str2bool(self.value("normalize", "True"))
         hop_length = self.value("hop_length")

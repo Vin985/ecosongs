@@ -44,7 +44,8 @@ class SpectrogramGenerator:
 
     def create_spectrogram(self, sample, n_fft=None, to_db=None,
                            remove_noise=None, normalize=None,
-                           spec_hop_length=-1, spec_window=-1, mel=False):
+                           spec_hop_length=-1, spec_window=-1, scale="Linear",
+                           nr_hist_rel_size=2, nr_N=0.1, nr_window_smoothing=5):
         if not n_fft:
             n_fft = self.default_fft
         if to_db is None:
@@ -61,7 +62,7 @@ class SpectrogramGenerator:
         spectro = librosa.stft(
             sample.audio, n_fft, hop_length=spec_hop_length, window=spec_window)
 
-        if mel:
+        if scale == "Mel":
             spectro = librosa.feature.melspectrogram(
                 S=spectro)
 
@@ -69,7 +70,8 @@ class SpectrogramGenerator:
 
         if remove_noise:
             # TODO: check SNR to remove noise?
-            spec = self.__remove_noise(spec)
+            spec = self.__remove_noise(spec, nr_N, nr_hist_rel_size,
+                                       nr_window_smoothing)
             spec = spec.astype("float32")
 
         if normalize:
@@ -82,7 +84,7 @@ class SpectrogramGenerator:
 
         return Spectrogram(spec, n_fft, sample.duration, sample.sr, remove_noise)
 
-    def __remove_noise(self, spectro):
+    def __remove_noise(self, spectro, N, hist_rel_size, window_smoothing):
         """
         Compute a new spectrogram which is "Noise Removed".
 

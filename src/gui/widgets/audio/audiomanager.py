@@ -5,6 +5,7 @@ from analyse.indexes import ACI, ACITable
 from audio.recording import Recording
 from db.models import TableModel
 from gui.threads.QIndexThread import QIndexThread
+from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from PySide2.QtGui import QPixmap, qApp
@@ -103,7 +104,8 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: add slider to select duration and see complete spectrogram
         sample = recording.get_sample(0, 15)
         # TODO: add spectrogram options
-        spec = sample.get_spectrogram()
+        settings = Settings()
+        spec = sample.get_spectrogram(spec_opts=settings.spectrogram_settings())
         # TODO: externalize ratio pixel/duration
         # TODO: save image somewhere
         im = qApp.imgen.spec2img(spec.spec, size=(int(299 * spec.duration / 1.5), 299))

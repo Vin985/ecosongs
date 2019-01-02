@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'spectrogramsettings.ui',
 # licensing of 'spectrogramsettings.ui' applies.
 #
-# Created: Wed Jan  2 08:37:22 2019
+# Created: Wed Jan  2 14:07:27 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!

@@ -47,7 +47,7 @@ FORMS += \
     src/gui/widgets/menus/settings.ui \
     src/gui/widgets/menus/spectrosettings.ui \
     src/gui/widgets/menus/ui/spectrogramsettings.ui \
-    src/gui/widgets/menus/ui/settingsmenu.ui
+    src/gui/widgets/menus/ui/settingsdialog.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \
