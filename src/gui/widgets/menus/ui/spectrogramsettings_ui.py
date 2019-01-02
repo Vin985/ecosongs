@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'spectrogramsettings.ui',
 # licensing of 'spectrogramsettings.ui' applies.
 #
-# Created: Mon Dec 31 14:32:47 2018
+# Created: Wed Jan  2 08:37:22 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,10 +37,10 @@ class Ui_SpectrogramSettings(object):
         self.combobox_fft.addItem("")
         self.combobox_fft.addItem("")
         self.gridLayout.addWidget(self.combobox_fft, 2, 1, 1, 1)
-        self.combobox_window = QtWidgets.QComboBox(SpectrogramSettings)
-        self.combobox_window.setObjectName("combobox_window")
-        self.combobox_window.addItem("")
-        self.gridLayout.addWidget(self.combobox_window, 3, 1, 1, 1)
+        self.combobox_spec_window = QtWidgets.QComboBox(SpectrogramSettings)
+        self.combobox_spec_window.setObjectName("combobox_spec_window")
+        self.combobox_spec_window.addItem("")
+        self.gridLayout.addWidget(self.combobox_spec_window, 3, 1, 1, 1)
         self.combobox_scale = QtWidgets.QComboBox(SpectrogramSettings)
         self.combobox_scale.setObjectName("combobox_scale")
         self.combobox_scale.addItem("")
@@ -107,7 +107,7 @@ class Ui_SpectrogramSettings(object):
         self.combobox_fft.setItemText(2, QtWidgets.QApplication.translate("SpectrogramSettings", "512", None, -1))
         self.combobox_fft.setItemText(3, QtWidgets.QApplication.translate("SpectrogramSettings", "1024", None, -1))
         self.combobox_fft.setItemText(4, QtWidgets.QApplication.translate("SpectrogramSettings", "2048", None, -1))
-        self.combobox_window.setItemText(0, QtWidgets.QApplication.translate("SpectrogramSettings", "Hanning", None, -1))
+        self.combobox_spec_window.setItemText(0, QtWidgets.QApplication.translate("SpectrogramSettings", "Hanning", None, -1))
         self.combobox_scale.setItemText(0, QtWidgets.QApplication.translate("SpectrogramSettings", "Linear", None, -1))
         self.combobox_scale.setItemText(1, QtWidgets.QApplication.translate("SpectrogramSettings", "Mel", None, -1))
         self.label_2.setText(QtWidgets.QApplication.translate("SpectrogramSettings", "Scale", None, -1))

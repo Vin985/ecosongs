@@ -81,7 +81,7 @@
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QComboBox" name="combobox_window">
+    <widget class="QComboBox" name="combobox_spec_window">
      <item>
       <property name="text">
        <string>Hanning</string>
