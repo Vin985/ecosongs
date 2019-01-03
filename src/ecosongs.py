@@ -2,7 +2,6 @@ import logging
 
 import db.dbutils as dbutils
 from analyse.image import ImageGenerator
-from analyse.spectrogram import SpectrogramGenerator
 from audio.recording import RecordingTable
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings
@@ -17,10 +16,8 @@ class Ecosongs(QApplication):
         else:
             return self.recordings.recordings
 
-    def load_recordings(self, indexes, specgen=None):
-        if not specgen:
-            specgen = self.specgen
-        return self.recordings.load_recordings(indexes, self.specgen)
+    def load_recordings(self, indexes):
+        return self.recordings.load_recordings(indexes)
 
     def __init__(self, argv):
         super(self.__class__, self).__init__(argv)
@@ -32,7 +29,6 @@ class Ecosongs(QApplication):
                                                 type=settings.db_type,
                                                 path=settings.db_path)
         self.recordings = RecordingTable(dbmanager=self.dbmanager)
-        self.specgen = SpectrogramGenerator(settings.spectrogram_settings())
         self.imgen = ImageGenerator(settings.image_settings())
 
 

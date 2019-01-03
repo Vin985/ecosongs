@@ -1,5 +1,6 @@
 import concurrent.futures
 import time
+import traceback
 
 import analyse.indexes as indexes
 from PySide2 import QtCore
@@ -33,6 +34,7 @@ class QIndexThread(QtCore.QThread):
                                                    spec_opts=self.spec_opts))
                 except Exception as exc:
                     print("Oh no! An exception occured! " + str(exc))
+                    print(traceback.format_exc())
             self.res = [self.get_result_submit(aci) for aci in concurrent.futures.as_completed(futures)]
             self.res = list(filter(None, self.res))
         end = time.time()
@@ -45,6 +47,7 @@ class QIndexThread(QtCore.QThread):
             res = item.result()
         except Exception as e:
             print("Oh no! An exception occured! " + str(e))
+            print(traceback.format_exc())
             return None
         return res
 

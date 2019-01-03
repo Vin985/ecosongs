@@ -75,14 +75,14 @@ class ImageGenerator:
             spec.spec, color_mask, size=(int(299 * spec.duration / 1.5), 299))
         return np.asarray(img)
 
-    def generate_composite(self, sample, specgen):
+    def generate_composite(self, sample):
         # TODO: more checks
         if len(self.composite_ffts) != 3:
             print("3 spectrograms sizes must be provided in the "
                   " composite_ffts option in the configuration file")
             return ()
         specs = [
-            specgen.create_spectrogram(sample, fft)
+            sample.get_spectrogram({"n_fft": fft})
             for fft in self.composite_ffts
         ]
         res = itertools.starmap(self.create_composite_part,

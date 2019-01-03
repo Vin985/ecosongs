@@ -70,9 +70,10 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         print(self.index_thread.res)
         acis = pd.DataFrame(self.index_thread.res)
-        if not acis.empty:
-            aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
-            aci_table.add(acis, save=True)
+        print(acis)
+        # if not acis.empty:
+        #     aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
+        #     aci_table.add(acis, save=True)
         #acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
         # for item in self.index_thread.res:
         #     print(item)
@@ -100,7 +101,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: add generators to qApp?
 
         # TODO: add recording object somewhere
-        recording = Recording(file_info, specgen=qApp.specgen)
+        recording = Recording(file_info)
         # TODO: add slider to select duration and see complete spectrogram
         sample = recording.get_sample(0, 15)
         # TODO: add spectrogram options
@@ -174,7 +175,10 @@ class AudioManager(QWidget, Ui_AudioManager):
         # Get list of all loaded recordings
         # Compute ACIs
         # TODO: clean up!
-        self.index_thread.spec_opts = {'to_db': False, 'remove_noise': True}
+        settings = Settings()
+        spec_opts = settings.spectrogram_settings()
+        spec_opts.update({'to_db': False, 'remove_noise': False})
+        self.index_thread.spec_opts = spec_opts
         self.index_thread.recordings = recs
         self.index_thread.start()
         # pool = Pool(5)

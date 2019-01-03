@@ -15,7 +15,7 @@ class RecordingTable(TableModel):
     def check_duplicates(self, new, replace):
         pass
 
-    def load_recordings(self, indexes, specgen):
+    def load_recordings(self, indexes):
         """Create Recording objects from indexes if they had not been loaded
         in memory before.
 
@@ -23,8 +23,6 @@ class RecordingTable(TableModel):
         ----------
         indexes : type
             Description of parameter `indexes`.
-        specgen : spectogram generator
-            Description of parameter `specgen`.
 
         Returns
         -------
@@ -35,7 +33,7 @@ class RecordingTable(TableModel):
         to_load = [idx for idx in indexes if idx not in self.recordings]
         if to_load:
             to_load = self._df.iloc[indexes]
-            self.recordings.update({row.Index: Recording(row._asdict(), specgen=specgen) for row in to_load.itertuples(index=True)})
+            self.recordings.update({row.Index: Recording(row._asdict()) for row in to_load.itertuples(index=True)})
         return [self.recordings[idx] for idx in indexes]
 
 
@@ -53,11 +51,11 @@ class Recording(BaseModel, sample.Sample):
     #     self.audio = None
 
     # TODO: load from file_path only
-    def __init__(self, attrs, specgen=None):
+    def __init__(self, attrs):
         # TODO: load from path
         # super(self.__class__, self).__init__(*args, **kwargs)
         BaseModel.__init__(self, attrs)
-        sample.Sample.__init__(self, specgen=specgen)
+        sample.Sample.__init__(self)
 
     # @property
     # def name(self):
@@ -101,7 +99,6 @@ class Recording(BaseModel, sample.Sample):
             self.audio[start_frame:end_frame],
             self.sr,
             start=start_frame,
-            specgen=self.specgen,
             duration=duration)
 
     def __str__(self):

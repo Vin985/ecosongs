@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import scipy.ndimage as ndimage
 
+from analyse.spectrogram import Spectrogram
+
 # Remove single spots from an image
 
 
@@ -17,12 +19,11 @@ def filter_isolated_cells(array, struct):
 
 
 class Sample:
-    def __init__(self, audio=np.array([]), sr=None, start=0, specgen=None, duration=None):
+    def __init__(self, audio=np.array([]), sr=None, start=0, duration=None):
         self.audio = audio
         self.sr = sr
         self.start = start
         self.spectrogram = None
-        self.specgen = specgen
         if duration:
             self.duration = duration
 
@@ -41,12 +42,10 @@ class Sample:
     #     return round(self.length / self.sr, 2)
 
     def get_spectrogram(self, spec_opts={}):
-        if not self.specgen:
-            raise AttributeError("No spectrogram generator provided.")
         if not self.audio.size:
             self.load_audio()
         if not self.spectrogram:
-            self.spectrogram = self.specgen.create_spectrogram(self, **spec_opts)
+            self.spectrogram = Spectrogram(self, **spec_opts)
         return (self.spectrogram)
 
     # def get_ACI(self, time_step=None, unit="seconds"):
