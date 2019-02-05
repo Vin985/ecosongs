@@ -25,3 +25,18 @@ Refactor
 
 Put all audio classes in single file?
 Put all indexes in single class?
+
+Audio
+------
+
+Play song
+See full spectrogram
+
+
+DL detect
+----------
+
+- detect songs
+- add threshold
+- add duration buffer
+- display on spectrogram?

@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'audiomanager.ui',
 # licensing of 'audiomanager.ui' applies.
 #
-# Created: Tue Feb  5 14:24:34 2019
+# Created: Tue Feb  5 14:39:20 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
