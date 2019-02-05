@@ -86,7 +86,7 @@ class TableModel():
             self.save(update=False)
 
     def update_table(self, table):
-        #TODO : check duplicates
+        # TODO : check duplicates
         self.df = table
 
     def query(self, query):

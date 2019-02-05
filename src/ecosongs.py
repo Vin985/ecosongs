@@ -1,11 +1,12 @@
 import logging
 
+from PySide2.QtWidgets import QApplication
+
 import db.dbutils as dbutils
 from analyse.image import ImageGenerator
 from audio.recording import RecordingTable
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings
-from PySide2.QtWidgets import QApplication
 
 
 class Ecosongs(QApplication):
@@ -20,11 +21,13 @@ class Ecosongs(QApplication):
         return self.recordings.load_recordings(indexes)
 
     def __init__(self, argv):
-        super(self.__class__, self).__init__(argv)
+        print(sys.argv[0])
+        super().__init__(argv)
         self.setOrganizationName("ecosongs")
         self.setOrganizationDomain("CRCEco")
         self.setApplicationName("ecosongs")
         settings = Settings()
+        print(settings.db_path)
         self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
                                                 type=settings.db_type,
                                                 path=settings.db_path)
@@ -34,7 +37,7 @@ class Ecosongs(QApplication):
 
 if __name__ == '__main__':
     import sys
-    #logging.basicConfig(filename='example.log', level=logging.DEBUG)
+    # logging.basicConfig(filename='example.log', level=logging.DEBUG)
     logging.basicConfig(level=logging.DEBUG)
     app = Ecosongs(sys.argv)
     ui = EcosongsUI()

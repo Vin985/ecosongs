@@ -3,16 +3,17 @@ import numpy as np
 from db.models import BaseModel, TableModel
 
 
-def compute_index(type, *args, **kwargs):
+def compute_index(index_type, *args, **kwargs):
     print(args)
     print(kwargs)
-    index = globals()[type]
+    index = globals()[index_type]
     if index:
         idx = index(*args, **kwargs)
         return idx.compute()
+    return()
 
 
-class AudioIndex (BaseModel):
+class AudioIndex(BaseModel):
 
     def __init__(self, attrs):
         print(attrs)
@@ -31,11 +32,15 @@ class ACITable(TableModel):
 
 class ACI(AudioIndex):
 
+    # pylint: disable=too-many-instance-attributes
+
     COLUMNS = ["recording_id", "ACI", "year", "site",
                "plot", "date", "duration", "time_step", "denoised"]
 
-    def __init__(self, values=None, recording=None, spectro=None, time_step=5, unit="seconds", spec_opts={}):
-        super(self.__class__, self).__init__(values)
+    def __init__(self, values=None, recording=None, spectro=None, time_step=5,
+                 unit="seconds", spec_opts=None):
+        super().__init__(values)
+        spec_opts = spec_opts or {}
         if not values:
             if recording:
                 print("Computing ACI for:" + recording.path)
@@ -57,7 +62,8 @@ class ACI(AudioIndex):
             j_bin = self.spec.shape[1]
         else:
             if self.unit == "seconds":
-                j_bin = int(self.time_step * self.spec.shape[1] / self.duration)
+                j_bin = int(self.time_step
+                            * self.spec.shape[1] / self.duration)
             elif self.unit == "frames":
                 j_bin = self.time_step
 
@@ -75,4 +81,4 @@ class ACI(AudioIndex):
         return self.to_dict()
 
     def __str__(self):
-        return ("Global ACI: {0.main}".format(self))
+        return "Global ACI: {0.ACI}".format(self)
