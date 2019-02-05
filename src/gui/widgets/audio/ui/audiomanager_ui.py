@@ -3,13 +3,12 @@
 # Form implementation generated from reading ui file 'audiomanager.ui',
 # licensing of 'audiomanager.ui' applies.
 #
-# Created: Fri Aug 31 22:48:21 2018
-#      by: pyside2-uic  running on PySide2 5.11.1a1.dev1530708810518
+# Created: Tue Feb  5 14:24:34 2019
+#      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtGui, QtWidgets
-
 
 class Ui_AudioManager(object):
     def setupUi(self, AudioManager):
@@ -28,7 +27,7 @@ class Ui_AudioManager(object):
         self.tree_view.setSizePolicy(sizePolicy)
         self.tree_view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.tree_view.setUniformRowHeights(True)
-        self.tree_view.setSortingEnabled(False)
+        self.tree_view.setHeaderHidden(True)
         self.tree_view.setObjectName("tree_view")
         self.tree_view.header().setVisible(False)
         self.details_pane = QtWidgets.QWidget(self.splitter)
@@ -41,23 +40,9 @@ class Ui_AudioManager(object):
         self.gridLayout = QtWidgets.QGridLayout(self.details_pane)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.scrollArea = QtWidgets.QScrollArea(self.details_pane)
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollArea.setObjectName("scrollArea")
-        self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 686, 266))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.scrollAreaWidgetContents)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.spectrogram = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.spectrogram.setObjectName("spectrogram")
-        self.horizontalLayout.addWidget(self.spectrogram)
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.gridLayout.addWidget(self.scrollArea, 4, 0, 1, 2)
-        self.path = QtWidgets.QLabel(self.details_pane)
-        self.path.setText("")
-        self.path.setObjectName("path")
-        self.gridLayout.addWidget(self.path, 1, 1, 1, 1)
+        self.pushButton = QtWidgets.QPushButton(self.details_pane)
+        self.pushButton.setObjectName("pushButton")
+        self.gridLayout.addWidget(self.pushButton, 3, 1, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.details_pane)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -67,13 +52,7 @@ class Ui_AudioManager(object):
         self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 2, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 5, 0, 1, 1)
-        self.year = QtWidgets.QLabel(self.details_pane)
-        self.year.setObjectName("year")
-        self.gridLayout.addWidget(self.year, 2, 1, 1, 1)
-        self.pushButton = QtWidgets.QPushButton(self.details_pane)
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout.addWidget(self.pushButton, 3, 1, 1, 1)
+        self.gridLayout.addItem(spacerItem, 6, 0, 1, 1)
         self.label = QtWidgets.QLabel(self.details_pane)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
@@ -84,6 +63,36 @@ class Ui_AudioManager(object):
         self.label_3 = QtWidgets.QLabel(self.details_pane)
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
+        self.lbl_duration = QtWidgets.QLabel(self.details_pane)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lbl_duration.sizePolicy().hasHeightForWidth())
+        self.lbl_duration.setSizePolicy(sizePolicy)
+        self.lbl_duration.setObjectName("lbl_duration")
+        self.gridLayout.addWidget(self.lbl_duration, 5, 2, 1, 1)
+        self.path = QtWidgets.QLabel(self.details_pane)
+        self.path.setText("")
+        self.path.setObjectName("path")
+        self.gridLayout.addWidget(self.path, 1, 1, 1, 1)
+        self.time_slider = QtWidgets.QSlider(self.details_pane)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(3)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.time_slider.sizePolicy().hasHeightForWidth())
+        self.time_slider.setSizePolicy(sizePolicy)
+        self.time_slider.setOrientation(QtCore.Qt.Horizontal)
+        self.time_slider.setTickPosition(QtWidgets.QSlider.NoTicks)
+        self.time_slider.setTickInterval(1)
+        self.time_slider.setObjectName("time_slider")
+        self.gridLayout.addWidget(self.time_slider, 5, 0, 1, 2)
+        self.lbl_spectro = QtWidgets.QLabel(self.details_pane)
+        self.lbl_spectro.setMinimumSize(QtCore.QSize(0, 299))
+        self.lbl_spectro.setObjectName("lbl_spectro")
+        self.gridLayout.addWidget(self.lbl_spectro, 4, 0, 1, 3)
+        self.year = QtWidgets.QLabel(self.details_pane)
+        self.year.setObjectName("year")
+        self.gridLayout.addWidget(self.year, 2, 1, 1, 1)
         self.horizontalLayout_2.addWidget(self.splitter)
         self.action_ACI = QtWidgets.QAction(AudioManager)
         self.action_ACI.setObjectName("action_ACI")
@@ -93,10 +102,12 @@ class Ui_AudioManager(object):
 
     def retranslateUi(self, AudioManager):
         AudioManager.setWindowTitle(QtWidgets.QApplication.translate("AudioManager", "Form", None, -1))
-        self.spectrogram.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
-        self.label_5.setText(QtWidgets.QApplication.translate("AudioManager", "Year", None, -1))
-        self.year.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
         self.pushButton.setText(QtWidgets.QApplication.translate("AudioManager", "compute ACI", None, -1))
+        self.label_5.setText(QtWidgets.QApplication.translate("AudioManager", "Year", None, -1))
         self.label.setText(QtWidgets.QApplication.translate("AudioManager", "Name", None, -1))
         self.label_3.setText(QtWidgets.QApplication.translate("AudioManager", "Path", None, -1))
+        self.lbl_duration.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
+        self.lbl_spectro.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
+        self.year.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
         self.action_ACI.setText(QtWidgets.QApplication.translate("AudioManager", "Compute ACI", None, -1))
+

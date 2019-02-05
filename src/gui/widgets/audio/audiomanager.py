@@ -1,36 +1,39 @@
 import pandas as pd
 from PIL import ImageQt
+from PySide2.QtGui import QPixmap, qApp
+from PySide2.QtWidgets import QMenu, QWidget
 
 from analyse.indexes import ACI, ACITable
 from audio.recording import Recording
-from db.models import TableModel
 from gui.threads.QIndexThread import QIndexThread
 from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
-from PySide2.QtGui import QPixmap, qApp
-from PySide2.QtWidgets import QMenu, QWidget
+
+import utils.commons as utils
 
 
-def get_ACI(self, rec):
+def get_ACI(rec):
     return ACI(recording=rec)
 
 
 def update_path(path):
     new = path.replace("Seagate Backup Plus Drive", "Backup")
-    return(new)
+    return new
 
 
 class AudioManager(QWidget, Ui_AudioManager):
     def __init__(self):
-        super(self.__class__, self).__init__()
+        super().__init__()
         self.setupUi(self)
         self.init_tree()
         self.index_thread = QIndexThread()
         self.link_events()
         self.add_actions()
+        self.current_recording = None
 
-        # aci_table = TableModel(ACI.COLUMNS, df=pd.DataFrame(),dbmanager=qApp.dbmanager, table="ACI")
+        # aci_table = TableModel(ACI.COLUMNS, df=pd.DataFrame(),
+        #                        dbmanager=qApp.dbmanager, table="ACI")
         aci_table = ACITable(dbmanager=qApp.dbmanager)
         print(aci_table.df)
         # aci_table.save()
@@ -64,6 +67,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.action_ACI.triggered.connect(self.compute_ACI)
         self.index_thread.progression.connect(self.update_progression)
         self.index_thread.finished.connect(self.get_results)
+        self.time_slider.valueChanged.connect(self.update_spectrogram)
 
     def get_results(self):
         print("finished")
@@ -74,7 +78,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         # if not acis.empty:
         #     aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
         #     aci_table.add(acis, save=True)
-        #acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
+        # acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
         # for item in self.index_thread.res:
         #     print(item)
         # print(self.index_thread.res)
@@ -101,20 +105,38 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: add generators to qApp?
 
         # TODO: add recording object somewhere
-        recording = Recording(file_info)
-        # TODO: add slider to select duration and see complete spectrogram
-        sample = recording.get_sample(0, 15)
-        # TODO: add spectrogram options
         settings = Settings()
-        spec = sample.get_spectrogram(spec_opts=settings.spectrogram_settings())
+        self.current_recording = Recording(file_info,
+                                           spec_opts=settings.spectrogram_settings())
+        # TODO: add slider to select duration and see complete spectrogram
+        # sample = self.current_recording.get_sample(0, 15)
+        print("height:" + str(self.lbl_spectro.height()))
+        print("width:" + str(self.lbl_spectro.width()))
+        self.update_spectrogram()
+        self.time_slider.setMaximum(self.current_recording.duration)
+        # update the time label
+        self.update_duration_lbl()
+        # im.show()
+
+    def update_spectrogram(self):
+        # TODO: add spectrogram options
+        max_duration = self.lbl_spectro.width() * 1.5 / 299
+        spec = self.current_recording.spectrogram.get_subspec(self.time_slider.value(), max_duration)
         # TODO: externalize ratio pixel/duration
         # TODO: save image somewhere
-        im = qApp.imgen.spec2img(spec.spec, size=(int(299 * spec.duration / 1.5), 299))
+        im = qApp.imgen.spec2img(spec, size=(
+            int(299 * max_duration / 1.5), 299))
         img = ImageQt.ImageQt(im)
         pixmap = QPixmap.fromImage(img)
         # TODO: add multiple spectrograms?
-        self.spectrogram.setPixmap(pixmap)
-        # im.show()
+        self.lbl_spectro.setPixmap(pixmap)
+        self.update_duration_lbl()
+
+    def update_duration_lbl(self):
+        duration = utils.format_s2hms(self.current_recording.duration)
+        current = utils.format_s2hms(self.time_slider.value())
+        lbl = current + "/" + duration
+        self.lbl_duration.setText(lbl)
 
     def show_folder_details(self, folder_info=None):
         if folder_info is not None:
@@ -124,28 +146,27 @@ class AudioManager(QWidget, Ui_AudioManager):
             res = qApp.recordings.df
         if not res.empty:
             total_secs = int(res["duration"].sum())
-            minutes, seconds = divmod(total_secs, 60)
-            hours, minutes = divmod(minutes, 60)
-            days, hours = divmod(hours, 24)
+            time = utils.time_from_secs(total_secs)
             duration = ""
-            if days > 0:
-                duration += "{} days ".format(days)
-            if hours > 0:
-                duration += "{} hours ".format(hours)
-            if minutes > 0:
-                duration += "{} minutes ".format(minutes)
-            if seconds > 0:
-                duration += "{} seconds ".format(seconds)
+            if time.days > 0:
+                duration += "{} days ".format(time.days)
+            if time.hours > 0:
+                duration += "{} hours ".format(time.hours)
+            if time.minutes > 0:
+                duration += "{} minutes ".format(time.minutes)
+            if time.seconds > 0:
+                duration += "{} seconds ".format(time.seconds)
         else:
             duration = "0 seconds "
 
         # total_duration = str(datetime.timedelta(seconds=total_secs))
-        self.spectrogram.setText("{} recordings representing {}of audio found!".format(res.shape[0], duration))
+        self.lbl_spectro.setText(
+            "{} recordings representing {}of audio found!".format(res.shape[0], duration))
 
     def folder_query(self, folder_info):
         return(' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()]))
 
-    def recording_query():
+    def recording_query(self):
         return()
 
     def compute_ACI(self):
@@ -163,7 +184,8 @@ class AudioManager(QWidget, Ui_AudioManager):
             else:
                 sel_recs.append(data["Index"])
         # If folders are selected, selected all recordings inside
-        tmp = [qApp.recordings.query(self.folder_query(folder)) for folder in sel_folders]
+        tmp = [qApp.recordings.query(self.folder_query(folder))
+               for folder in sel_folders]
         # Get individually selected recordings
         tmp.append(qApp.get_recordings().iloc[sel_recs])
         # Get one list of unique selected files
