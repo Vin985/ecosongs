@@ -1,5 +1,4 @@
 import librosa
-import pandas as pd
 
 from audio import sample
 from db.models import BaseModel, TableModel
@@ -51,11 +50,11 @@ class Recording(BaseModel, sample.Sample):
     #     self.audio = None
 
     # TODO: load from file_path only
-    def __init__(self, attrs):
+    def __init__(self, attributes, spec_opts=None):
         # TODO: load from path
         # super(self.__class__, self).__init__(*args, **kwargs)
-        BaseModel.__init__(self, attrs)
-        sample.Sample.__init__(self)
+        BaseModel.__init__(self, attributes)
+        sample.Sample.__init__(self, spec_opts=spec_opts)
 
     # @property
     # def name(self):
@@ -70,6 +69,11 @@ class Recording(BaseModel, sample.Sample):
     #     Docstring for name property
     #     """
     #     self.model.name = name
+
+    def create_spectrogram(self, spec_opts=None):
+        if not self.audio.size:
+            self.load_audio()
+        return super().create_spectrogram(spec_opts)
 
     def load_audio(self, sr=None):
         # TODO: externalize supported types
@@ -104,4 +108,4 @@ class Recording(BaseModel, sample.Sample):
     def __str__(self):
         string = "Audio file of type {0.ext}, with id {0.id} recorded on {0.date}".format(
             self)
-        return (string)
+        return string

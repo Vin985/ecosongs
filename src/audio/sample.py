@@ -3,6 +3,7 @@ import numpy as np
 import scipy.ndimage as ndimage
 
 from analyse.spectrogram import Spectrogram
+import logging
 
 # Remove single spots from an image
 
@@ -19,11 +20,13 @@ def filter_isolated_cells(array, struct):
 
 
 class Sample:
-    def __init__(self, audio=np.array([]), sr=None, start=0, duration=None):
+    def __init__(self, audio=np.array([]), sr=None, start=0, duration=None,
+                 spec_opts=None):
         self.audio = audio
         self.sr = sr
         self.start = start
-        self.spectrogram = None
+        self._spectrogram = None
+        self.spectrogram_options = spec_opts or {}
         if duration:
             self.duration = duration
 
@@ -41,12 +44,15 @@ class Sample:
     #     """
     #     return round(self.length / self.sr, 2)
 
-    def get_spectrogram(self, spec_opts={}):
-        if not self.audio.size:
-            self.load_audio()
-        if not self.spectrogram:
-            self.spectrogram = Spectrogram(self, **spec_opts)
-        return (self.spectrogram)
+    @property
+    def spectrogram(self):
+        return self._spectrogram or self.create_spectrogram()
+
+    def create_spectrogram(self, spec_opts=None):
+        if not spec_opts:
+            spec_opts = self.spectrogram_options
+        self._spectrogram = Spectrogram(self, **spec_opts)
+        return self._spectrogram
 
     # def get_ACI(self, time_step=None, unit="seconds"):
     #     self.ACI = ACI(self.get_spectrogram(), time_step, unit)
@@ -166,14 +172,14 @@ class Sample:
     def has_bird(self, imgen, threshold=16):
 
         # working copy
-        #img = self.get_spectrogram().spec.copy()
+        # img = self.get_spectrogram().spec.copy()
         # img = imgen.create_composite_part(self.get_spectrogram(),
         #                                   (255, 0, 0)).copy()
         img = imgen.spec2img(self.get_spectrogram().spec, (255, 0, 0))
         img = img.convert('L')
         img = np.asarray(img).copy()
         # STEP 1: Median blur
-        #img = cv2.medianBlur(img, 5)
+        # img = cv2.medianBlur(img, 5)
         # cv2.imshow('SPEC', img)
         # cv2.waitKey(-1)
 
