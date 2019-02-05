@@ -1,4 +1,4 @@
-from analyse.indexes import ACITable
+from analysis.indexes import ACITable
 from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dbmanager.fileimport import FileImport
 from gui.widgets.dbmanager.ui.dbexplorer_ui import Ui_DBExplorer

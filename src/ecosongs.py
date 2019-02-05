@@ -3,7 +3,7 @@ import logging
 from PySide2.QtWidgets import QApplication
 
 import db.dbutils as dbutils
-from analyse.image import ImageGenerator
+from analysis.image import ImageGenerator
 from audio.recording import RecordingTable
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings

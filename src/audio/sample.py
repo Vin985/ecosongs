@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import scipy.ndimage as ndimage
 
-from analyse.spectrogram import Spectrogram
+from analysis.spectrogram import Spectrogram
 import logging
 
 # Remove single spots from an image

@@ -3,7 +3,7 @@ from PIL import ImageQt
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
 
-from analyse.indexes import ACI, ACITable
+from analysis.indexes import ACI, ACITable
 from audio.recording import Recording
 from gui.threads.QIndexThread import QIndexThread
 from gui.utils.settings import Settings

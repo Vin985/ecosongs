@@ -5,9 +5,9 @@ import librosa
 import numpy as np
 
 import soundfile as sf
-from analyse.image import ImageGenerator
-from analyse.indexes import ACI
-from analyse.spectrogram import SpectrogramGenerator
+from analysis.image import ImageGenerator
+from analysis.indexes import ACI
+from analysis.spectrogram import SpectrogramGenerator
 from audio.recording import Recording
 from db import models
 

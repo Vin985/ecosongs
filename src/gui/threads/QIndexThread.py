@@ -2,7 +2,7 @@ import concurrent.futures
 import time
 import traceback
 
-import analyse.indexes as indexes
+import analysis.indexes as indexes
 from PySide2 import QtCore
 
 
