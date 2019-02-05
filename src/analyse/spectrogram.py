@@ -47,6 +47,12 @@ class Spectrogram:
 
         return spec
 
+    def get_subspec(self, start, duration):
+        fps = self.spec.shape[1] / self.duration
+        start_frame = int(start * fps)
+        end_frame = int(start_frame + duration * fps)
+        return self.spec[..., start_frame:end_frame]
+
     def __remove_noise(self, spectro):
         """
         Compute a new spectrogram which is "Noise Removed".
