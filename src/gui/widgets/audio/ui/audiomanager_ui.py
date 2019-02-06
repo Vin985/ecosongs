@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'audiomanager.ui',
 # licensing of 'audiomanager.ui' applies.
 #
-# Created: Tue Feb  5 14:39:20 2019
+# Created: Tue Feb  5 16:57:58 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,6 +96,8 @@ class Ui_AudioManager(object):
         self.horizontalLayout_2.addWidget(self.splitter)
         self.action_ACI = QtWidgets.QAction(AudioManager)
         self.action_ACI.setObjectName("action_ACI")
+        self.action_detect_songs = QtWidgets.QAction(AudioManager)
+        self.action_detect_songs.setObjectName("action_detect_songs")
 
         self.retranslateUi(AudioManager)
         QtCore.QMetaObject.connectSlotsByName(AudioManager)
@@ -110,4 +112,5 @@ class Ui_AudioManager(object):
         self.lbl_spectro.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
         self.year.setText(QtWidgets.QApplication.translate("AudioManager", "TextLabel", None, -1))
         self.action_ACI.setText(QtWidgets.QApplication.translate("AudioManager", "Compute ACI", None, -1))
+        self.action_detect_songs.setText(QtWidgets.QApplication.translate("AudioManager", "Detect bird songs", None, -1))
 

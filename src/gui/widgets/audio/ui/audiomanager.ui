@@ -170,6 +170,11 @@
     <string>Compute ACI</string>
    </property>
   </action>
+  <action name="action_detect_songs">
+   <property name="text">
+    <string>Detect bird songs</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
