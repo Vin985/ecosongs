@@ -2,15 +2,15 @@ import pandas as pd
 from PIL import ImageQt
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
-
-from analysis.indexes import ACI, ACITable
-from audio.recording import Recording
-from gui.threads.QIndexThread import QIndexThread
-from gui.utils.settings import Settings
-from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
-from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
+from PySide2.QtCore import QThread, Slot
 
 import utils.commons as utils
+from analysis.indexes import ACI, ACITable
+from audio.recording import Recording
+from gui.utils.settings import Settings
+from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
+from gui.widgets.audio.QAudioAnalyzer import QAudioAnalyzer
+from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 
 
 def get_ACI(rec):
@@ -26,16 +26,17 @@ class AudioManager(QWidget, Ui_AudioManager):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.init_tree()
-        self.index_thread = QIndexThread()
-        self.link_events()
-        self.add_actions()
+        self.audio_analyzer = QAudioAnalyzer()
         self.current_recording = None
+
+        self.init_tree()
+        self.link_events()
+        self.init_thread()
 
         # aci_table = TableModel(ACI.COLUMNS, df=pd.DataFrame(),
         #                        dbmanager=qApp.dbmanager, table="ACI")
-        aci_table = ACITable(dbmanager=qApp.dbmanager)
-        print(aci_table.df)
+        # aci_table = ACITable(dbmanager=qApp.dbmanager)
+        # print(aci_table.df)
         # aci_table.save()
 
         # recs = qApp.get_recordings()
@@ -47,8 +48,6 @@ class AudioManager(QWidget, Ui_AudioManager):
         # aci_table.save()
 
         self.tree_view.setRootIsDecorated(True)
-        # self.treeView.setUniformRowHeights(True)
-        # self.treeView.setHeaderHidden(True)
 
     def init_tree(self):
         recordings = qApp.get_recordings()
@@ -57,35 +56,41 @@ class AudioManager(QWidget, Ui_AudioManager):
         model = RecordingsTreeModel(self, recordings, categories=categories)
         self.tree_view.setModel(model)
         self.tree_view.expand(model.item(0, 0).index())
+        self.add_actions()
         self.show_folder_details()
 
     def add_actions(self):
         self.tree_view.addAction(self.action_ACI)
+        self.tree_view.addAction(self.action_detect_songs)
 
     def link_events(self):
         self.tree_view.selectionModel().selectionChanged.connect(self.tree_selection_changed)
+
         self.action_ACI.triggered.connect(self.compute_ACI)
-        self.index_thread.progression.connect(self.update_progression)
-        self.index_thread.finished.connect(self.get_results)
+        self.action_detect_songs.triggered.connect(self.detect_songs)
+
         self.time_slider.valueChanged.connect(self.update_spectrogram)
 
-    def get_results(self):
-        print("finished")
+        self.audio_analyzer.update_progress.connect(self.update_progress)
+        # self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
 
-        print(self.index_thread.res)
-        acis = pd.DataFrame(self.index_thread.res)
-        print(acis)
-        # if not acis.empty:
-        #     aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
-        #     aci_table.add(acis, save=True)
-        # acis = pd.DataFrame([aci.to_dict() for aci in self.index_thread.res])
-        # for item in self.index_thread.res:
-        #     print(item)
-        # print(self.index_thread.res)
+    def init_thread(self):
+        self.worker_thread = QThread()
+        self.audio_analyzer.moveToThread(self.worker_thread)
+        self.worker_thread.finished.connect(self.audio_analyzer.deleteLater)
+        self.worker_thread.start()
 
-    def update_progression(self, progress):
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+        menu.addAction(self.action_ACI)
+        menu.addAction(self.action_detect_songs)
+        menu.exec_(event.globalPos())
+
+    @Slot()
+    def update_progress(self, progress):
         print(progress)
 
+    @Slot()
     def tree_selection_changed(self, new, old):
         # TODO: handle multiple selection
         if not new.indexes():
@@ -99,29 +104,12 @@ class AudioManager(QWidget, Ui_AudioManager):
             # item is recording
             self.show_recording_details(item.data())
 
-    def show_recording_details(self, file_info):
-        # TODO: setting to enable/disable display on each selection change
-        # TODO: improve performance to avoid reloading everything.
-        # TODO: add generators to qApp?
-
-        # TODO: add recording object somewhere
-        settings = Settings()
-        self.current_recording = Recording(file_info,
-                                           spec_opts=settings.spectrogram_settings())
-        # TODO: add slider to select duration and see complete spectrogram
-        # sample = self.current_recording.get_sample(0, 15)
-        print("height:" + str(self.lbl_spectro.height()))
-        print("width:" + str(self.lbl_spectro.width()))
-        self.update_spectrogram()
-        self.time_slider.setMaximum(self.current_recording.duration)
-        # update the time label
-        self.update_duration_lbl()
-        # im.show()
-
+    @Slot()
     def update_spectrogram(self):
         # TODO: add spectrogram options
         max_duration = self.lbl_spectro.width() * 1.5 / 299
-        spec = self.current_recording.spectrogram.get_subspec(self.time_slider.value(), max_duration)
+        spectro = self.current_recording.spectrogram
+        spec = spectro.get_subspec(self.time_slider.value(), max_duration)
         # TODO: externalize ratio pixel/duration
         # TODO: save image somewhere
         im = qApp.imgen.spec2img(spec, size=(
@@ -138,39 +126,35 @@ class AudioManager(QWidget, Ui_AudioManager):
         lbl = current + "/" + duration
         self.lbl_duration.setText(lbl)
 
-    def show_folder_details(self, folder_info=None):
-        if folder_info is not None:
-            query = self.folder_query(folder_info)
-            res = qApp.recordings.query(query)
-        else:
-            res = qApp.recordings.df
-        if not res.empty:
-            total_secs = int(res["duration"].sum())
-            time = utils.time_from_secs(total_secs)
-            duration = ""
-            if time.days > 0:
-                duration += "{} days ".format(time.days)
-            if time.hours > 0:
-                duration += "{} hours ".format(time.hours)
-            if time.minutes > 0:
-                duration += "{} minutes ".format(time.minutes)
-            if time.seconds > 0:
-                duration += "{} seconds ".format(time.seconds)
-        else:
-            duration = "0 seconds "
-
-        # total_duration = str(datetime.timedelta(seconds=total_secs))
-        self.lbl_spectro.setText(
-            "{} recordings representing {}of audio found!".format(res.shape[0], duration))
-
-    def folder_query(self, folder_info):
-        return(' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()]))
-
-    def recording_query(self):
-        return()
-
+    @Slot()
     def compute_ACI(self):
-        # default value for result containers
+        # Get list of all selected recordings
+        recs = self.get_selected_recordings()
+
+        # Get spectrogram settings for computing ACIs
+        # TODO: add menu for this
+        settings = Settings()
+        spec_opts = settings.spectrogram_settings()
+        spec_opts.update({'to_db': False, 'remove_noise': False})
+
+        # Compute ACIs
+        acis = self.audio_analyzer.compute_index(recs, "ACI", spec_opts=spec_opts)
+        acis = pd.DataFrame(acis)
+        print(acis)
+        # if not acis.empty:
+        #     aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
+        #     aci_table.add(acis, save=True)
+        # acis = pd.DataFrame([aci.to_dict() for aci in self.analysis_thread.res])
+        # for item in self.analysis_thread.res:
+        #     print(item)
+        # print(self.analysis_thread.res)
+
+    @Slot()
+    def detect_songs(self):
+        recs = self.get_selected_recordings()
+        print("detecting songs")
+
+    def get_selected_recordings(self):
         res = None
         sel_recs = []
         sel_folders = []
@@ -193,29 +177,44 @@ class AudioManager(QWidget, Ui_AudioManager):
         res = res[res["duration"] > 0]
         # Load files if not already in memory
         recs = qApp.load_recordings(res.index.values)
+        return recs
 
-        # Get list of all loaded recordings
-        # Compute ACIs
-        # TODO: clean up!
+    def show_folder_details(self, folder_info=None):
+        if folder_info is not None:
+            query = self.folder_query(folder_info)
+            res = qApp.recordings.query(query)
+        else:
+            res = qApp.recordings.df
+        if not res.empty:
+            total_secs = int(res["duration"].sum())
+            time = utils.time_from_secs(total_secs)
+            duration = ""
+            if time.days > 0:
+                duration += "{} days ".format(time.days)
+            if time.hours > 0:
+                duration += "{} hours ".format(time.hours)
+            if time.minutes > 0:
+                duration += "{} minutes ".format(time.minutes)
+            if time.seconds > 0:
+                duration += "{} seconds ".format(time.seconds)
+        else:
+            duration = "0 seconds "
+
+        self.lbl_spectro.setText(
+            "{} recordings representing {}of audio found!".format(res.shape[0], duration))
+
+    def show_recording_details(self, file_info):
+        # TODO: setting to enable/disable display on each selection change
+        # TODO: improve performance to avoid reloading everything.
+        # TODO: add generators to qApp?
         settings = Settings()
-        spec_opts = settings.spectrogram_settings()
-        spec_opts.update({'to_db': False, 'remove_noise': False})
-        self.index_thread.spec_opts = spec_opts
-        self.index_thread.recordings = recs
-        self.index_thread.start()
-        # pool = Pool(5)
-        # acis = pool.map(ACI, recs)
-        # pool.close()
-        # print(acis)
+        self.current_recording = Recording(file_info,
+                                           spec_opts=settings.spectrogram_settings())
+        print("height:" + str(self.lbl_spectro.height()))
+        print("width:" + str(self.lbl_spectro.width()))
+        self.update_spectrogram()
+        self.time_slider.setMaximum(self.current_recording.duration)
+        self.update_duration_lbl()
 
-        # folder_query = {key: [] for key in idx.model().categories}
-        # for dic in sel_folders:
-        #     for k, v in dic.items():
-        #         if v not in folder_query[k]:
-        #             folder_query[k].append(v)
-        # print(folder_query)
-
-    def contextMenuEvent(self, event):
-        menu = QMenu(self)
-        menu.addAction(self.action_ACI)
-        menu.exec_(event.globalPos())
+    def folder_query(self, folder_info):
+        return(' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()]))

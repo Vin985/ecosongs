@@ -3,12 +3,12 @@ import numpy as np
 from db.models import BaseModel, TableModel
 
 
-def compute_index(index_type, *args, **kwargs):
+def compute_index(recording, index_type, *args, **kwargs):
     print(args)
     print(kwargs)
     index = globals()[index_type]
     if index:
-        idx = index(*args, **kwargs)
+        idx = index(recording=recording, *args, **kwargs)
         return idx.compute()
     return()
 
@@ -45,7 +45,7 @@ class ACI(AudioIndex):
             if recording:
                 print("Computing ACI for:" + recording.path)
             if not spectro:
-                spectro = recording.get_spectrogram(spec_opts)
+                spectro = recording.create_spectrogram(spec_opts)
             self.unit = unit
             self.time_step = time_step
             self.recording_id = recording.id
