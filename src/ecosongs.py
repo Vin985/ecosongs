@@ -21,13 +21,11 @@ class Ecosongs(QApplication):
         return self.recordings.load_recordings(indexes)
 
     def __init__(self, argv):
-        print(sys.argv[0])
         super().__init__(argv)
         self.setOrganizationName("ecosongs")
         self.setOrganizationDomain("CRCEco")
         self.setApplicationName("ecosongs")
         settings = Settings()
-        print(settings.db_path)
         self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
                                                 type=settings.db_type,
                                                 path=settings.db_path)

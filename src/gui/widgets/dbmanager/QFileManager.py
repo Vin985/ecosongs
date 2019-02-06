@@ -68,7 +68,7 @@ class QFileManager(QThreadWorker, FileManager):
         self.to_save = to_save
         self.tosave.emit()
         # TODO: check duplicates
-        #qApp.recordings.append(to_save, save=True)
+        # qApp.recordings.append(to_save, save=True)
 
     def get_new_path(self, path, old, new):
         new_path = path.replace(old, new)
