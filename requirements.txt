@@ -1,0 +1,10 @@
+PySide2
+numpy
+pandas
+librosa
+webcolors
+pillow
+opencv-python
+# tensorflow
+bidict
+tables
