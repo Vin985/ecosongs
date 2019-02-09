@@ -1,8 +1,9 @@
 import pandas as pd
+import yaml
 from PIL import ImageQt
+from PySide2.QtCore import QThread, Slot
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
-from PySide2.QtCore import QThread, Slot
 
 import utils.commons as utils
 from analysis.indexes import ACI, ACITable
@@ -28,6 +29,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.setupUi(self)
         self.audio_analyzer = QAudioAnalyzer()
         self.current_recording = None
+        self.song_classifier = None
 
         self.init_tree()
         self.link_events()
@@ -71,13 +73,14 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         self.time_slider.valueChanged.connect(self.update_spectrogram)
 
-        self.audio_analyzer.update_progress.connect(self.update_progress)
+        self.audio_analyzer.progressed.connect(self.update_progress)
         # self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
 
     def init_thread(self):
         self.worker_thread = QThread()
         self.audio_analyzer.moveToThread(self.worker_thread)
         self.worker_thread.finished.connect(self.audio_analyzer.deleteLater)
+        self.destroyed.connect(self.worker_thread.quit)
         self.worker_thread.start()
 
     def contextMenuEvent(self, event):
@@ -88,7 +91,7 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     @Slot()
     def update_progress(self, progress):
-        print(progress)
+        print("progress" + str(progress))
 
     @Slot()
     def tree_selection_changed(self, new, old):
@@ -138,6 +141,10 @@ class AudioManager(QWidget, Ui_AudioManager):
         spec_opts.update({'to_db': False, 'remove_noise': False})
 
         # Compute ACIs
+        # acis = self.audio_analyzer.compute_index(recs, "ACI", spec_opts=spec_opts)
+        # acis = pd.DataFrame(acis)
+        # print(acis)
+
         acis = self.audio_analyzer.compute_index(recs, "ACI", spec_opts=spec_opts)
         acis = pd.DataFrame(acis)
         print(acis)
@@ -151,8 +158,23 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     @Slot()
     def detect_songs(self):
-        recs = self.get_selected_recordings()
         print("detecting songs")
+        recs = self.get_selected_recordings()
+        # TODO: add detection options in UI
+        model_opts = {"model_root_dir": "analysis/detection/models",
+                      "classifier": "biotic",
+                      "options_file": "analysis/detection/models/biotic/network_opts.yaml",
+                      "weights_file": "analysis/detection/models/biotic/weights_99.pkl-1"}
+        with open(model_opts["options_file"]) as f:
+            options = yaml.load(f)
+        detection_options = {'min_activity': 0.85, 'min_duration': 0.01}  # {'min_activity' : 0.6, 'min_duration' : 0}
+        print(recs[0])
+        events = self.audio_analyzer.detect_songs(recs,
+                                                  options=options,
+                                                  weight_file=model_opts["weights_file"],
+                                                  detection_options=detection_options)
+        events = pd.DataFrame(events)
+        print(events)
 
     def get_selected_recordings(self):
         res = None
@@ -217,4 +239,4 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.update_duration_lbl()
 
     def folder_query(self, folder_info):
-        return(' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()]))
+        return ' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])

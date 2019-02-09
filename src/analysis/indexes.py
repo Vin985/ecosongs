@@ -3,9 +3,25 @@ import numpy as np
 from db.models import BaseModel, TableModel
 
 
+def mp_initialize_index(index_type, spec_opts):
+    global INDEX, INDEX_OPTS
+    INDEX = index_type
+    INDEX_OPTS = spec_opts
+
+
+def mp_compute_index(recording):
+    if 'INDEX' in globals() and 'INDEX_OPTS' in globals():
+        res = compute_index(recording, index_type=INDEX, spec_opts=INDEX_OPTS)
+        return res
+    return None
+
+
+def mp_compute_index_chunk(recordings):
+    res = [mp_compute_index(rec) for rec in recordings]
+    return res
+
+
 def compute_index(recording, index_type, *args, **kwargs):
-    print(args)
-    print(kwargs)
     index = globals()[index_type]
     if index:
         idx = index(recording=recording, *args, **kwargs)
@@ -16,7 +32,6 @@ def compute_index(recording, index_type, *args, **kwargs):
 class AudioIndex(BaseModel):
 
     def __init__(self, attrs):
-        print(attrs)
         BaseModel.__init__(self, attrs)
 
     def compute(self):
@@ -32,10 +47,10 @@ class ACITable(TableModel):
 
 class ACI(AudioIndex):
 
-    # pylint: disable=too-many-instance-attributes
-
     COLUMNS = ["recording_id", "ACI", "year", "site",
                "plot", "date", "duration", "time_step", "denoised"]
+
+    # pylint: disable=too-many-instance-attributes
 
     def __init__(self, values=None, recording=None, spectro=None, time_step=5,
                  unit="seconds", spec_opts=None):
@@ -43,7 +58,7 @@ class ACI(AudioIndex):
         spec_opts = spec_opts or {}
         if not values:
             if recording:
-                print("Computing ACI for:" + recording.path)
+                print("Initializing ACI for:" + recording.path)
             if not spectro:
                 spectro = recording.create_spectrogram(spec_opts)
             self.unit = unit
@@ -58,6 +73,7 @@ class ACI(AudioIndex):
             self.duration = spectro.duration
 
     def compute(self):
+        print("Computing ACI for:" + self.site)
         if self.time_step is None:
             j_bin = self.spec.shape[1]
         else:

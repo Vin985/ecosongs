@@ -58,7 +58,7 @@ class FileImport(QWizard, Ui_FileImport):
         self.file_manager.saving.connect(self.saving_files, type=Qt.BlockingQueuedConnection)
         self.file_manager.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
         self.file_manager.filesLoaded.connect(self.show_files, type=Qt.BlockingQueuedConnection)
-        self.file_manager.update_progress.connect(self.update_progress, type=Qt.BlockingQueuedConnection)
+        self.file_manager.progressed.connect(self.update_progress, type=Qt.BlockingQueuedConnection)
         self.file_manager.tosave.connect(self.save_files)
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
