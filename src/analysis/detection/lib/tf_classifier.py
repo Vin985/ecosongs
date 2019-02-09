@@ -73,13 +73,13 @@ class TFClassifier(object):
 
     def classify(self, wavpath=None):
         """Apply the classifier"""
-
+        tic = time()
         if wavpath is not None:
             self.load_wav(wavpath, loadmethod='librosa')
             self.compute_spec()
 
         labels = np.zeros(self.spec.shape[1])
-
+        print("Took %0.3fs to load" % (time() - tic))
         tic = time()
         probas = []
         for Xb, _ in self.test_sampler([self.spec], [labels]):
