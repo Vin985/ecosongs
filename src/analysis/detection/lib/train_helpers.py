@@ -3,7 +3,7 @@ import os
 import collections
 import tensorflow as tf
 from tensorflow.contrib import slim
-from lib import minibatch_generators as mbg
+from analysis.detection.lib import minibatch_generators as mbg
 
 
 # Which parameters are used in the network generation?

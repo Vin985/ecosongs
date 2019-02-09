@@ -14,8 +14,7 @@ class Ecosongs(QApplication):
     def get_recordings(self, df=True):
         if df:
             return self.recordings.df
-        else:
-            return self.recordings.recordings
+        return self.recordings.recordings
 
     def load_recordings(self, indexes):
         return self.recordings.load_recordings(indexes)

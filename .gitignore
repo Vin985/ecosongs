@@ -9,3 +9,5 @@ results
 *.feather
 src/plots/figs
 *.csv
+.vscode
+*.lprof
