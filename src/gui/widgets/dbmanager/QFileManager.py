@@ -3,16 +3,16 @@ import os
 import time
 
 import pandas as pd
-from utils.filemanager import FileManager
-
-from audio.recording import Recording
-from gui.threads.QParallelWorker import QParallelWorker
-from gui.utils.settings import Settings
-from PySide2.QtCore import Signal
+from PySide2.QtCore import QObject, Signal
 from PySide2.QtGui import qApp
 
+from audio.recording import Recording
+from gui.threads.ParallelWorker import ParallelWorker
+from gui.utils.settings import Settings
+from utils.filemanager import FileManager
 
-class QFileManager(QParallelWorker, FileManager):
+
+class QFileManager(QObject, ParallelWorker, FileManager):
     filesLoaded = Signal()
 
     converting = Signal()
@@ -20,8 +20,20 @@ class QFileManager(QParallelWorker, FileManager):
     renaming = Signal()
     saving = Signal()
     tosave = Signal()
+    logging = Signal(str)
+    progressed = Signal(int)
+
+    def log(self, text):
+        self.logging.emit(text)
+
+    def update_progress(self, step=1):
+        if self.with_progress:
+            self.progress += step
+            print("progress: " + str(self.progress))
+            self.progressed.emit(int(self.progress/self.nitems * 100))
 
     def __init__(self):
+        QObject.__init__(self)
         QParallelWorker.__init__(self)
         settings = Settings()
         FileManager.__init__(self, sites=settings.sites_path)

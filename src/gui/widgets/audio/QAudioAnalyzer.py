@@ -1,63 +1,58 @@
+import logging
 import time
 
+import pandas as pd
+from PySide2.QtCore import QObject, Signal, Slot
+
 import analysis.detection.song_detector as song_detector
-from PySide2.QtCore import Signal
-
 import analysis.indexes as indexes
-from gui.threads.QParallelWorker import QParallelWorker
-
-from analysis.detection.lib.tf_classifier import HOP_LENGTH, TFClassifier
+from gui.threads.ParallelWorker import ParallelWorker
 
 
-class QAudioAnalyzer(QParallelWorker):
+class QAudioAnalyzer(QObject, ParallelWorker):
+    logging = Signal(str)
+    progressed = Signal(int)
+    computing = Signal()
+    done = Signal()
 
-    computing_index = Signal(str)
+    def __init__(self, recordings):
+        QObject.__init__(self)
+        ParallelWorker.__init__(self)
+        self.recordings = recordings or []
 
-    def __init__(self):
-        super().__init__()
+    def log(self, text):
+        self.logging.emit(text)
 
-    def compute_index(self, recordings, index_type, *args, spec_opts=None, **kwargs):
-        # self.computing_index.emit("")
-        start = time.time()
-        # TODO: change initializer to be able to use more indexes
-        # TODO: put chunksize as option
-        chunksize = int(len(recordings)/20)
-        if chunksize < 1:
-            chunksize = 1
-        res = self.map(recordings,
-                       indexes.mp_compute_index_chunk,
-                       initializer=indexes.mp_initialize_index,
-                       initargs=(index_type, spec_opts),
-                       multiprocess=True,
-                       chunksize_percent=20,
-                       *args, **kwargs)
-        end = time.time()
-        print("Action took: " + str(end - start))
-        return res
+    @Slot()
+    def cancel_tasks(self):
+        print("in cancel tasks")
+        self.terminate_tasks()
+        self.results = pd.DataFrame(self.results)
+        self.done.emit()
 
-    def detect_songs(self, recordings, options, weight_file, detection_options,
-                     *args, **kwargs):
-        chunksize = int(len(recordings)/20)
-        if chunksize < 1:
-            chunksize = 1
-        res = self.map(recordings,
-                       song_detector.mp_detect_songs,
-                       initializer=song_detector.mp_initialize_detector,
-                       initargs=(options, weight_file, detection_options),
-                       multiprocess=True,
-                       chunksize=chunksize,
-                       *args, **kwargs)
-        return res
+    def update_progress(self, step=1):
+        if self.with_progress:
+            self.progress += step
+            print("progress: " + str(self.progress))
+            self.progressed.emit(int(self.progress/self.nitems * 100))
 
-    def detect_songs2(self, recordings, options, weight_file, detection_options,
-                      *args, **kwargs):
-        chunksize = int(len(recordings)/20)
-        if chunksize < 1:
-            chunksize = 1
-        classifier = TFClassifier(options, weight_file)
-        res = self.map(recordings,
-                       song_detector.detect_songs,
-                       classifier=classifier,
-                       detection_options=detection_options,
-                       * args, **kwargs)
-        return res
+    @Slot()
+    def compute_index(self, index_type):
+        self.perform_analysis(indexes.mp_compute_index_chunk,
+                              initializer=indexes.mp_initialize_index,
+                              initargs=(index_type, self.options["initargs"]))
+
+    @Slot()
+    def detect_songs(self):
+        self.perform_analysis(song_detector.mp_detect_songs_chunk,
+                              initializer=song_detector.mp_initialize_detector,
+                              initargs=self.options["initargs"])
+
+    def perform_analysis(self, function, *args, **kwargs):
+        self.results = []
+        self.computing.emit()
+        if self.recordings:
+            # TODO: put chunksize as option
+            self.map(self.recordings, function, *args, **kwargs)
+        self.results = pd.DataFrame(self.results)
+        self.done.emit()
