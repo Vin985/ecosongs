@@ -1,7 +1,8 @@
+import traceback
+
 import pandas as pd
-import yaml
 from PIL import ImageQt
-from PySide2.QtCore import QThread, Slot
+from PySide2.QtCore import Slot
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
 
@@ -10,7 +11,8 @@ from analysis.indexes import ACI, ACITable
 from audio.recording import Recording
 from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
-from gui.widgets.audio.QAudioAnalyzer import QAudioAnalyzer
+from gui.widgets.audio.acidialog import AciDialog
+from gui.widgets.audio.detectordialog import DetectorDialog
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 
 
@@ -27,13 +29,13 @@ class AudioManager(QWidget, Ui_AudioManager):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.audio_analyzer = QAudioAnalyzer()
+        # self.audio_analyzer = QAudioAnalyzer()
         self.current_recording = None
         self.song_classifier = None
+        self.action_dialog = None
 
         self.init_tree()
         self.link_events()
-        self.init_thread()
 
         # aci_table = TableModel(ACI.COLUMNS, df=pd.DataFrame(),
         #                        dbmanager=qApp.dbmanager, table="ACI")
@@ -73,25 +75,13 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         self.time_slider.valueChanged.connect(self.update_spectrogram)
 
-        self.audio_analyzer.progressed.connect(self.update_progress)
         # self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
-
-    def init_thread(self):
-        self.worker_thread = QThread()
-        self.audio_analyzer.moveToThread(self.worker_thread)
-        self.worker_thread.finished.connect(self.audio_analyzer.deleteLater)
-        self.destroyed.connect(self.worker_thread.quit)
-        self.worker_thread.start()
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         menu.addAction(self.action_ACI)
         menu.addAction(self.action_detect_songs)
         menu.exec_(event.globalPos())
-
-    @Slot()
-    def update_progress(self, progress):
-        print("progress" + str(progress))
 
     @Slot()
     def tree_selection_changed(self, new, old):
@@ -133,48 +123,21 @@ class AudioManager(QWidget, Ui_AudioManager):
     def compute_ACI(self):
         # Get list of all selected recordings
         recs = self.get_selected_recordings()
-
         # Get spectrogram settings for computing ACIs
         # TODO: add menu for this
-        settings = Settings()
-        spec_opts = settings.spectrogram_settings()
-        spec_opts.update({'to_db': False, 'remove_noise': False})
+        self.action_dialog = AciDialog(recs)
+        self.action_dialog.show()
 
-        # Compute ACIs
-        # acis = self.audio_analyzer.compute_index(recs, "ACI", spec_opts=spec_opts)
-        # acis = pd.DataFrame(acis)
-        # print(acis)
-
-        acis = self.audio_analyzer.compute_index(recs, "ACI", spec_opts=spec_opts)
-        acis = pd.DataFrame(acis)
-        print(acis)
         # if not acis.empty:
         #     aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
         #     aci_table.add(acis, save=True)
         # acis = pd.DataFrame([aci.to_dict() for aci in self.analysis_thread.res])
-        # for item in self.analysis_thread.res:
-        #     print(item)
-        # print(self.analysis_thread.res)
 
     @Slot()
     def detect_songs(self):
-        print("detecting songs")
         recs = self.get_selected_recordings()
-        # TODO: add detection options in UI
-        model_opts = {"model_root_dir": "analysis/detection/models",
-                      "classifier": "biotic",
-                      "options_file": "analysis/detection/models/biotic/network_opts.yaml",
-                      "weights_file": "analysis/detection/models/biotic/weights_99.pkl-1"}
-        with open(model_opts["options_file"]) as f:
-            options = yaml.load(f)
-        detection_options = {'min_activity': 0.85, 'min_duration': 0.01}  # {'min_activity' : 0.6, 'min_duration' : 0}
-        print(recs[0])
-        events = self.audio_analyzer.detect_songs(recs,
-                                                  options=options,
-                                                  weight_file=model_opts["weights_file"],
-                                                  detection_options=detection_options)
-        events = pd.DataFrame(events)
-        print(events)
+        self.action_dialog = DetectorDialog(recs)
+        self.action_dialog.show()
 
     def get_selected_recordings(self):
         res = None
@@ -225,6 +188,15 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.lbl_spectro.setText(
             "{} recordings representing {}of audio found!".format(res.shape[0], duration))
 
+    def show_recording_info(self, infos):
+        for info in infos:
+            try:
+                label = getattr(self, "lbl_" + info)
+                value = getattr(self.current_recording, info)
+                label.setText(str(value))
+            except AttributeError as err:
+                print(traceback.format_exc())
+
     def show_recording_details(self, file_info):
         # TODO: setting to enable/disable display on each selection change
         # TODO: improve performance to avoid reloading everything.
@@ -232,8 +204,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         settings = Settings()
         self.current_recording = Recording(file_info,
                                            spec_opts=settings.spectrogram_settings())
-        print("height:" + str(self.lbl_spectro.height()))
-        print("width:" + str(self.lbl_spectro.width()))
+        self.show_recording_info(["id", "name", "path", "year"])
         self.update_spectrogram()
         self.time_slider.setMaximum(self.current_recording.duration)
         self.update_duration_lbl()
