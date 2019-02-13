@@ -18,7 +18,7 @@ def mp_compute_index(recording):
 
 def mp_compute_index_chunk(recordings):
     res = [mp_compute_index(rec) for rec in recordings]
-    return res
+    return (res, len(recordings))
 
 
 def compute_index(recording, index_type, *args, **kwargs):

@@ -1,14 +1,22 @@
+import time
+
 import numpy as np
 import pandas as pd
-import time
 
 from analysis.detection.lib.tf_classifier import HOP_LENGTH, TFClassifier
 
 
-def mp_initialize_detector(options, weight_path, detection_options):
+def mp_initialize_detector(model_options, weight_path, detection_options):
     global DETECTOR, DETECTION_OPTIONS
-    DETECTOR = TFClassifier(options, weight_path)
+    DETECTOR = TFClassifier(model_options, weight_path)
     DETECTION_OPTIONS = detection_options
+
+
+def mp_detect_songs_chunk(recordings):
+    res = []
+    for rec in recordings:
+        res += mp_detect_songs(rec)
+    return (res, len(recordings))
 
 
 def mp_detect_songs(recording):
