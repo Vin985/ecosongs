@@ -1,11 +1,15 @@
-import utils.commons as utils
+import logging
 
 from PySide2.QtCore import QSettings
+
+import utils.commons as utils
 
 
 class Settings(QSettings):
     # def __init__(self):
     #     super(self.__class__, self).__init__()
+
+    GROUP_SPECTROGRAM = "spectrogram"
 
     @property
     def spec_fft(self):
@@ -27,10 +31,17 @@ class Settings(QSettings):
     def db_path(self):
         return str(self.value("database/path", "db"))
 
-    def spectrogram_settings(self):
+    def spectrogram_settings(self, context=""):
+        group = self.GROUP_SPECTROGRAM
         res = {}
         # Spectrogram settings
-        self.beginGroup("spectrogram")
+        if context:
+            context = "/" + context
+        self.beginGroup(group + context)
+        if context and not self.childKeys():
+            logging.info("No entries found for selected context, using default group")
+            self.endGroup()
+            self.beginGroup(group)
         res["spec_window"] = self.value("window", "Hanning")
         res["n_fft"] = int(self.value("n_fft", 512))
         res["to_db"] = utils.str2bool(self.value("to_db", "True"))
