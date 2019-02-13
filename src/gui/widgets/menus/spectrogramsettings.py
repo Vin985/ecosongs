@@ -1,36 +1,42 @@
 from functools import partial
 
 import bidict
+
 from gui.utils.settings import Settings
-from gui.widgets.menus.settingspage import SettingsPage
+from gui.widgets.menus.settingswidget import SettingsWidget
 from gui.widgets.menus.ui.spectrogramsettings_ui import Ui_SpectrogramSettings
 
 
-class SpectrogramSettings(SettingsPage, Ui_SpectrogramSettings):
-
-    GROUP = "spectrogram"
+class SpectrogramSettings(SettingsWidget, Ui_SpectrogramSettings):
 
     spec_window = bidict.bidict({"Hanning": "hann"})
 
-    def __init__(self):
-        super(self.__class__, self).__init__()
+    def __init__(self, parent=None, local=False):
+        super().__init__(parent)
+        # TODO: create different settings for different indexes and all
+        # TODO: load spectrogram settings here using context?
         self.setupUi(self)
         self.init_settings()
         self.link_events()
 
-    def init_settings(self):
+    def load_settings(self):
         settings = Settings()
-        spec_opts = settings.spectrogram_settings()
-        self.combobox_scale.setCurrentIndex(self.combobox_scale.findText(spec_opts["scale"]))
-        self.combobox_fft.setCurrentIndex(self.combobox_fft.findText(str(spec_opts["n_fft"])))
-        spec_window = self.spec_window.inv[spec_opts["spec_window"]]
+        self.group = Settings.GROUP_SPECTROGRAM
+        self.settings = settings.spectrogram_settings(self.CONTEXT)
+
+    def init_settings(self):
+        if not self.settings:
+            self.load_settings()
+        self.combobox_scale.setCurrentIndex(self.combobox_scale.findText(self.settings["scale"]))
+        self.combobox_fft.setCurrentIndex(self.combobox_fft.findText(str(self.settings["n_fft"])))
+        spec_window = self.spec_window.inv[self.settings["spec_window"]]
         self.combobox_spec_window.setCurrentIndex(self.combobox_spec_window.findText(spec_window))
-        self.checkbox_to_db.setChecked(spec_opts["to_db"])
-        self.checkbox_normalize.setChecked(spec_opts["normalize"])
-        self.remove_noise.setChecked(spec_opts["remove_noise"])
-        self.lineedit_noise_N.setText(str(spec_opts["nr_N"]))
-        self.lineedit_noise_hist_rel_size.setText(str(spec_opts["nr_hist_rel_size"]))
-        self.lineedit_noise_window.setText(str(spec_opts["nr_window_smoothing"]))
+        self.checkbox_to_db.setChecked(self.settings["to_db"])
+        self.checkbox_normalize.setChecked(self.settings["normalize"])
+        self.remove_noise.setChecked(self.settings["remove_noise"])
+        self.lineedit_noise_N.setText(str(self.settings["nr_N"]))
+        self.lineedit_noise_hist_rel_size.setText(str(self.settings["nr_hist_rel_size"]))
+        self.lineedit_noise_window.setText(str(self.settings["nr_window_smoothing"]))
 
     def link_events(self):
         self.combobox_scale.currentTextChanged.connect(partial(self.update_setting, key="scale"))
@@ -45,7 +51,3 @@ class SpectrogramSettings(SettingsPage, Ui_SpectrogramSettings):
 
     def update_spec_window(self, text):
         self.update_setting("window", self.spec_window[text])
-
-    def update_setting(self, value, key):
-        settings = Settings()
-        settings.setValue(self.GROUP + "/" + key, value)
