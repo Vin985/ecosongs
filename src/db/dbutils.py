@@ -1,3 +1,4 @@
+from db.feathermanager import FeatherManager
 from db.hdf5manager import HDF5Manager
 from db.sqlite import SQLiteManager
 
@@ -9,7 +10,7 @@ from db.sqlite import SQLiteManager
 #         print("Please use a supported database")
 
 
-dbs = {"sqlite": SQLiteManager, "hdf5": HDF5Manager}
+dbs = {"sqlite": SQLiteManager, "hdf5": HDF5Manager, "feather": FeatherManager}
 
 
 def get_db_manager(database, type, *args, **kwargs):

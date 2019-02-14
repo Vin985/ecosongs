@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class DBManager(ABC):
-    def __init__(self, config):
+    def __init__(self):
         pass
 
     def save(self, table, data, update=False):
