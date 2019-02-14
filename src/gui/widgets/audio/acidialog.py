@@ -21,23 +21,10 @@ class AciDialog(AnalyzerDialog, Ui_AciDialog):
 
     def link_events(self):
         super().link_events()
-        self.btn_start.clicked.connect(self.start)
-        self.btn_cancel.clicked.connect(self.cancel)
-        self.btn_close.clicked.connect(self.accept)
-
         self.compute_index.connect(self.audio_analyzer.compute_index, type=Qt.QueuedConnection)
 
     @Slot()
-    def cancel(self):
-        self.reject()
-
-    def reset_progress(self):
-        self.progress_bar.setEnabled(True)
-        self.progress_bar.setValue(0)
-
-    @Slot()
     def start(self):
-        print("clicking start")
         spec_opts = self.spectro_settings.settings
         spec_opts.update({'to_db': False, 'remove_noise': False})
         options = {"initargs": spec_opts, "chunksize_percent": 20}
@@ -46,16 +33,7 @@ class AciDialog(AnalyzerDialog, Ui_AciDialog):
         self.started = time.time()
 
     @Slot()
-    def computing(self):
-        self.reset_progress()
-        self.btn_start.setEnabled(False)
-
-    @Slot()
     def process_results(self):
         super().process_results()
         acis = self.audio_analyzer.results
         print(acis)
-
-    @Slot()
-    def log(self, text):
-        self.lbl_progress.setText(text)

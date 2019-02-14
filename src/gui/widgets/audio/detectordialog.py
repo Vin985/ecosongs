@@ -23,20 +23,8 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
 
     def link_events(self):
         super().link_events()
-        self.btn_start.clicked.connect(self.start)
-        self.btn_cancel.clicked.connect(self.cancel)
-        self.btn_close.clicked.connect(self.close_dialog)
         self.slider_activity.valueChanged.connect(self.update_activity)
         self.detect_songs.connect(self.audio_analyzer.detect_songs, type=Qt.QueuedConnection)
-        self.cancelling.connect(self.audio_analyzer.cancel_tasks, type=Qt.QueuedConnection)
-
-    @Slot()
-    def cancel(self):
-        print("clicking cancel")
-        if self.started:
-            self.cancelling.emit()
-        else:
-            self.reject()
 
     def reset_progress(self):
         self.progress_bar.setEnabled(True)
@@ -59,23 +47,15 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
                              'min_duration': self.spin_min_duration.value()}
         options = {"initargs": (options,
                                 model_opts["weights_file"],
-                                detection_options),
-                   "chunksize_percent": 5}
+                                detection_options)}  # ,
+        # "chunksize_percent": 5}
         self.audio_analyzer.options = options
         self.detect_songs.emit()
         self.started = time.time()
 
-    @Slot()
-    def computing(self):
-        self.reset_progress()
-        self.btn_start.setEnabled(False)
 
     @Slot()
     def process_results(self):
         super().process_results()
         events = self.audio_analyzer.results
         print(events)
-
-    @Slot()
-    def log(self, text):
-        self.lbl_progress.setText(text)
