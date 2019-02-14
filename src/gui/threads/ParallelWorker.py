@@ -47,7 +47,6 @@ class ParallelWorker():
             print("progress: " + str(int(self.progress/self.nitems * 100)))
 
     def map(self, collection, func, *args, **kwargs):
-        print(self.options)
         if self.with_progress:
             self.nitems = len(collection)
             self.progress = 0
@@ -86,8 +85,6 @@ class ParallelWorker():
         else:
             chunksize = self.options["chunksize"]
 
-        print("chunks")
-        print(chunksize)
         # Create chunks
         if len(collection) > 1:
             chunks = [collection[x:x+chunksize] for x in range(0, len(collection), chunksize)]
