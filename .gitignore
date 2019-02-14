@@ -11,3 +11,4 @@ src/plots/figs
 *.csv
 .vscode
 *.lprof
+src/db/feather

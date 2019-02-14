@@ -4,6 +4,23 @@ import numpy as np
 import pandas as pd
 
 from analysis.detection.lib.tf_classifier import HOP_LENGTH, TFClassifier
+from db.models import TableModel
+
+
+class SongEventsTable(TableModel):
+    TABLE_NAME = "song_events"
+    COLUMNS = ["event_id", "recording_id", "start", "end"]
+
+    def __init__(self, df=None, dbmanager=None):
+        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+
+
+class SongsSummaryTable(TableModel):
+    TABLE_NAME = "songs_summary"
+    COLUMNS = ["recording_id", "n_events", "path", "name"]
+
+    def __init__(self, df=None, dbmanager=None):
+        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
 
 def mp_initialize_detector(model_options, weight_path, detection_options):

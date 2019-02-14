@@ -2,7 +2,9 @@ import time
 
 import yaml
 from PySide2.QtCore import Qt, Signal, Slot
+from PySide2.QtGui import qApp
 
+from analysis.detection.song_detector import SongEventsTable
 from gui.widgets.audio.analyzerdialog import AnalyzerDialog
 from gui.widgets.audio.ui.detector_dialog_ui import Ui_DetectorDialog
 
@@ -53,9 +55,10 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
         self.detect_songs.emit()
         self.started = time.time()
 
-
     @Slot()
     def process_results(self):
         super().process_results()
         events = self.audio_analyzer.results
         print(events)
+        events_table = SongEventsTable(dbmanager=qApp.feather_manager)
+        events_table.add(events, save=True)
