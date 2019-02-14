@@ -29,6 +29,7 @@ class QAudioAnalyzer(QObject, ParallelWorker):
         self.terminate_tasks()
         self.results = pd.DataFrame(self.results)
         self.done.emit()
+        self.thread().requestInterruption()
 
     def update_progress(self, step=1):
         if self.with_progress:
