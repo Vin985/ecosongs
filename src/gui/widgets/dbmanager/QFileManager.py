@@ -34,7 +34,7 @@ class QFileManager(QObject, ParallelWorker, FileManager):
 
     def __init__(self):
         QObject.__init__(self)
-        QParallelWorker.__init__(self)
+        ParallelWorker.__init__(self)
         settings = Settings()
         FileManager.__init__(self, sites=settings.sites_path)
 
