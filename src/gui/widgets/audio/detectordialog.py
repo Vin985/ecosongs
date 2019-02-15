@@ -49,8 +49,8 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
                              'min_duration': self.spin_min_duration.value()}
         options = {"initargs": (options,
                                 model_opts["weights_file"],
-                                detection_options)}  # ,
-        # "chunksize_percent": 5}
+                                detection_options),
+                   "chunksize_percent": 2}
         self.audio_analyzer.options = options
         self.detect_songs.emit()
         self.started = time.time()
@@ -60,5 +60,5 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
         super().process_results()
         events = self.audio_analyzer.results
         print(events)
-        events_table = SongEventsTable(dbmanager=qApp.feather_manager)
-        events_table.add(events, save=True)
+        events_table = SongEventsTable(events, dbmanager=qApp.feather_manager)
+        events_table.save()
