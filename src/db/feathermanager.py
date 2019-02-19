@@ -14,5 +14,6 @@ class FeatherManager(DBManager):
         return feather.read_dataframe(self.db_root + table + ".feather")
 
     def save(self, table, data, update=False):
-        print(os.getcwd())
+        if not os.path.exists(self.db_root):
+            os.makedirs(self.db_root)
         data.to_feather(self.db_root + table + ".feather")
