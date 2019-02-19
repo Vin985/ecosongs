@@ -7,8 +7,9 @@ results
 *.log
 *.Rhistory
 *.feather
-src/plots/figs
 *.csv
 .vscode
 *.lprof
 src/db/feather
+src/plots/figs
+src/plots/pdf
