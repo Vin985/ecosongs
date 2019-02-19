@@ -1,12 +1,13 @@
 import traceback
 
 import pandas as pd
-from PIL import ImageQt
+from PIL import ImageDraw, ImageQt
 from PySide2.QtCore import Slot
 from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
 
 import utils.commons as utils
+from analysis.detection.song_detector import SongEventsTable
 from analysis.indexes import ACI, ACITable
 from audio.recording import Recording
 from gui.utils.settings import Settings
@@ -97,6 +98,33 @@ class AudioManager(QWidget, Ui_AudioManager):
             # item is recording
             self.show_recording_details(item.data())
 
+    def draw_events(self, img, duration):
+        #TODO: add events table to qApp
+        events_table = SongEventsTable(dbmanager=qApp.feather_manager)
+        events = events_table.get_events(self.current_recording.id)
+        im_start = self.time_slider.value()
+        im_end = self.time_slider.value() + duration
+        current_events = events[(events.start >= im_start) & (events.start < im_end)]
+        if len(current_events.index):
+            #  img = img.convert("RGB")
+            for event in current_events.itertuples():
+                print(event)
+                # TODO: externalize color
+                draw = ImageDraw.Draw(img, "RGBA")
+                start = self.sec2pixels(event.start - self.time_slider.value())
+                end = self.sec2pixels(min(event.end, im_end) - self.time_slider.value())
+                print(start)
+                print(end)
+                draw.rectangle(((start, 0), (end, 299)), fill=(255, 255, 0, 128))
+
+        return img
+
+    def sec2pixels(self, sec, to_int=True):
+        pix = 299 * sec / 1.5
+        if to_int:
+            return int(pix)
+        return pix
+
     @Slot()
     def update_spectrogram(self):
         # TODO: add spectrogram options
@@ -105,8 +133,9 @@ class AudioManager(QWidget, Ui_AudioManager):
         spec = spectro.get_subspec(self.time_slider.value(), max_duration)
         # TODO: externalize ratio pixel/duration
         # TODO: save image somewhere
-        im = qApp.imgen.spec2img(spec, size=(
-            int(299 * max_duration / 1.5), 299))
+        im = qApp.imgen.spec2img(spec, size=(self.sec2pixels(max_duration), 299))
+        if self.checkbox_draw_events.isChecked():
+            im = self.draw_events(im, max_duration)
         img = ImageQt.ImageQt(im)
         pixmap = QPixmap.fromImage(img)
         # TODO: add multiple spectrograms?
