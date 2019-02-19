@@ -14,7 +14,7 @@ class RecordingTable(TableModel):
     def check_duplicates(self, new, replace):
         pass
 
-    def load_recordings(self, indexes):
+    def load_recordings(self, indexes, spec_opts=None):
         """Create Recording objects from indexes if they had not been loaded
         in memory before.
 
@@ -32,7 +32,8 @@ class RecordingTable(TableModel):
         to_load = [idx for idx in indexes if idx not in self.recordings]
         if to_load:
             to_load = self._df.iloc[indexes]
-            self.recordings.update({row.Index: Recording(row._asdict()) for row in to_load.itertuples(index=True)})
+            to_update = {row.Index: Recording(row._asdict(), spec_opts=spec_opts) for row in to_load.itertuples(index=True)}
+            self.recordings.update(to_update)
         return [self.recordings[idx] for idx in indexes]
 
 

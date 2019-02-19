@@ -17,8 +17,10 @@ class Ecosongs(QApplication):
             return self.recordings.df
         return self.recordings.recordings
 
-    def load_recordings(self, indexes):
-        return self.recordings.load_recordings(indexes)
+    def load_recordings(self, indexes, spec_opts=None):
+        settings = Settings()
+        spec_opts = spec_opts or settings.spectrogram_settings()
+        return self.recordings.load_recordings(indexes, spec_opts)
 
     def __init__(self, argv):
         super().__init__(argv)
