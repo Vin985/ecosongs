@@ -10,6 +10,7 @@ class Spectrogram:
                  nr_hist_rel_size=2, nr_N=0.1, nr_window_smoothing=5):
 
         self.n_fft = n_fft
+
         self.duration = sample.duration
         self.sr = sample.sr
         self.to_db = to_db
@@ -29,14 +30,14 @@ class Spectrogram:
             sample.audio, self.n_fft, hop_length=self.hop_length, window=self.window)
 
         if self.scale == "Mel":
-            spectro = librosa.feature.melspectrogram(
-                S=spectro)
+            spectro = librosa.feature.melspectrogram(S=spectro)
 
         spec = np.abs(spectro)
 
         if self.denoised:
             # TODO: check SNR to remove noise?
-            spec = self.__remove_noise(spec)
+            spec = self.remove_noise(spec, self.nr_N,
+                                     self.nr_hist_rel_size, self.nr_window_smoothing)
             spec = spec.astype("float32")
 
         if self.normalize:
@@ -53,7 +54,8 @@ class Spectrogram:
         end_frame = int(start_frame + duration * fps)
         return self.spec[..., start_frame:end_frame]
 
-    def __remove_noise(self, spectro):
+    @staticmethod
+    def remove_noise(spectro, N=0.1, hist_rel_size=2, window_smoothing=5):
         """
         Compute a new spectrogram which is "Noise Removed".
 
@@ -75,16 +77,15 @@ class Spectrogram:
 
         # Min value for the new spectrogram (preferably slightly higher than 0)
         low_value = 1.e-07
-        N = self.nr_N
 
         len_spectro_e = spectro.shape[0]
-        histo_size = int(len_spectro_e / self.nr_hist_rel_size)
+        histo_size = int(len_spectro_e / hist_rel_size)
 
         background_noise = []
         for row in spectro:
             hist, bin_edges = np.histogram(row, bins=histo_size, density=False)
 
-            ws = int(self.nr_window_smoothing / 2)
+            ws = int(window_smoothing / 2)
             hist_smooth = ([
                 np.mean(hist[i - ws:i + ws])
                 for i in range(ws, len(hist) - ws)
