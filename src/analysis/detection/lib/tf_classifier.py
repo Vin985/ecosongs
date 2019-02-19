@@ -52,7 +52,8 @@ class TFClassifier(object):
         if loadmethod == 'librosa':
             # a more correct and robust way -
             # this resamples any audio file to 22050Hz
-            self.wav, self.sample_rate = librosa.load(wavpath, 22050)
+            # TODO: downsample if higher than 22050
+            self.wav, self.sample_rate = librosa.load(wavpath, sr=None)
         elif loadmethod == 'wavfile':
             # a hack for speed - resampling is done assuming raw audio is
             # sampled at 44100Hz. Not recommended for general use.
