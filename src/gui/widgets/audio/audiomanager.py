@@ -76,6 +76,8 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         self.time_slider.valueChanged.connect(self.update_spectrogram)
 
+        self.btn_export_pdf.clicked.connect(self.export_pdf)
+
         # self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
 
     def contextMenuEvent(self, event):
@@ -108,13 +110,10 @@ class AudioManager(QWidget, Ui_AudioManager):
         if len(current_events.index):
             #  img = img.convert("RGB")
             for event in current_events.itertuples():
-                print(event)
                 # TODO: externalize color
                 draw = ImageDraw.Draw(img, "RGBA")
                 start = self.sec2pixels(event.start - self.time_slider.value())
                 end = self.sec2pixels(min(event.end, im_end) - self.time_slider.value())
-                print(start)
-                print(end)
                 draw.rectangle(((start, 0), (end, 299)), fill=(255, 255, 0, 128))
 
         return img
@@ -162,10 +161,13 @@ class AudioManager(QWidget, Ui_AudioManager):
         #     aci_table.add(acis, save=True)
         # acis = pd.DataFrame([aci.to_dict() for aci in self.analysis_thread.res])
 
+    def export_pdf(self):
+        self.detect_songs(export_pdf=True)
+
     @Slot()
-    def detect_songs(self):
+    def detect_songs(self, export_pdf=False):
         recs = self.get_selected_recordings()
-        self.action_dialog = DetectorDialog(recs)
+        self.action_dialog = DetectorDialog(recs, export_pdf)
         self.action_dialog.show()
 
     def get_selected_recordings(self):
