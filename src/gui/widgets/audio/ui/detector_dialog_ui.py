@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'detector_dialog.ui',
 # licensing of 'detector_dialog.ui' applies.
 #
-# Created: Wed Feb 13 15:26:52 2019
+# Created: Mon Feb 18 14:51:40 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,13 +29,9 @@ class Ui_DetectorDialog(object):
         self.btn_close = QtWidgets.QPushButton(DetectorDialog)
         self.btn_close.setObjectName("btn_close")
         self.horizontalLayout.addWidget(self.btn_close)
-        self.gridLayout.addLayout(self.horizontalLayout, 6, 0, 1, 3)
+        self.gridLayout.addLayout(self.horizontalLayout, 8, 0, 1, 3)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem1, 3, 0, 1, 3)
-        self.lbl_progress = QtWidgets.QLabel(DetectorDialog)
-        self.lbl_progress.setText("")
-        self.lbl_progress.setObjectName("lbl_progress")
-        self.gridLayout.addWidget(self.lbl_progress, 4, 0, 1, 1)
         self.label = QtWidgets.QLabel(DetectorDialog)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 3)
@@ -46,7 +42,7 @@ class Ui_DetectorDialog(object):
         self.progress_bar.setEnabled(False)
         self.progress_bar.setProperty("value", 0)
         self.progress_bar.setObjectName("progress_bar")
-        self.gridLayout.addWidget(self.progress_bar, 5, 0, 1, 3)
+        self.gridLayout.addWidget(self.progress_bar, 7, 0, 1, 3)
         self.slider_activity = QtWidgets.QSlider(DetectorDialog)
         self.slider_activity.setMaximum(100)
         self.slider_activity.setProperty("value", 95)
@@ -70,6 +66,18 @@ class Ui_DetectorDialog(object):
         self.spin_min_duration.setProperty("value", 0.1)
         self.spin_min_duration.setObjectName("spin_min_duration")
         self.gridLayout.addWidget(self.spin_min_duration, 2, 1, 1, 1)
+        self.checkbox_save = QtWidgets.QCheckBox(DetectorDialog)
+        self.checkbox_save.setChecked(True)
+        self.checkbox_save.setObjectName("checkbox_save")
+        self.gridLayout.addWidget(self.checkbox_save, 4, 0, 1, 1)
+        self.checkbox_overwrite = QtWidgets.QCheckBox(DetectorDialog)
+        self.checkbox_overwrite.setChecked(True)
+        self.checkbox_overwrite.setObjectName("checkbox_overwrite")
+        self.gridLayout.addWidget(self.checkbox_overwrite, 4, 1, 1, 1)
+        self.lbl_progress = QtWidgets.QLabel(DetectorDialog)
+        self.lbl_progress.setText("")
+        self.lbl_progress.setObjectName("lbl_progress")
+        self.gridLayout.addWidget(self.lbl_progress, 5, 0, 1, 2)
 
         self.retranslateUi(DetectorDialog)
         QtCore.QMetaObject.connectSlotsByName(DetectorDialog)
@@ -82,4 +90,6 @@ class Ui_DetectorDialog(object):
         self.label.setText(QtWidgets.QApplication.translate("DetectorDialog", "Detect songs in selected recordings", None, -1))
         self.label_3.setText(QtWidgets.QApplication.translate("DetectorDialog", "Minimum duration (s)", None, -1))
         self.label_2.setText(QtWidgets.QApplication.translate("DetectorDialog", "Activity level", None, -1))
+        self.checkbox_save.setText(QtWidgets.QApplication.translate("DetectorDialog", "Save Settings", None, -1))
+        self.checkbox_overwrite.setText(QtWidgets.QApplication.translate("DetectorDialog", "Replace previous results", None, -1))
 

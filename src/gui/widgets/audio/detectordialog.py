@@ -60,5 +60,6 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
         super().process_results()
         events = self.audio_analyzer.results
         print(events)
-        events_table = SongEventsTable(events, dbmanager=qApp.feather_manager)
-        events_table.save()
+        if self.checkbox_save.isChecked():
+            events_table = SongEventsTable(dbmanager=qApp.feather_manager)
+            events_table.add(events, save=True, replace=self.checkbox_overwrite.isChecked())

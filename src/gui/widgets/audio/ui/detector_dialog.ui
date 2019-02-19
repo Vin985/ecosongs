@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="6" column="0" colspan="3">
+   <item row="8" column="0" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <spacer name="horizontalSpacer">
@@ -65,13 +65,6 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="lbl_progress">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0" colspan="3">
     <widget class="QLabel" name="label">
      <property name="text">
@@ -86,7 +79,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="3">
+   <item row="7" column="0" colspan="3">
     <widget class="QProgressBar" name="progress_bar">
      <property name="enabled">
       <bool>false</bool>
@@ -136,6 +129,33 @@
      </property>
      <property name="value">
       <double>0.100000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="checkbox_save">
+     <property name="text">
+      <string>Save Settings</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QCheckBox" name="checkbox_overwrite">
+     <property name="text">
+      <string>Replace previous results</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QLabel" name="lbl_progress">
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>
