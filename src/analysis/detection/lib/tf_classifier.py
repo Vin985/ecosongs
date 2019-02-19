@@ -9,6 +9,7 @@ from librosa.feature import melspectrogram
 from scipy.io import wavfile
 
 from analysis.detection.lib import train_helpers
+from analysis.spectrogram import Spectrogram
 
 # Custom functions and classes
 sys.path.append('../lib')
@@ -53,7 +54,8 @@ class TFClassifier(object):
             # a more correct and robust way -
             # this resamples any audio file to 22050Hz
             # TODO: downsample if higher than 22050
-            self.wav, self.sample_rate = librosa.load(wavpath, sr=None)
+            sample_rate = 22050 if self.opts.resample else None
+            self.wav, self.sample_rate = librosa.load(wavpath, sr=sample_rate)
         elif loadmethod == 'wavfile':
             # a hack for speed - resampling is done assuming raw audio is
             # sampled at 44100Hz. Not recommended for general use.
@@ -67,6 +69,9 @@ class TFClassifier(object):
         # tic = time()
         spec = melspectrogram(self.wav, sr=self.sample_rate, n_fft=N_FFT,
                               hop_length=HOP_LENGTH, n_mels=N_MELS)
+
+        if self.opts.remove_noise:
+            spec = Spectrogram.remove_noise(spec)
 
         spec = np.log(self.opts.A + self.opts.B * spec)
         spec = spec - np.median(spec, axis=1, keepdims=True)
