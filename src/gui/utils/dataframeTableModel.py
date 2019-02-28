@@ -40,6 +40,14 @@ class DataFrameTableModel(QAbstractTableModel):
 
         return(self.df.columns.values[section])
 
+    def sort(self, column, order):
+        print("sorting")
+        self.layoutAboutToBeChanged.emit()
+        col = self.df.columns[column]
+        ascending = bool(order == Qt.AscendingOrder)
+        self.df.sort_values(by=col, ascending=ascending, inplace=True)
+        self.layoutChanged.emit()
+
     # def insertRows(self, position, rows=1, index=QModelIndex()):
     #     """ Insert a row into the model. """
     #     self.beginInsertRows(QModelIndex(), position, position + rows - 1)

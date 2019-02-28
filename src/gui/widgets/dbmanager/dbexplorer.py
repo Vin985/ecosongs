@@ -1,27 +1,27 @@
-from analysis.indexes import ACITable
-from gui.utils.dataframeTableModel import DataFrameTableModel
-from gui.widgets.dbmanager.fileimport import FileImport
-from gui.widgets.dbmanager.ui.dbexplorer_ui import Ui_DBExplorer
 from PySide2.QtCore import QSortFilterProxyModel
 from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QWidget
 
+from analysis.indexes import ACITable
+from gui.utils.dataframeTableModel import DataFrameTableModel
+from gui.widgets.dbmanager.fileimport import FileImport
+from gui.widgets.dbmanager.ui.dbexplorer_ui import Ui_DBExplorer
+
 
 class DBExplorer(QWidget, Ui_DBExplorer):
     def __init__(self, recordings=None):
-        super(self.__class__, self).__init__()
+        super().__init__()
         self.setupUi(self)
         recordings = qApp.get_recordings()
 
-        self.rowsFound.setText(
-            "{0} recording(s) found!".format(len(recordings)))
-        self.initTableView()
+        self.rowsFound.setText("{0} recording(s) found!".format(len(recordings)))
         self.linkEvents()
         self.addAction(self.action_ACI)
         # TODO: change the way this is loaded
         # use text to display as data
         self.comboBox_table.addItem("Recordings", "Recording")
         self.comboBox_table.addItem("ACI", "ACI")
+        self.initTableView()
 
     def linkEvents(self):
         self.dbImportButton.clicked.connect(self.showImportWindow)
@@ -50,9 +50,10 @@ class DBExplorer(QWidget, Ui_DBExplorer):
 
     def setTableModel(self, data):
         model = DataFrameTableModel(data)
-        proxyModel = QSortFilterProxyModel()
-        proxyModel.setSourceModel(model)
-        self.dbTable.setModel(proxyModel)
+        self.dbTable.setModel(model)
+        # proxyModel = QSortFilterProxyModel()
+        # proxyModel.setSourceModel(model)
+        # self.dbTable.setModel(proxyModel)
 
     def refresh_table(self):
         self.setTableModel(qApp.get_recordings())
