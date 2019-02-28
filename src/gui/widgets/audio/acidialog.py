@@ -27,7 +27,7 @@ class AciDialog(AnalyzerDialog, Ui_AciDialog):
     def start(self):
         spec_opts = self.spectro_settings.settings
         spec_opts.update({'to_db': False, 'remove_noise': False})
-        options = {"initargs": spec_opts, "chunksize_percent": 20}
+        options = {"initargs": spec_opts, "chunksize_percent": 2}
         self.audio_analyzer.options = options
         self.compute_index.emit("ACI")
         self.started = time.time()
