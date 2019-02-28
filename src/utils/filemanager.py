@@ -5,8 +5,9 @@ import zipfile
 from datetime import datetime
 
 import pandas as pd
-from utils.wav_headers import get_wav_headers
 from wac2wav import wac2wav
+
+from utils.wav_headers import get_wav_headers
 
 RECORDER_AM = "Audiomoth"
 RECORDER_SM2 = "SongMeter"
@@ -35,6 +36,8 @@ class FileManager:
                 "Ecosongs": "(.+)_(.+)_(\d{4}-\d{2}-\d{2})_(\d{2}:\d{2}:\d{2})"}
 
     def __init__(self, sites=None):
+        self.file_infos = None
+        # will be used to change site name to shortcut
         self.sites = sites
         self.root_dir = ""
         self.dest_dir = ""
@@ -42,7 +45,9 @@ class FileManager:
         self.file_paths = ""
         self.to_wav = None
         self.archive = None
-        self.options = {"recursive": True, "recorder": None, "folder": False}
+        self.options = {"recursive": True, "recorder": RECORDER_AUTO, "folder": False,
+                        "site_info": {"site": 1, "year": 0, "plot": 2},
+                        "folder_hierarchy": True}
         self.regex = {key: re.compile(value) for (key, value) in self.PATTERNS.items()}
 
     def log(self, text):
@@ -54,7 +59,6 @@ class FileManager:
         else:
             file_infos = self.extract_infos(None, self.file_paths)
         file_infos = list(filter(None, file_infos))
-        print(file_infos)
         self.file_infos = pd.DataFrame(file_infos)
         self.files_loaded()
         return self.file_infos
@@ -126,13 +130,11 @@ class FileManager:
             recorder = self.options["recorder"]
             match = self.regex[recorder].match(name)
         else:
-            recorder, match = self.recorder_from_name(name, dirpath)
+            recorder, match = self.recorder_from_name(name)
 
         res["date"] = self.extract_date(recorder, match)
         res["recorder"] = recorder
 
-        print(path)
-        print(self.options["site_info"]["site"])
         if self.options["folder_hierarchy"]:
             if len(path) < 4:
                 error = "Cannot extrapolate information from hierarchy, not enough folders"
@@ -145,12 +147,16 @@ class FileManager:
             res["year"] = self.options["site_info"]["year"]
             res["plot"] = self.options["site_info"]["plot"]
 
-        res["name"] = (res["plot"]
-                       + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
+        if res["date"]:
+            res["name"] = (res["plot"]
+                           + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
+        else:
+             res["name"] = name
+
         res["duration"] = 0
         res["sample_rate"] = 0
 
-        if (res["ext"] == "wav"):
+        if res["ext"] == "wav":
             headers = get_wav_headers(fullpath)
             if headers:
                 res["duration"] = headers["Duration"]
@@ -159,15 +165,19 @@ class FileManager:
                 # TODO: add an error instead?
                 return None
 
-        return(res)
+        return res
 
-    def recorder_from_name(self, file, path):
+    def recorder_from_name(self, file):
         for key, reg in self.regex.items():
             m = reg.match(file)
             if m:
                 return(key, m)
+        logging.warning("Name does not match any known recorder, skipping automatic detection")
+        return (None, None)
 
     def extract_date(self, recorder, match):
+        if not recorder:
+            return None
         return getattr(self, "extract_date_" + recorder.lower())(match)
 
     def extract_date_audiomoth(self, match):
