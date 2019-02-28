@@ -37,6 +37,7 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         ParallelWorker.__init__(self)
         settings = Settings()
         FileManager.__init__(self, sites=settings.sites_path)
+        self.options["multiprocess"] = False
 
     def import_files(self):
         self.converting.emit()
