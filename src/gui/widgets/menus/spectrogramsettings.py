@@ -9,6 +9,8 @@ from gui.widgets.menus.ui.spectrogramsettings_ui import Ui_SpectrogramSettings
 
 class SpectrogramSettings(SettingsWidget, Ui_SpectrogramSettings):
 
+    CONTEXT = ""
+
     spec_window = bidict.bidict({"Hanning": "hann"})
 
     def __init__(self, parent=None, local=False):

@@ -11,11 +11,11 @@ class SettingsWidget(QWidget):
         self.group = ""
         self.settings = {}
 
-    def save_setting(self, value, key, context=""):
+    def save_setting(self, key, value, context=""):
         if context:
             context = "/" + context
         settings = Settings()
-        settings.setValue(self.group + context + "/" + key, value)
+        settings.setValue(self.group + context + "/" + key, str(value))
 
     def update_setting(self, value, key):
         self.settings[key] = value

@@ -61,7 +61,7 @@ class Settings(QSettings):
         self.beginGroup("image")
         res["color_masks_str"] = list(self.value("color_masks", ["red", "lime", "blue"]))
         res["contrast"] = int(self.value("contrast", 0))
-        res["invert_colors"] = eval(self.value("invert_colors", False))
+        res["invert_colors"] = utils.str2bool(self.value("invert_colors", "False"))
         composite_ffts = list(self.value("composite_ffts", [128, 512, 2048]))
         res["composite_ffts"] = [int(i) for i in composite_ffts]
         self.endGroup()
