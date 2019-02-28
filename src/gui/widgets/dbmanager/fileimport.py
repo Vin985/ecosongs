@@ -19,7 +19,7 @@ class FileImport(QWizard, Ui_FileImport):
     list_files_convert = Signal()
 
     def __init__(self):
-        super(self.__class__, self).__init__()
+        super().__init__()
         # Initialize UI
         self.setupUi(self)
         self.init_ui()
@@ -28,6 +28,7 @@ class FileImport(QWizard, Ui_FileImport):
         self.init_thread()
         self.registerFields()
         self.linkEvents()
+        self.setWizardStyle(QWizard.ClassicStyle)
 
     def init_thread(self):
         self.worker_thread = QThread()
