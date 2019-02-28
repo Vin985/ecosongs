@@ -17,13 +17,12 @@ class RecordingsTreeModel(QStandardItemModel):
         self.clear()
         root = FolderItem("Audio")
         self.appendRow(root)
-        recordings = recordings.sort_values(categories + ["date"])
-
         self.create_model(categories, recordings, parent=root)
         # self.insertColumn(1)
 
     def create_model(self, categories, recordings, path={}, parent=None):
         if not recordings.empty:
+            recordings = recordings.sort_values(categories + ["date"])
             category = categories[0]
             groups = recordings.groupby(category, sort=False)
             for (entry, recs) in groups:
