@@ -1,11 +1,12 @@
 import os
 
-from gui.utils.dataframeTableModel import DataFrameTableModel
-from gui.widgets.dbmanager.QFileManager import QFileManager
-from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
 from PySide2.QtCore import QSortFilterProxyModel, Qt, QThread, Signal, Slot
 from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
+
+from gui.utils.dataframeTableModel import DataFrameTableModel
+from gui.widgets.dbmanager.QFileManager import QFileManager
+from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
 
 # TODO: put files in config
 
@@ -80,7 +81,7 @@ class FileImport(QWizard, Ui_FileImport):
     def initialize_page1(self):
         site_info = {}
         # get information about site from comboboxes
-        if (self.radio_site_auto.isChecked()):
+        if self.radio_site_auto.isChecked():
             for i in range(1, 4):
                 tmp = getattr(self, "combo_idx_" + str(i)).currentText().lower()
                 site_info[tmp] = i
