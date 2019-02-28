@@ -11,7 +11,7 @@
             <icon_contained_condition user_name="Done" ICON="checked"/>
         </conditional_style>
     </conditional_styles>
-    <properties show_icon_for_attributes="true" fit_to_viewport="false" edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff"/>
+    <properties fit_to_viewport="false" show_icon_for_attributes="true" edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -86,7 +86,12 @@
 </node>
 <node TEXT="load info in database" STYLE_REF="Done" ID="ID_916902358" CREATED="1522519821744" MODIFIED="1550404578429"/>
 <node TEXT="dialog widget" STYLE_REF="Done" ID="ID_533738551" CREATED="1522519852963" MODIFIED="1550404588669">
-<node TEXT="Finish all options" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_426289579" CREATED="1550404593207" MODIFIED="1550404611805"/>
+<node TEXT="Finish all options" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_426289579" CREATED="1550404593207" MODIFIED="1550404611805">
+<node TEXT="Handle duplicates" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_29302424" CREATED="1550782048283" MODIFIED="1550782134593">
+<node TEXT="Replace" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1043236784" CREATED="1550782061268" MODIFIED="1550782137400"/>
+<node TEXT="Ignore" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_25289354" CREATED="1550782128942" MODIFIED="1550782140001"/>
+</node>
+</node>
 </node>
 </node>
 <node TEXT="choose database" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" POSITION="right" ID="ID_279025532" CREATED="1522520007160" MODIFIED="1550404557364">
@@ -153,7 +158,9 @@
 </node>
 </node>
 <node TEXT="AudioManager" POSITION="left" ID="ID_763832084" CREATED="1550404049491" MODIFIED="1550404055580">
-<node TEXT="File tree view" STYLE_REF="Done" ID="ID_861506097" CREATED="1534108210971" MODIFIED="1550404447026"/>
+<node TEXT="File tree view" STYLE_REF="Done" ID="ID_861506097" CREATED="1534108210971" MODIFIED="1550404447026">
+<node TEXT="Delete recording" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1462938834" CREATED="1550782030943" MODIFIED="1550782038416"/>
+</node>
 <node TEXT="Analysis" STYLE_REF="Done" ID="ID_1751091927" CREATED="1550404067355" MODIFIED="1550404453299">
 <node TEXT="Indexes" STYLE_REF="Done" ID="ID_992375452" CREATED="1550404073185" MODIFIED="1550404456347">
 <node TEXT="ACI" STYLE_REF="Done" ID="ID_91128739" CREATED="1550404078193" MODIFIED="1550404465395"/>
@@ -166,6 +173,7 @@
 <node TEXT="Save settings" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1352675262" CREATED="1550404280253" MODIFIED="1550404406368"/>
 <node TEXT="Overwrite results" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_481332997" CREATED="1550404290161" MODIFIED="1550404429386"/>
 <node TEXT="Create parent widget" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_627361703" CREATED="1550404311453" MODIFIED="1550404426154"/>
+<node TEXT="Do not perform analysis if already exists" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1414402158" CREATED="1550781993783" MODIFIED="1550782019599"/>
 </node>
 </node>
 </node>
