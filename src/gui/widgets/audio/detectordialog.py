@@ -23,6 +23,7 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
         self.export_pdf = export_pdf
         self.btn_close.hide()
         self.lbl_activity.setText(str(self.slider_activity.value()))
+        self.lbl_end_threshold.setText(str(self.slider_end_threshold.value()))
         if export_pdf:
             self.checkbox_save.setChecked(False)
             self.checkbox_save.hide()

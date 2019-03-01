@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'detector_dialog.ui',
 # licensing of 'detector_dialog.ui' applies.
 #
-# Created: Tue Feb 19 16:40:27 2019
+# Created: Fri Mar  1 16:18:04 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -108,7 +108,7 @@ class Ui_DetectorDialog(object):
         self.label.setText(QtWidgets.QApplication.translate("DetectorDialog", "Detect songs in selected recordings", None, -1))
         self.label_3.setText(QtWidgets.QApplication.translate("DetectorDialog", "Minimum duration (s)", None, -1))
         self.label_2.setText(QtWidgets.QApplication.translate("DetectorDialog", "Activity level", None, -1))
-        self.checkbox_save.setText(QtWidgets.QApplication.translate("DetectorDialog", "Save Settings", None, -1))
+        self.checkbox_save.setText(QtWidgets.QApplication.translate("DetectorDialog", "Save results", None, -1))
         self.checkbox_overwrite.setText(QtWidgets.QApplication.translate("DetectorDialog", "Replace previous results", None, -1))
         self.label_4.setText(QtWidgets.QApplication.translate("DetectorDialog", "End threshold", None, -1))
         self.checkbox_remove_noise.setText(QtWidgets.QApplication.translate("DetectorDialog", "Remove noise", None, -1))
