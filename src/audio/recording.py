@@ -1,3 +1,5 @@
+import time
+
 import librosa
 
 from audio import sample
@@ -6,13 +8,11 @@ from db.models import BaseModel, TableModel
 
 class RecordingTable(TableModel):
     TABLE_NAME = "recordings"
+    DUPLICATE_COLUMNS = ["name", "plot", "site", "year"]
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, Recording.COLUMNS, df=df, dbmanager=dbmanager)
         self.recordings = {}
-
-    def check_duplicates(self, new, replace):
-        pass
 
     def load_recordings(self, indexes, spec_opts=None):
         """Create Recording objects from indexes if they had not been loaded

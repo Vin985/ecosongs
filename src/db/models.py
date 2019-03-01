@@ -32,6 +32,7 @@ class BaseModel:
 class TableModel():
     TABLE_NAME = ""
     COMMON_COLUMNS = ["id"]
+    DUPLICATE_COLUMNS = []
 
     def __init__(self, columns, df=None, dbmanager=None, table=None):
         # TODO: Change to externalize dbmanager
@@ -44,6 +45,9 @@ class TableModel():
             self.df = df
         else:
             self.load_data()
+
+    def __str__(self):
+        return str(self.df)
 
     def load_data(self):
         try:
@@ -102,6 +106,12 @@ class TableModel():
             self.next_id = max(table["id"]) + 1
         return table
 
+    def remove_duplicates(self, df_remove, df_keep):
+        print("removing duplicates")
+        keep_dict = df_keep[self.DUPLICATE_COLUMNS].to_dict(orient='list')
+        res = df_remove[~df_remove[self.DUPLICATE_COLUMNS].isin(keep_dict).all(axis=1)]
+        return res
+
     def add(self, new, save=False, replace=True):
         # TODO: check duplicates
         # TODO: add idx column?
@@ -110,7 +120,13 @@ class TableModel():
         # new_idx = max(self.df["id"]) + 1
         # if "id" not in new.columns:
         #     new["id"] = list(range(new_idx, new_idx + new.shape[0]))
-        self.check_duplicates(new, replace)
-        self.df = self.df.append(new, ignore_index=True, sort=True)
-        if save:
-            self.save(update=True)
+        if replace:
+            # if we replace, remove duplicates from old dataframe
+            dest = self.remove_duplicates(self.df, new)
+        else:
+            # remove duplicates from new dataframe
+            new = self.remove_duplicates(new, self.df)
+        if not new.empty:
+            self.df = dest.append(new, ignore_index=True, sort=True)
+            if save:
+                self.save(update=True)

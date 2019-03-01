@@ -222,7 +222,8 @@ class FileImport(QWizard, Ui_FileImport):
 
     def save_files(self):
         print("saving for real")
-        qApp.recordings.add(self.file_manager.to_save, save=True)
+        qApp.recordings.add(self.file_manager.to_save, save=True,
+                            replace=self.checkbox_reimport.isChecked())
         self.checkbox_done.setChecked(True)
 
     @Slot()
