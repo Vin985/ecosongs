@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'audiomanager.ui',
 # licensing of 'audiomanager.ui' applies.
 #
-# Created: Tue Feb 19 14:19:11 2019
+# Created: Thu Feb 21 15:17:03 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -122,6 +122,8 @@ class Ui_AudioManager(object):
         self.action_ACI.setObjectName("action_ACI")
         self.action_detect_songs = QtWidgets.QAction(AudioManager)
         self.action_detect_songs.setObjectName("action_detect_songs")
+        self.action_delete = QtWidgets.QAction(AudioManager)
+        self.action_delete.setObjectName("action_delete")
 
         self.retranslateUi(AudioManager)
         QtCore.QMetaObject.connectSlotsByName(AudioManager)
@@ -139,4 +141,5 @@ class Ui_AudioManager(object):
         self.checkbox_draw_events.setText(QtWidgets.QApplication.translate("AudioManager", "Draw events", None, -1))
         self.action_ACI.setText(QtWidgets.QApplication.translate("AudioManager", "Compute ACI", None, -1))
         self.action_detect_songs.setText(QtWidgets.QApplication.translate("AudioManager", "Detect bird songs", None, -1))
+        self.action_delete.setText(QtWidgets.QApplication.translate("AudioManager", "Delete", None, -1))
 

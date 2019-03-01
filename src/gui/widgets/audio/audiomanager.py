@@ -73,6 +73,7 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         self.action_ACI.triggered.connect(self.compute_ACI)
         self.action_detect_songs.triggered.connect(self.detect_songs)
+        self.action_delete.triggered.connect(self.delete)
 
         self.time_slider.valueChanged.connect(self.update_spectrogram)
 
@@ -82,6 +83,8 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
+        menu.addAction(self.action_delete)
+        menu.addSeparator()
         menu.addAction(self.action_ACI)
         menu.addAction(self.action_detect_songs)
         menu.exec_(event.globalPos())
@@ -101,7 +104,7 @@ class AudioManager(QWidget, Ui_AudioManager):
             self.show_recording_details(item.data())
 
     def draw_events(self, img, duration):
-        #TODO: add events table to qApp
+        # TODO: add events table to qApp
         events_table = SongEventsTable(dbmanager=qApp.feather_manager)
         events = events_table.get_events(self.current_recording.id)
         im_start = self.time_slider.value()
@@ -169,6 +172,11 @@ class AudioManager(QWidget, Ui_AudioManager):
         recs = self.get_selected_recordings()
         self.action_dialog = DetectorDialog(recs, export_pdf)
         self.action_dialog.show()
+
+    @Slot()
+    def delete(self):
+        print("deleting...")
+        pass
 
     def get_selected_recordings(self):
         res = None
