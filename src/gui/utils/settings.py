@@ -42,7 +42,7 @@ class Settings(QSettings):
             logging.info("No entries found for selected context, using default group")
             self.endGroup()
             self.beginGroup(group)
-        res["spec_window"] = self.value("window", "Hanning")
+        res["spec_window"] = self.value("window", "hann")
         res["n_fft"] = int(self.value("n_fft", 512))
         res["to_db"] = utils.str2bool(self.value("to_db", "True"))
         res["normalize"] = utils.str2bool(self.value("normalize", "True"))
