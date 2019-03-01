@@ -18,3 +18,7 @@ def time_from_secs(time):
 def format_s2hms(seconds):
     duration = time_from_secs(seconds)
     return "%d:%02d:%02d" % (duration.hours, duration.minutes, duration.seconds)
+
+
+def fullclassname(cls):
+    return cls.__module__ + "." + cls.__name__

@@ -6,6 +6,7 @@ import db.dbutils as dbutils
 from analysis.image import ImageGenerator
 from audio.recording import RecordingTable
 from db.feathermanager import FeatherManager
+from db.tablemanager import TableManager
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings
 
@@ -35,6 +36,8 @@ class Ecosongs(QApplication):
         self.feather_manager = FeatherManager("db/feather")
         self.recordings = RecordingTable(dbmanager=self.dbmanager)
         self.imgen = ImageGenerator(settings.image_settings())
+
+        self.tables = TableManager(self.dbmanager)
 
 
 if __name__ == '__main__':
