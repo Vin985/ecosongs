@@ -13,3 +13,5 @@ results
 src/db/feather
 src/plots/figs
 src/plots/pdf
+Ecosongs.mm
+*.pro.user
