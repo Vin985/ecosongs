@@ -10,12 +10,13 @@ from db.sqlite import SQLiteManager
 #         print("Please use a supported database")
 
 
-dbs = {"sqlite": SQLiteManager, "hdf5": HDF5Manager, "feather": FeatherManager}
+DATABASES = {"sqlite": SQLiteManager, "hdf5": HDF5Manager, "feather": FeatherManager}
 
 
-def get_db_manager(database, type, *args, **kwargs):
-    if type not in dbs:
+def get_db_manager(db_type, **kwargs):
+    print(kwargs)
+    if db_type not in DATABASES:
         raise NotImplementedError(
             "DB manager is not implemented")
 
-    return dbs[type](database, *args, **kwargs)
+    return DATABASES[db_type](**kwargs)

@@ -5,7 +5,7 @@ class DBManager(ABC):
     def __init__(self):
         pass
 
-    def save(self, table, data, update=False):
+    def save(self, table, data):
         raise NotImplementedError(
             "Function not implemented for this DB manager")
 

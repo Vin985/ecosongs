@@ -4,7 +4,6 @@ from PySide2.QtWidgets import QApplication
 
 import db.dbutils as dbutils
 from analysis.image import ImageGenerator
-from audio.recording import RecordingTable
 from db.feathermanager import FeatherManager
 from db.tablemanager import TableManager
 from gui.ecosongsUI import EcosongsUI
@@ -15,8 +14,8 @@ class Ecosongs(QApplication):
 
     def get_recordings(self, df=True):
         if df:
-            return self.recordings.df
-        return self.recordings.recordings
+            return self.tables.recordings.df
+        return self.tables.recordings.recordings
 
     def load_recordings(self, indexes, spec_opts=None):
         settings = Settings()
@@ -29,12 +28,14 @@ class Ecosongs(QApplication):
         self.setOrganizationDomain("CRCEco")
         self.setApplicationName("ecosongs")
         settings = Settings()
-        self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
-                                                type=settings.db_type,
-                                                path=settings.db_path)
+
+        db_opts = settings.group_to_dict("database")
+        self.dbmanager = dbutils.get_db_manager(**db_opts)
+        # self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
+        #                                         db_type=settings.db_type,
+        #                                         path=settings.db_path)
         # TODO: replace everything with feather?
-        self.feather_manager = FeatherManager("db/feather")
-        self.recordings = RecordingTable(dbmanager=self.dbmanager)
+        # self.recordings = RecordingTable(dbmanager=self.dbmanager)
         self.imgen = ImageGenerator(settings.image_settings())
 
         self.tables = TableManager(self.dbmanager)

@@ -12,7 +12,7 @@ class HDF5Manager (DBManager):
     def get_table(self, table):
         return self.store[table]
 
-    def save(self, table, data, update=False):
+    def save(self, table, data):
         # Ignore update for the time being as we dont append rows
         self.store.put(table, data, format=self.format)
 

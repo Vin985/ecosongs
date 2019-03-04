@@ -7,8 +7,7 @@ from PySide2.QtGui import QPixmap, qApp
 from PySide2.QtWidgets import QMenu, QWidget
 
 import utils.commons as utils
-from analysis.detection.song_detector import SongEventsTable
-from analysis.indexes import ACI, ACITable
+from analysis.indexes import ACI
 from audio.recording import Recording
 from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
@@ -105,7 +104,8 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     def draw_events(self, img, duration):
         # TODO: add events table to qApp
-        events_table = SongEventsTable(dbmanager=qApp.feather_manager)
+        events_table = qApp.tables.song_events
+        # SongEventsTable(dbmanager=qApp.feather_manager)
         events = events_table.get_events(self.current_recording.id)
         im_start = self.time_slider.value()
         im_end = self.time_slider.value() + duration
@@ -192,10 +192,11 @@ class AudioManager(QWidget, Ui_AudioManager):
             else:
                 sel_recs.append(data["Index"])
         # If folders are selected, selected all recordings inside
-        tmp = [qApp.recordings.query(self.folder_query(folder))
+        recordings = qApp.get_recordings()
+        tmp = [recordings.query(self.folder_query(folder))
                for folder in sel_folders]
         # Get individually selected recordings
-        tmp.append(qApp.get_recordings().iloc[sel_recs])
+        tmp.append(recordings.iloc[sel_recs])
         # Get one list of unique selected files
         res = pd.concat(tmp).drop_duplicates()
         res = res[res["duration"] > 0]
@@ -206,9 +207,9 @@ class AudioManager(QWidget, Ui_AudioManager):
     def show_folder_details(self, folder_info=None):
         if folder_info is not None:
             query = self.folder_query(folder_info)
-            res = qApp.recordings.query(query)
+            res = qApp.tables.recordings.query(query)
         else:
-            res = qApp.recordings.df
+            res = qApp.tables.recordings.df
         if not res.empty:
             total_secs = int(res["duration"].sum())
             time = utils.time_from_secs(total_secs)
