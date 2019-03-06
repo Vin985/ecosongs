@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import ImageDraw, ImageQt
 from PySide2.QtCore import Slot
 from PySide2.QtGui import QPixmap, qApp
-from PySide2.QtWidgets import QMenu, QWidget
+from PySide2.QtWidgets import QMenu, QMessageBox, QWidget
 
 import utils.commons as utils
 from analysis.indexes import ACI
@@ -72,7 +72,7 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         self.action_ACI.triggered.connect(self.compute_ACI)
         self.action_detect_songs.triggered.connect(self.detect_songs)
-        self.action_delete.triggered.connect(self.delete)
+        self.action_delete.triggered.connect(self.show_delete_msg)
 
         self.time_slider.valueChanged.connect(self.update_spectrogram)
 
@@ -93,6 +93,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: handle multiple selection
         if not new.indexes():
             self.show_folder_details()
+        # TODO: handle multiple selection
         index = new.indexes()[0]
         item = index.model().itemFromIndex(index)
         if item.is_folder:
@@ -154,29 +155,44 @@ class AudioManager(QWidget, Ui_AudioManager):
     def compute_ACI(self):
         # Get list of all selected recordings
         recs = self.get_selected_recordings()
-        # Get spectrogram settings for computing ACIs
-        # TODO: add menu for this
-        self.action_dialog = AciDialog(recs)
+        self.action_dialog = AciDialog(recs, parent=self)
         self.action_dialog.show()
 
-        # if not acis.empty:
-        #     aci_table = TableModel(ACI.COLUMNS, dbmanager=qApp.dbmanager, table="ACI")
-        #     aci_table.add(acis, save=True)
-        # acis = pd.DataFrame([aci.to_dict() for aci in self.analysis_thread.res])
-
+    @Slot()
     def export_pdf(self):
         self.detect_songs(export_pdf=True)
 
     @Slot()
     def detect_songs(self, export_pdf=False):
         recs = self.get_selected_recordings()
-        self.action_dialog = DetectorDialog(recs, export_pdf)
+        self.action_dialog = DetectorDialog(recs, export_pdf, parent=self)
+        self.action_dialog.setModal(True)
         self.action_dialog.show()
+
+    @Slot()
+    def show_delete_msg(self):
+        msgbox = QMessageBox(parent=self)
+        # TODO: change text based on number/selection
+        msgbox.setText("Do you want to delete these recordings?")
+        msgbox.setInformativeText(('All data related to these recordings'
+                                   ' (indexes, song detection) will also be deleted'))
+        msgbox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msgbox.setDefaultButton(QMessageBox.Cancel)
+        msgbox.setIcon(QMessageBox.Warning)
+        ret = msgbox.exec()
+        if ret == QMessageBox.Ok:
+            self.delete()
+        else:
+            print("not deleting")
 
     @Slot()
     def delete(self):
         print("deleting...")
-        pass
+        recs = self.get_selected_recordings()
+        idxs = self.tree_view.selectedIndexes()
+        idx = idxs[0]
+        self.tree_view.model().removeRow(idx.row(), idx.parent())
+        print(recs)
 
     def get_selected_recordings(self):
         res = None
@@ -186,6 +202,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         idxs = self.tree_view.selectedIndexes()
         for idx in idxs:
             item = idx.model().itemFromIndex(idx)
+            print(idx.row())
             data = item.data()
             if item.is_folder:
                 sel_folders.append(data)
@@ -196,7 +213,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         tmp = [recordings.query(self.folder_query(folder))
                for folder in sel_folders]
         # Get individually selected recordings
-        tmp.append(recordings.iloc[sel_recs])
+        tmp.append(recordings.loc[sel_recs])
         # Get one list of unique selected files
         res = pd.concat(tmp).drop_duplicates()
         res = res[res["duration"] > 0]
