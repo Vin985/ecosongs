@@ -14,7 +14,7 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
     detect_songs = Signal()
     cancelling = Signal()
 
-    def __init__(self, recordings, export_pdf=False):
+    def __init__(self, recordings, export_pdf=False, parent=None):
         super().__init__(recordings)
         self.setupUi(self)
         self.link_events()
@@ -80,5 +80,5 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
         events = self.audio_analyzer.results
         print(events)
         if self.checkbox_save.isChecked():
-            events_table = SongEventsTable(dbmanager=qApp.feather_manager)
+            events_table = qApp.tables.song_events
             events_table.add(events, save=True, replace=self.checkbox_overwrite.isChecked())
