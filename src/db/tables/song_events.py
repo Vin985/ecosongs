@@ -17,8 +17,7 @@ class SongEventsTable(TableModel):
         if replace:
             to_remove = new["recording_id"].unique()
             self.df = self.df.loc[~self.df.recording_id.isin(to_remove)]
-        self.df = self.df.append(new, ignore_index=True, sort=True)
-        self.save(update=True)
+        self.update(self.df.append(new, ignore_index=True, sort=True), save=save)
 
     def get_events(self, recording_id):
         return self.df[self.df["recording_id"] == recording_id]

@@ -41,10 +41,7 @@ class TableModel():
         self.dbmanager = dbmanager
         self.columns = self.COMMON_COLUMNS + columns
         self.next_id = 0
-        if df is not None:
-            self.df = df
-        else:
-            self.load_data()
+        self._df = df
 
     def __str__(self):
         return str(self.df)
@@ -76,20 +73,20 @@ class TableModel():
     def empty(self):
         return self._df.empty
 
-    def save(self, update=False):
-        self.dbmanager.save(self.TABLE_NAME, self._df, update)
+    def save(self):
+        self.dbmanager.save(self.TABLE_NAME, self._df)
 
     def update(self, table, save=False, **kwargs):
         self.update_table(table, **kwargs)
         if save:
-            self.save(update=True)
+            self.dbmanager.update(self.TABLE_NAME, self._df)
 
     def create(self, table, save=False):
         self._df = table
         if save:
-            self.save(update=False)
+            self.save()
 
-    def update_table(self, table):
+    def update_table(self, table, **kwargs):
         # TODO : check duplicates
         self.df = table
 
@@ -127,6 +124,5 @@ class TableModel():
             # remove duplicates from new dataframe
             new = self.remove_duplicates(new, self.df)
         if not new.empty:
-            self.df = dest.append(new, ignore_index=True, sort=True)
-            if save:
-                self.save(update=True)
+            self.update(table=dest.append(new, ignore_index=True, sort=True),
+                        save=save)
