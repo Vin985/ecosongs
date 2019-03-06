@@ -12,7 +12,7 @@ class FolderItem(QStandardItem):
 
 class RecordingsTreeModel(QStandardItemModel):
     def __init__(self, parent, recordings, categories=["site", "plot", "year"]):
-        super(self.__class__, self).__init__(1, 0, parent)
+        super().__init__(1, 0, parent)
         self.categories = categories
         self.clear()
         root = FolderItem("Audio")
