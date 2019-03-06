@@ -10,7 +10,7 @@ class AciDialog(AnalyzerDialog, Ui_AciDialog):
 
     compute_index = Signal(str)
 
-    def __init__(self, recordings):
+    def __init__(self, recordings, parent=None):
         super().__init__(recordings)
         self.setupUi(self)
         self.link_events()

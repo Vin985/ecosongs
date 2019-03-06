@@ -10,8 +10,8 @@ class AnalyzerDialog(QDialog):
 
     cancelling = Signal()
 
-    def __init__(self, recordings):
-        super().__init__()
+    def __init__(self, recordings, parent=None):
+        super().__init__(parent=parent)
         self.audio_analyzer = QAudioAnalyzer(recordings)
         self.worker_thread = QThread()
         self.started = 0
@@ -27,7 +27,7 @@ class AnalyzerDialog(QDialog):
                                                type=Qt.BlockingQueuedConnection)
         self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
         self.audio_analyzer.computing.connect(self.computing, type=Qt.BlockingQueuedConnection)
-        
+
         self.audio_analyzer.done.connect(self.process_results)
 
         self.cancelling.connect(self.audio_analyzer.cancel_tasks, type=Qt.DirectConnection)
@@ -51,7 +51,6 @@ class AnalyzerDialog(QDialog):
     def reset_progress(self):
         self.progress_bar.setEnabled(True)
         self.progress_bar.setValue(0)
-
 
     @Slot()
     def computing(self):
