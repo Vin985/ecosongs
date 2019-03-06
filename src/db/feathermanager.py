@@ -11,7 +11,9 @@ class FeatherManager(DBManager):
         self.db_root = path + "/feather/"
 
     def get_table(self, table):
-        return feather.read_dataframe(self.db_root + table + ".feather")
+        data = feather.read_dataframe(self.db_root + table + ".feather")
+        data.set_index("id", drop=False, inplace=True)
+        return data
 
     def save(self, table, data):
         if not os.path.exists(self.db_root):
