@@ -59,7 +59,7 @@ events_grouped.rename(columns={'event_id': 'n_events'}, inplace=True)
 events_grouped
 dbmanager = dbutils.get_db_manager(database="ecosongs",
                                    type="hdf5",
-                                   path="../db")
+                                   path="")
 recordings_table = RecordingTable(dbmanager=dbmanager)
 recordings = recordings_table.df
 recs = recordings[["id", "date", "name", "site", "plot"]]
