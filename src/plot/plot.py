@@ -2,7 +2,7 @@
 
 
 class Plot():
-    def __init__(self, data, opts=None):
+    def __init__(self, data=None, opts=None):
         self.plot_data = data
         self.opts = opts or {}
 

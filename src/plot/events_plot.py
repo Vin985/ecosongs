@@ -1,41 +1,48 @@
+import math
+
 import feather
 import pandas as pd
 from plotnine import (aes, annotate, facet_grid, facet_wrap, geom_errorbar,
                       geom_line, geom_point, geom_rect, geom_smooth, ggplot,
-                      scale_colour_manual, scale_x_continuous, xlab, xlim,
-                      ylab)
+                      save_as_pdf_pages, scale_colour_manual,
+                      scale_x_continuous, theme, xlab, xlim, ylab)
+from plotnine.facets.facet_wrap import n2mfrow
 
 from .plot import Plot
-from .utils import exclude_rows, join_tuple, label_x
+from .utils import exclude_rows, get_rows, join_tuple, label_x
 
 
 class EventsPlot(Plot):
 
     def __init__(self, events=None, recordings=None, plot_data=None, opts=None):
         super().__init__(plot_data, opts)
-        self.events = events
-        self.recordings = recordings
-        if not plot_data:
-            if events and recordings:
-                # create final data from events and recordings
-                self.create_plot_data(events, recordings)
-            else:
-                raise AttributeError(('Either "plot_data" with all relevant information'
-                                      ' for plotting, paths to files containing'
-                                      ' events and recordings data'
-                                      ' or dataframes with this information should be provided'))
+        self.events_raw = events
+        self.recordings_raw = recordings
+        self.events = None
+        self.plt = None
 
-    def create_plot_data(self, events, recordings):
-        self.get_events()
+    def create_plot_data(self):
+        if (not self.events_raw and not self.recordings_raw):
+            raise AttributeError(('Either "plot_data" with all relevant information'
+                                  ' for plotting, paths to files containing'
+                                  ' events and recordings data'
+                                  ' or dataframes with this information should be provided'))
+        if not self.events:
+            self.get_events()
+        plot_data = self.events.copy()
+        plot_data = self.subset_data(plot_data)
+        plot_data = self.check_data_columns(plot_data)
+        plot_data = self.aggregate(plot_data, "n_events")
+        self.plot_data = plot_data
 
     def get_data(self, name):
-        data = getattr(self, name)
+        data = getattr(self, name + "_raw")
         if not isinstance(data, pd.DataFrame):
             if isinstance(data, str):
                 # events is a path, load data file
                 path = data
                 setattr(self, name + "_path", path)
-                setattr(self, name, feather.read_dataframe(path))
+                setattr(self, name + "_raw", feather.read_dataframe(path))
             else:
                 print("Unsupported type provided for " + name)
 
@@ -43,29 +50,45 @@ class EventsPlot(Plot):
         # verify that events are correctly loaded
         self.get_data("events")
         self.get_data("recordings")
+        self.aggregate_events()
+        self.add_recording_info()
 
-        events = self.aggregate_events()
-        events = self.get_recordings_info(events)
-        events = exclude_rows(events, self.opts)
-        res = self.check_data_columns(events)
-        print(res)
-        self.plot_data = res
+    def subset_data(self, data, subset_opts=None):
+        opts = subset_opts or self.opts.get("subset", None)
+        if not opts:
+            return data
 
-    def aggregate_events(self):
+        if opts.get("include"):
+            data = get_rows(data, opts.get("include"), include=True)
+        elif opts.get("exclude"):
+            data = get_rows(data, opts.get("exclude"), include=False)
+
+        return data
+
+    def count_events(self):
+        events = self.events_raw
+        if not "n_events" in events.columns:
+            events = self.events_raw.groupby(
+                ["recording_id"], as_index=False).agg({"event_id": "count"})
+            events.rename(columns={'event_id': 'n_events'}, inplace=True)
+        self.events = events
+
+    def aggregate_events(self, by="count", on=["recording_id"]):
+
+        # agg_by = self.opts.get("agg_events_by", by)
+        # agg_on = self.opts.get("agg_events_on", on)
+        #
+        # res = self.events_raw.groupby(agg_on, as_index=False).agg({"event_id": agg_by})
+        # res.rename(columns={'event_id': 'n_events'}, inplace=True)
         # TODO change aggregation options
-        if "agg_by" in self.opts:
-            agg_by = self.opts["agg_by"]
-        else:
-            agg_by = "count"
-        res = self.events.groupby(["recording_id"], as_index=False).agg({"event_id": agg_by})
-        res.rename(columns={'event_id': 'n_events'}, inplace=True)
-        return res
+        if by == "count":
+            self.count_events()
+        # return self.events_raw
 
-    def get_recordings_info(self, events):
+    def add_recording_info(self):
         # TODO: externalize columns selection
-        recs = self.recordings[["id", "date", "name", "site", "plot"]]
-        res = events.merge(recs, left_on="recording_id", right_on="id")
-        return res
+        recs = self.recordings_raw[["id", "date", "name", "site", "plot"]]
+        self.events = self.events.merge(recs, left_on="recording_id", right_on="id")
 
     def check_data_columns(self, data):
         # if "duration" not in data:
@@ -80,27 +103,117 @@ class EventsPlot(Plot):
             data = data.loc[(data["julian"] > min_j) & (data["julian"] < max_j)]
         return data
 
-    def aggregate_mean(self, data, column):
+    def aggregate(self, data, column, group_by=["site", "julian", "type"], agg_by={"value": "mean"}):
+        group_by = self.opts.get("plt_group_by", group_by)
+        agg_by = self.opts.get("plt_agg_by", agg_by)
         data["type"] = column
         data.rename(columns={column: "value"}, inplace=True)
-        res = data.groupby(["site", "julian", "type"], as_index=False).agg({"value": "mean"})
+        res = data.groupby(group_by, as_index=False).agg(agg_by)
         # res.columns = pd.Index(join_tuple(i, "_") for i in res.columns)
         return res
 
+    def get_facet_rows(self, data, facet_by):
+        nrow = self.opts.get("facet_nrow", None)
+        ncol = self.opts.get("facet_ncol", None)
+        if not nrow and not ncol:
+            nplots = len(data[facet_by].unique())
+            nrow, ncol = n2mfrow(nplots)
+        return (nrow, ncol)
+
+    def plot_plots(self, site, plot_options, as_pdf):
+        subset = self.plot_data.loc[self.plot_data["site"] == site]
+        plots = subset["plot"].unique()
+        if len(plots) > 1:
+            if as_pdf:
+                plot_options["save"] = None
+            else:
+                plot_options["save"]["filename"] = "Plots_" + site
+            return self.__plot(subset, **plot_options)
+        return None
+
+    def plots_by_site(self, as_pdf=True, filename="plot/figs/All_sites_by_plot.pdf"):
+        self.opts["plt_group_by"] = ["site", "plot", "julian", "type"]
+        if self.plot_data is None:
+            self.create_plot_data()
+        sites = self.plot_data["site"].unique()
+        # Update plot options
+        plot_options = self.get_plot_options()
+        plot_options["colour"] = "plot"
+        plot_options["facet_by"] = "plot"
+        plots = [self.plot_plots(site, plot_options, as_pdf) for site in sites]
+        plots = [plot for plot in plots if plot is not None]
+        if as_pdf:
+            save_as_pdf_pages(plots, filename)
+
+    def get_plot_options(self):
+        opts = {}
+        opts["x"] = self.opts.get("x", "julian")
+        opts["y"] = self.opts.get("y", "value")
+        opts["colour"] = self.opts.get("colour", "site")
+        opts["lbl_x"] = self.opts.get("xlab", "Day")
+        opts["lbl_y"] = self.opts.get("ylab", "Mean number of detected songs")
+
+        opts["facet"] = self.opts.get("facet", True)
+        opts["facet_by"] = self.opts.get("facet_by", "site")
+        opts["facet_scales"] = self.opts.get("facet_scales", "free_y")
+
+        opts["error_bars"] = self.opts.get("error_bars", False)
+
+        opts["smoothed"] = self.opts.get("smoothed", True)
+        opts["points"] = self.opts.get("points", True)
+        opts["save"] = self.opts.get("save", None)
+        return opts
+
     def plot(self):
+        if self.plot_data is None:
+            self.create_plot_data()
+
+        plot_opts = self.get_plot_options()
+        # x = self.opts.get("x", "julian")
+        # y = self.opts.get("y", "value")
+        # colour = self.opts.get("colour", "site")
+        # lbl_x = self.opts.get("xlab", "Day")
+        # lbl_y = self.opts.get("ylab", "Mean number of detected songs")
+        #
+        # facet = self.opts.get("facet", True)
+        # facet_by = self.opts.get("facet_by", "site")
+        # facet_scales = self.opts.get("facet_scales", "free_y")
+        #
+        # smoothed = self.opts.get("smoothed", True)
+        # points = self.opts.get("points", True)
+        # save = self.opts.get("save", None)
+
+        self.plt = self.__plot(self.plot_data, **plot_opts)
         # cbbPalette = ["#000000", "#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"]
-        res = self.aggregate_mean(self.plot_data, "n_events")
-        self.plt = ggplot(data=res, mapping=aes(x='julian', y='value', colour='site'))
-        self.plt += xlab("Day")
-        self.plt += ylab("Mean number of detected songs")
+
+    def __plot(self, plot_data, x, y, colour, lbl_x, lbl_y, facet, facet_scales,
+               facet_by, smoothed, points, error_bars, save):
+        plt = ggplot(data=plot_data, mapping=aes(x=x, y=y, colour=colour))
+        plt += xlab(lbl_x)
+        plt += ylab(lbl_y)
         # + facet_grid("site~", scales="free")
         # + geom_line()
-        self.plt += facet_wrap("site", nrow=6, ncol=3, scales="free_y")
-        self.plt += geom_point()
-        # + geom_errorbar(aes(ymin="ACI_mean - ACI_std", ymax="ACI_mean + ACI_std"))
-        self.plt += geom_smooth(method="mavg", se=False,
-                                method_args={"window": 4, "center": True, "min_periods": 1})
+        if facet:
+            # TODO: use facet as save
+            nrow, ncol = self.get_facet_rows(plot_data, facet_by)
+            plt += facet_wrap(facet_by, nrow=nrow, ncol=ncol, scales=facet_scales)
+        if points:
+            plt += geom_point()
+        if error_bars:
+            # TODO use generic way to compute them
+            pass
+            # self.plt += geom_errorbar(aes(ymin="ACI_mean - ACI_std", ymax="ACI_mean + ACI_std"))
+        # TODO: use smooth as save
+        if smoothed:
+            plt += geom_smooth(method="mavg", se=False,
+                               method_args={"window": 4, "center": True, "min_periods": 1})
+        else:
+            plt += geom_line()
         # + scale_colour_manual(values=cbbPalette, guide=False)
-        self.plt += scale_x_continuous(labels=label_x)
+        plt += scale_x_continuous(labels=label_x)
 
-        self.plt.save("plot/figs/TEST_SECLASS.png", height=10, width=16, dpi=150)
+        plt += theme(figure_size=(15, 18), dpi=150)
+
+        if save:
+            plt.save(**save)
+        return plt

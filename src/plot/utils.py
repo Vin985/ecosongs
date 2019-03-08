@@ -16,6 +16,15 @@ def exclude_rows(data, options):
     return data
 
 
+def get_rows(data, options, include=True):
+    for column, value in options.items():
+        if include:
+            data = data.loc[data[column].isin(value)]
+        else:
+            data = data.loc[~data[column].isin(value)]
+    return data
+
+
 def label_x(dates):
     res = [(datetime.datetime(2018, 1, 1) + datetime.timedelta(x)).strftime("%d-%m") for x in dates]
     print(res)
