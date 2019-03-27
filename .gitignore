@@ -11,7 +11,7 @@ results
 .vscode
 *.lprof
 src/db/feather
-src/plots/figs
-src/plots/pdf
+src/plot/figs
+src/plot/pdf
 Ecosongs.mm
 *.pro.user

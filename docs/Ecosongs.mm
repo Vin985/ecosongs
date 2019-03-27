@@ -11,7 +11,7 @@
             <icon_contained_condition user_name="Done" ICON="checked"/>
         </conditional_style>
     </conditional_styles>
-    <properties fit_to_viewport="false" show_icon_for_attributes="true" edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff"/>
+    <properties show_icon_for_attributes="true" fit_to_viewport="false" edgeColorConfiguration="#808080ff,#ff0000ff,#0000ffff,#00ff00ff,#ff00ffff,#00ffffff,#7c0000ff,#00007cff,#007c00ff,#7c007cff,#007c7cff,#7c7c00ff"/>
 
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24.0 pt">
@@ -159,23 +159,53 @@
 </node>
 <node TEXT="AudioManager" POSITION="left" ID="ID_763832084" CREATED="1550404049491" MODIFIED="1550404055580">
 <node TEXT="File tree view" STYLE_REF="Done" ID="ID_861506097" CREATED="1534108210971" MODIFIED="1550404447026">
-<node TEXT="Delete recording" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1462938834" CREATED="1550782030943" MODIFIED="1550782038416"/>
+<node TEXT="Delete recording" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1462938834" CREATED="1550782030943" MODIFIED="1550782038416">
+<node TEXT="delete all related information" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_634488262" CREATED="1551885847066" MODIFIED="1551885892043"/>
+<node TEXT="update tree view" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_684939027" CREATED="1551885858411" MODIFIED="1551885894788">
+<node TEXT="Delete all parents if no more child" ID="ID_1192881045" CREATED="1551899214708" MODIFIED="1551899224899"/>
+</node>
+<node TEXT="Change text based on selected information" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1818669027" CREATED="1551885903628" MODIFIED="1551885917235"/>
+</node>
 </node>
 <node TEXT="Analysis" STYLE_REF="Done" ID="ID_1751091927" CREATED="1550404067355" MODIFIED="1550404453299">
 <node TEXT="Indexes" STYLE_REF="Done" ID="ID_992375452" CREATED="1550404073185" MODIFIED="1550404456347">
 <node TEXT="ACI" STYLE_REF="Done" ID="ID_91128739" CREATED="1550404078193" MODIFIED="1550404465395"/>
 </node>
-<node TEXT="Song detection" STYLE_REF="Done" ID="ID_56802018" CREATED="1550404083565" MODIFIED="1550404460194"/>
+<node TEXT="Song detection" STYLE_REF="Done" ID="ID_56802018" CREATED="1550404083565" MODIFIED="1551454864867">
+<node TEXT="Overwrite results" STYLE_REF="Done" ID="ID_481332997" CREATED="1550404290161" MODIFIED="1551454864866"/>
+<node TEXT="Save detection options" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_706731544" CREATED="1551454867635" MODIFIED="1551454879802"/>
+<node TEXT="Benchmark options" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_503146154" CREATED="1551454891490" MODIFIED="1551885938147"/>
+<node TEXT="Allow for multiple detections" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_97169668" CREATED="1551890179451" MODIFIED="1551890201023">
+<node TEXT="Add multiple process options" ID="ID_1121109467" CREATED="1552331948701" MODIFIED="1552331962426"/>
+</node>
+</node>
 </node>
 <node TEXT="GUI" ID="ID_1614658667" CREATED="1550404242986" MODIFIED="1550404244564">
 <node TEXT="Contextual Dialog" STYLE_REF="Done" ID="ID_1576334714" CREATED="1550404245720" MODIFIED="1550404505821">
 <node TEXT="AnalyserDialog" STYLE_REF="Done" ID="ID_256961476" CREATED="1550404258088" MODIFIED="1550404500244">
 <node TEXT="Save settings" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1352675262" CREATED="1550404280253" MODIFIED="1550404406368"/>
-<node TEXT="Overwrite results" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_481332997" CREATED="1550404290161" MODIFIED="1550404429386"/>
 <node TEXT="Create parent widget" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_627361703" CREATED="1550404311453" MODIFIED="1550404426154"/>
 <node TEXT="Do not perform analysis if already exists" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1414402158" CREATED="1550781993783" MODIFIED="1550782019599"/>
+<node TEXT="Add help tooltips" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1295589993" CREATED="1551454796268" MODIFIED="1551885927830"/>
 </node>
 </node>
+<node TEXT="Tree view" ID="ID_443503103" CREATED="1551885871310" MODIFIED="1551885874456">
+<node TEXT="Speed up tree loading" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1126319422" CREATED="1551885875486" MODIFIED="1551885887422"/>
+</node>
+</node>
+<node TEXT="Details" ID="ID_1158438779" CREATED="1551893778711" MODIFIED="1551893785499">
+<node TEXT="Update details when selecting more than one recording" ID="ID_1437638346" CREATED="1551893787067" MODIFIED="1551893808477"/>
+</node>
+</node>
+<node TEXT="Database management" POSITION="left" ID="ID_390417758" CREATED="1551455309238" MODIFIED="1551455401417">
+<node TEXT="Create dict of models in main app" STYLE_REF="Done" ID="ID_1632665224" CREATED="1551455319943" MODIFIED="1551885956381">
+<node TEXT="load at startup" ID="ID_1901760926" CREATED="1551455331607" MODIFIED="1551455335580"/>
+<node TEXT="Where to list all models?" ID="ID_952640881" CREATED="1551455611618" MODIFIED="1551455618449"/>
+</node>
+<node TEXT="Have one item always loaded in memory" ID="ID_1590380273" CREATED="1551455353346" MODIFIED="1551455401415">
+<node TEXT="Add" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_769053315" CREATED="1551455373955" MODIFIED="1551455415013"/>
+<node TEXT="Delete" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1554719227" CREATED="1551455385025" MODIFIED="1551455419110"/>
+<node TEXT="Update" LOCALIZED_STYLE_REF="AutomaticLayout.level,1" ID="ID_1965449311" CREATED="1551455388602" MODIFIED="1551455422515"/>
 </node>
 </node>
 </node>

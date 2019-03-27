@@ -49,7 +49,11 @@ FORMS += \
     src/gui/widgets/menus/ui/spectrogramsettings.ui \
     src/gui/widgets/menus/ui/settingsdialog.ui \
     src/gui/widgets/audio/ui/aci_dialog.ui \
-    src/gui/widgets/audio/ui/detector_dialog.ui
+    src/gui/widgets/audio/ui/detector_dialog.ui \
+    src/gui/widgets/audio/ui/detector_dialog2.ui \
+    src/gui/widgets/menus/ui/progress_dialog.ui \
+    src/gui/widgets/audio/ui/detectoroptions.ui \
+    src/gui/widgets/menus/ui/progressdialog.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \
