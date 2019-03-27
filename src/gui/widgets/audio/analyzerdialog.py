@@ -4,9 +4,10 @@ from PySide2.QtCore import Qt, QThread, Signal, Slot
 from PySide2.QtWidgets import QDialog
 
 from gui.widgets.audio.QAudioAnalyzer import QAudioAnalyzer
+from gui.widgets.menus.progressdialog import ProgressDialog
 
 
-class AnalyzerDialog(QDialog):
+class AnalyzerDialog(ProgressDialog):
 
     cancelling = Signal()
 
@@ -42,6 +43,7 @@ class AnalyzerDialog(QDialog):
 
     @Slot()
     def cancel(self):
+        print("cancel")
         if self.started:
             self.cancelling.emit()
         else:

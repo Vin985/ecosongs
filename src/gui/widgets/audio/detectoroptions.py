@@ -1,27 +1,22 @@
-import time
 
 import yaml
 from PySide2.QtCore import Qt, Signal, Slot
-from PySide2.QtGui import qApp
+from PySide2.QtWidgets import QWidget
 
-from analysis.detection.song_detector import SongEventsTable
-from gui.widgets.audio.analyzerdialog import AnalyzerDialog
-from gui.widgets.audio.ui.detector_dialog_ui import Ui_DetectorDialog
+from gui.widgets.audio.ui.detectoroptions_ui import Ui_DetectorOptions
 
 
-class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
-
+class DetectorOptions(QWidget, Ui_DetectorOptions):
     detect_songs = Signal()
     cancelling = Signal()
 
-    def __init__(self, recordings, export_pdf=False, parent=None):
-        super().__init__(recordings)
+    def __init__(self, parent, export_pdf=False):
+        super().__init__(parent)
         self.setupUi(self)
         self.link_events()
         # Set settings to local to avoid saving them unless asked
         # TODO: allow saving settings
         self.export_pdf = export_pdf
-        self.btn_close.hide()
         self.lbl_activity.setText(str(self.slider_activity.value()))
         self.lbl_end_threshold.setText(str(self.slider_end_threshold.value()))
         if export_pdf:
@@ -31,14 +26,8 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
             self.checkbox_overwrite.hide()
 
     def link_events(self):
-        super().link_events()
         self.slider_activity.valueChanged.connect(self.update_activity)
         self.slider_end_threshold.valueChanged.connect(self.update_end_threshold)
-        self.detect_songs.connect(self.audio_analyzer.detect_songs, type=Qt.QueuedConnection)
-
-    def reset_progress(self):
-        self.progress_bar.setEnabled(True)
-        self.progress_bar.setValue(0)
 
     def update_end_threshold(self, activity):
         self.lbl_end_threshold.setText(str(activity))
@@ -67,20 +56,3 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
                 "nprocess": 1,
                 "chunksize_percent": 2}
         return opts
-
-    @Slot()
-    def start(self):
-        print("clicking start")
-        # TODO: add detection options in UI
-        self.audio_analyzer.options = self.get_options()
-        self.detect_songs.emit()
-        self.started = time.time()
-
-    @Slot()
-    def process_results(self):
-        super().process_results()
-        events = self.audio_analyzer.results
-        print(events)
-        if self.checkbox_save.isChecked():
-            events_table = qApp.tables.song_events
-            events_table.add(events, save=True, replace=self.checkbox_overwrite.isChecked())

@@ -12,7 +12,7 @@ from audio.recording import Recording
 from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.acidialog import AciDialog
-from gui.widgets.audio.detectordialog import DetectorDialog
+from gui.widgets.audio.detectordialog2 import DetectorDialog
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 
 
@@ -109,18 +109,19 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: add events table to qApp
         events_table = qApp.tables.song_events
         # SongEventsTable(dbmanager=qApp.feather_manager)
-        events = events_table.get_events(self.current_recording.id)
-        im_start = self.time_slider.value()
-        im_end = self.time_slider.value() + duration
-        current_events = events[(events.start >= im_start) & (events.start < im_end)]
-        if len(current_events.index):
-            #  img = img.convert("RGB")
-            for event in current_events.itertuples():
-                # TODO: externalize color
-                draw = ImageDraw.Draw(img, "RGBA")
-                start = self.sec2pixels(event.start - self.time_slider.value())
-                end = self.sec2pixels(min(event.end, im_end) - self.time_slider.value())
-                draw.rectangle(((start, 0), (end, 299)), fill=(255, 255, 0, 128))
+        if not events_table.empty:
+            events = events_table.get_events(self.current_recording.id)
+            im_start = self.time_slider.value()
+            im_end = self.time_slider.value() + duration
+            current_events = events[(events.start >= im_start) & (events.start < im_end)]
+            if len(current_events.index):
+                #  img = img.convert("RGB")
+                for event in current_events.itertuples():
+                    # TODO: externalize color
+                    draw = ImageDraw.Draw(img, "RGBA")
+                    start = self.sec2pixels(event.start - self.time_slider.value())
+                    end = self.sec2pixels(min(event.end, im_end) - self.time_slider.value())
+                    draw.rectangle(((start, 0), (end, 299)), fill=(255, 255, 0, 128))
 
         return img
 
