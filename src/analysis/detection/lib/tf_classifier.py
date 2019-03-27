@@ -26,11 +26,16 @@ class TFClassifier(object):
         self.opts = namedtuple("opts", opts.keys())(*opts.values())
         tf.reset_default_graph()
 
-        net_options = {xx: opts[xx] for xx in train_helpers.net_params}
-        self.net = train_helpers.create_net(SPEC_HEIGHT=N_MELS, **net_options)
+        # config = tf.ConfigProto(
+        #     device_count={'GPU': 0}
+        # )
+        # self.sess = tf.Session(config=config)
 
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
+
+        net_options = {xx: opts[xx] for xx in train_helpers.net_params}
+        self.net = train_helpers.create_net(SPEC_HEIGHT=N_MELS, **net_options)
 
         train_saver = tf.train.Saver()
         print("Loading from {}".format(weights_path))
