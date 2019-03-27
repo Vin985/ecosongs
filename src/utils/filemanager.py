@@ -244,3 +244,22 @@ class FileManager:
             os.rename(old, new)
             mask = self.file_infos.path == old
             self.file_infos.loc[mask, "path"] = new
+
+    def get_new_path(self, path, old, new):
+        new_path = path.replace(old, new)
+        if self.dest_dir:
+            new_path = new_path.replace(self.root_dir, self.dest_dir)
+        return(new_path)
+
+    def create_links(self, overwrite=True):
+        cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
+        new_paths = [self.get_new_path(*row) for row in cols.itertuples(index=False)]
+        tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
+        for old, new in tmp:
+            self.log("Creating link " + new + " to " + old)
+            if not os.path.exists(os.path.dirname(new)):
+                os.makedirs(os.path.dirname(new))
+            if (os.path.exists(new) and overwrite):
+                self.log(new + " already exists. Overwriting!")
+                os.remove(new)
+            os.symlink(old, new)

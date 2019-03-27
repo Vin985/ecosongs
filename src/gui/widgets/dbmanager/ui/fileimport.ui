@@ -869,7 +869,17 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0" colspan="2">
+     <item row="4" column="0">
+      <widget class="QCheckBox" name="checkbox_link">
+       <property name="text">
+        <string>Create links to files instead of renaming</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="2">
       <widget class="QGroupBox" name="compression_options">
        <property name="enabled">
         <bool>true</bool>

@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'audiomanager.ui',
 # licensing of 'audiomanager.ui' applies.
 #
-# Created: Thu Feb 21 15:17:03 2019
+# Created: Wed Mar 13 16:21:19 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -124,6 +124,8 @@ class Ui_AudioManager(object):
         self.action_detect_songs.setObjectName("action_detect_songs")
         self.action_delete = QtWidgets.QAction(AudioManager)
         self.action_delete.setObjectName("action_delete")
+        self.action_create_links = QtWidgets.QAction(AudioManager)
+        self.action_create_links.setObjectName("action_create_links")
 
         self.retranslateUi(AudioManager)
         QtCore.QMetaObject.connectSlotsByName(AudioManager)
@@ -142,4 +144,6 @@ class Ui_AudioManager(object):
         self.action_ACI.setText(QtWidgets.QApplication.translate("AudioManager", "Compute ACI", None, -1))
         self.action_detect_songs.setText(QtWidgets.QApplication.translate("AudioManager", "Detect bird songs", None, -1))
         self.action_delete.setText(QtWidgets.QApplication.translate("AudioManager", "Delete", None, -1))
+        self.action_create_links.setText(QtWidgets.QApplication.translate("AudioManager", "Create virtual links", None, -1))
+        self.action_create_links.setToolTip(QtWidgets.QApplication.translate("AudioManager", "<html><head/><body><p>Create virtual links to files to easily have human readable filenames</p></body></html>", None, -1))
 

@@ -110,6 +110,13 @@ class FileImport(QWizard, Ui_FileImport):
     def initialize_page4(self):
         # Convert files to wac
         self.file_manager.set_args(dest="")
+        opts = {"rename": self.checkbox_rename.isChecked(),
+                "move": self.checkbox_move.isChecked(),
+                "create_links": self.checkbox_link.isChecked(),
+                "overwrite": self.checkbox_overwrite.isChecked()
+                }
+        self.file_manager.options.update(opts)
+        self.file_manager.dest_dir = self.input_dest_path.text()
         self.import_files.emit()
 
     # Called when any radio button for folder or file is selected

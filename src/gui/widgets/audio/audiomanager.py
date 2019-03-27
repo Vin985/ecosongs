@@ -73,6 +73,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.action_ACI.triggered.connect(self.compute_ACI)
         self.action_detect_songs.triggered.connect(self.detect_songs)
         self.action_delete.triggered.connect(self.show_delete_msg)
+        self.action_create_links.triggered.connect(self.show_create_links_msg)
 
         self.time_slider.valueChanged.connect(self.update_spectrogram)
 
@@ -83,6 +84,7 @@ class AudioManager(QWidget, Ui_AudioManager):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         menu.addAction(self.action_delete)
+        menu.addAction(self.action_create_links)
         menu.addSeparator()
         menu.addAction(self.action_ACI)
         menu.addAction(self.action_detect_songs)
@@ -186,6 +188,25 @@ class AudioManager(QWidget, Ui_AudioManager):
             print("not deleting")
 
     @Slot()
+    def show_create_links_msg(self):
+        msgbox = QMessageBox(parent=self)
+        # TODO: change text based on number/selection
+        msgbox.setText("Do you want to create virtual links for these files?")
+        msgbox.setInformativeText('Existing links will be overwritten')
+        msgbox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msgbox.setDefaultButton(QMessageBox.Cancel)
+        msgbox.setIcon(QMessageBox.Warning)
+        ret = msgbox.exec()
+        if ret == QMessageBox.Ok:
+            self.create_links()
+        else:
+            print("not deleting")
+
+    def create_links(self):
+        print("creating virtual links...")
+        recs = self.get_selected_recordings()
+        print(recs)
+
     def delete(self):
         print("deleting...")
         recs = self.get_selected_recordings()

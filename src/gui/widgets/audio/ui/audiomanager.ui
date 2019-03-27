@@ -235,6 +235,14 @@
     <string>Delete</string>
    </property>
   </action>
+  <action name="action_create_links">
+   <property name="text">
+    <string>Create virtual links</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create virtual links to files to easily have human readable filenames&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
