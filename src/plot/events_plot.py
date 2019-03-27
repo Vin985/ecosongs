@@ -14,10 +14,11 @@ from .utils import exclude_rows, get_rows, join_tuple, label_x
 
 class EventsPlot(Plot):
 
-    def __init__(self, events=None, recordings=None, plot_data=None, opts=None):
+    def __init__(self, events=None, recordings=None, plot_data=None, opts=None, deployment_data=None):
         super().__init__(plot_data, opts)
         self.events_raw = events
         self.recordings_raw = recordings
+        self.deployment_data_raw = deployment_data
         self.events = None
         self.plt = None
 
@@ -32,6 +33,7 @@ class EventsPlot(Plot):
         plot_data = self.events.copy()
         plot_data = self.subset_data(plot_data)
         plot_data = self.check_data_columns(plot_data)
+        plot_data = self.check_dates(plot_data)
         plot_data = self.aggregate(plot_data, "n_events")
         self.plot_data = plot_data
 
@@ -102,6 +104,21 @@ class EventsPlot(Plot):
             min_j, max_j = self.opts["julian_bounds"]
             data = data.loc[(data["julian"] > min_j) & (data["julian"] < max_j)]
         return data
+
+    def check_dates(self, plot_data):
+        if self.deployment_data_raw is not None:
+            self.get_data("deployment_data")
+            site_data = self.deployment_data_raw
+            plot = site_data.loc[site_data["plot"] == df.name]
+            res = df
+            if not plot.empty:
+                start = plot.depl_start.iloc[0]
+                end = plot.depl_end.iloc[0]
+                if not pd.isnull(start):
+                    res = df.loc[(df["date"] > start) & (df["date"] < end)]
+                res["lat"] = plot.lat.iloc[0]
+                res["lon"] = plot.lon.iloc[0]
+        return plot_data
 
     def aggregate(self, data, column, group_by=["site", "julian", "type"], agg_by={"value": "mean"}):
         group_by = self.opts.get("plt_group_by", group_by)
