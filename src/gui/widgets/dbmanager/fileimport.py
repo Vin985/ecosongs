@@ -66,6 +66,7 @@ class FileImport(QWizard, Ui_FileImport):
         self.file_manager.tosave.connect(self.save_files)
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
+        self.btn_browse_dest.clicked.connect(self.browse_dest)
         # Radio
         self.radio_is_folder.buttonToggled.connect(self.folder_options)
         self.radio_site_info.buttonToggled.connect(self.site_info_options)
@@ -163,9 +164,10 @@ class FileImport(QWizard, Ui_FileImport):
         # TODO: extract metadata
         # self.show_files()
 
-        # Browse destination directory
+    # Browse destination directory
     def browse_dest(self):
         self.browse(self.input_dest_path, True)
+        # TODO modify browse to accomodate for destination
 
     # Generic method to browse for files
     def browse(self, text_input, is_folder):
@@ -176,6 +178,7 @@ class FileImport(QWizard, Ui_FileImport):
                 default = text_input.text()
             text = QFileDialog.getExistingDirectory(self, "Choose directory",
                                                     default)
+            # TODO remove this line
             self.file_manager.root_dir = text
         else:
             # We want to select files
