@@ -18,7 +18,6 @@ class AnalyzerDialog(QDialog):
         self.init_thread()
 
     def link_events(self):
-
         self.btn_start.clicked.connect(self.start)
         self.btn_cancel.clicked.connect(self.cancel)
         self.btn_close.clicked.connect(self.close_dialog)

@@ -148,10 +148,10 @@ class FileManager:
             res["plot"] = self.options["site_info"]["plot"]
 
         if res["date"]:
-            res["name"] = (res["plot"]
-                           + "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
+            res["name"] = (res["plot"] +
+                           "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
         else:
-             res["name"] = name
+            res["name"] = name
 
         res["duration"] = 0
         res["sample_rate"] = 0

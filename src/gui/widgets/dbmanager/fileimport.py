@@ -50,11 +50,13 @@ class FileImport(QWizard, Ui_FileImport):
         # Signals emitted
         self.get_infos.connect(self.file_manager.get_files, type=Qt.QueuedConnection)
         self.import_files.connect(self.file_manager.import_files, type=Qt.QueuedConnection)
-        self.list_files_convert.connect(self.file_manager.get_files_to_convert, type=Qt.QueuedConnection)
+        self.list_files_convert.connect(
+            self.file_manager.get_files_to_convert, type=Qt.QueuedConnection)
 
         # Signals received
         # File manager
-        self.file_manager.converting.connect(self.converting_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.converting.connect(
+            self.converting_files, type=Qt.BlockingQueuedConnection)
         self.file_manager.removing.connect(self.removing_files, type=Qt.BlockingQueuedConnection)
         self.file_manager.renaming.connect(self.renaming_files, type=Qt.BlockingQueuedConnection)
         self.file_manager.saving.connect(self.saving_files, type=Qt.BlockingQueuedConnection)
@@ -97,7 +99,7 @@ class FileImport(QWizard, Ui_FileImport):
                                      "folder_hierarchy": self.radio_site_auto.isChecked(),
                                      "site_info": site_info}
         self.get_infos.emit()
-        #self.file_manager.get_files()
+        # self.file_manager.get_files()
 
     def initialize_page2(self):
         self.move_options.setVisible(self.checkbox_move.isChecked())
@@ -229,6 +231,7 @@ class FileImport(QWizard, Ui_FileImport):
 
     def save_files(self):
         print("saving for real")
+        print(self.file_manager.to_save)
         qApp.tables.recordings.add(self.file_manager.to_save, save=True,
                                    replace=self.checkbox_reimport.isChecked())
         self.checkbox_done.setChecked(True)

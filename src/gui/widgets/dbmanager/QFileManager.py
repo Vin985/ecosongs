@@ -30,7 +30,7 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         if self.with_progress:
             self.progress += step
             print("progress: " + str(self.progress))
-            self.progressed.emit(int(self.progress/self.nitems * 100))
+            self.progressed.emit(int(self.progress / self.nitems * 100))
 
     def __init__(self):
         QObject.__init__(self)
