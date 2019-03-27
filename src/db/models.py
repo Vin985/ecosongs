@@ -71,7 +71,7 @@ class TableModel():
 
     @property
     def empty(self):
-        return self._df.empty
+        return self.df.empty
 
     def save(self):
         self.dbmanager.save(self.TABLE_NAME, self._df)
@@ -105,6 +105,10 @@ class TableModel():
 
     def remove_duplicates(self, df_remove, df_keep):
         print("removing duplicates")
+        if df_keep.empty:
+            return df_remove
+        if df_remove.empty:
+            return df_keep
         keep_dict = df_keep[self.DUPLICATE_COLUMNS].to_dict(orient='list')
         res = df_remove[~df_remove[self.DUPLICATE_COLUMNS].isin(keep_dict).all(axis=1)]
         return res
@@ -122,6 +126,7 @@ class TableModel():
             dest = self.remove_duplicates(self.df, new)
         else:
             # remove duplicates from new dataframe
+            dest = self.df
             new = self.remove_duplicates(new, self.df)
         if not new.empty:
             self.update(table=dest.append(new, ignore_index=True, sort=True),
