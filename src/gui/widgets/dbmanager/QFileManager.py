@@ -83,9 +83,3 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         self.tosave.emit()
         # TODO: check duplicates
         # qApp.recordings.append(to_save, save=True)
-
-    def get_new_path(self, path, old, new):
-        new_path = path.replace(old, new)
-        if self.dest_dir:
-            new_path = path.replace(self.root_dir, self.dest_dir)
-        return(new_path)
