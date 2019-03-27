@@ -431,7 +431,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0" colspan="4">
+     <item row="11" column="0" colspan="4">
       <spacer name="verticalSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -592,6 +592,26 @@
        </property>
       </widget>
      </item>
+     <item row="9" column="0" colspan="4">
+      <widget class="QCheckBox" name="checkbox_save_info">
+       <property name="text">
+        <string>Generate information file when parsing directories to allow for fast loading of directories</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0" colspan="4">
+      <widget class="QCheckBox" name="checkbox_load_info">
+       <property name="text">
+        <string>Load information file instead of parsing all files if present</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -676,7 +696,7 @@
       <x>0</x>
       <y>0</y>
       <width>861</width>
-      <height>531</height>
+      <height>543</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_4">
@@ -696,7 +716,7 @@
        </property>
       </spacer>
      </item>
-     <item row="6" column="0" colspan="2">
+     <item row="8" column="0" colspan="2">
       <spacer name="verticalSpacer_4">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -712,7 +732,7 @@
        </property>
       </spacer>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QCheckBox" name="checkbox_rename">
        <property name="text">
         <string>Rename files (files will be renamed with the following convention: SITE-ABBREV_PLOT_yyyy-MM-dd_hh:mm:ss)</string>
@@ -729,7 +749,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="2">
+     <item row="6" column="0" colspan="2">
       <widget class="QWidget" name="move_options" native="true">
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="1" column="0">
@@ -786,7 +806,7 @@
          </widget>
         </item>
         <item row="2" column="3">
-         <widget class="QPushButton" name="button_browse_dest">
+         <widget class="QPushButton" name="btn_browse_dest">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -843,7 +863,7 @@
        </layout>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -859,7 +879,7 @@
        </property>
       </spacer>
      </item>
-     <item row="3" column="0">
+     <item row="5" column="0">
       <widget class="QCheckBox" name="checkbox_move">
        <property name="text">
         <string>Move files</string>
@@ -949,6 +969,13 @@
          </widget>
         </item>
        </layout>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="checkbox_reimport">
+       <property name="text">
+        <string>Re-import files that already exist in database</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -1135,10 +1162,10 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radio_is_folder"/>
   <buttongroup name="radio_compression"/>
-  <buttongroup name="radio_site_info"/>
   <buttongroup name="radio_recorders"/>
   <buttongroup name="radio_destination"/>
+  <buttongroup name="radio_site_info"/>
+  <buttongroup name="radio_is_folder"/>
  </buttongroups>
 </ui>
