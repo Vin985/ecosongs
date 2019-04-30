@@ -22,13 +22,14 @@ class DetectorDialog(AnalyzerDialog):
 
     def link_events(self):
         super().link_events()
-        self.detect_songs.connect(self.audio_analyzer.detect_songs, type=Qt.QueuedConnection)
+        self.detect_songs.connect(
+            self.audio_analyzer.detect_songs, type=Qt.QueuedConnection)
 
     @Slot()
     def start(self):
         print("clicking start")
         # TODO: add detection options in UI
-        self.audio_analyzer.options = self.content_widget.get_options()
+        self.audio_analyzer.options = self.options.get_options()
         self.detect_songs.emit()
         self.started = time.time()
 
@@ -37,7 +38,7 @@ class DetectorDialog(AnalyzerDialog):
         super().process_results()
         events = self.audio_analyzer.results
         print(events)
-        if self.content_widget.checkbox_save.isChecked():
+        if self.options.checkbox_save.isChecked():
             events_table = qApp.tables.song_events
             events_table.add(events, save=True,
-                             replace=self.content_widget.checkbox_overwrite.isChecked())
+                             replace=self.options.checkbox_overwrite.isChecked())
