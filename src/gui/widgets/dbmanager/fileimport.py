@@ -48,8 +48,10 @@ class FileImport(QWizard, Ui_FileImport):
     # Define callbacks when events happen
     def linkEvents(self):
         # Signals emitted
-        self.get_infos.connect(self.file_manager.get_files, type=Qt.QueuedConnection)
-        self.import_files.connect(self.file_manager.import_files, type=Qt.QueuedConnection)
+        self.get_infos.connect(
+            self.file_manager.get_infos, type=Qt.QueuedConnection)
+        self.import_files.connect(
+            self.file_manager.import_files, type=Qt.QueuedConnection)
         self.list_files_convert.connect(
             self.file_manager.get_files_to_convert, type=Qt.QueuedConnection)
 
@@ -57,12 +59,18 @@ class FileImport(QWizard, Ui_FileImport):
         # File manager
         self.file_manager.converting.connect(
             self.converting_files, type=Qt.BlockingQueuedConnection)
-        self.file_manager.removing.connect(self.removing_files, type=Qt.BlockingQueuedConnection)
-        self.file_manager.renaming.connect(self.renaming_files, type=Qt.BlockingQueuedConnection)
-        self.file_manager.saving.connect(self.saving_files, type=Qt.BlockingQueuedConnection)
-        self.file_manager.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
-        self.file_manager.filesLoaded.connect(self.show_files, type=Qt.BlockingQueuedConnection)
-        self.file_manager.progressed.connect(self.update_progress, type=Qt.BlockingQueuedConnection)
+        self.file_manager.removing.connect(
+            self.removing_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.renaming.connect(
+            self.renaming_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.saving.connect(
+            self.saving_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.logging.connect(
+            self.log, type=Qt.BlockingQueuedConnection)
+        self.file_manager.filesLoaded.connect(
+            self.show_files, type=Qt.BlockingQueuedConnection)
+        self.file_manager.progressed.connect(
+            self.update_progress, type=Qt.BlockingQueuedConnection)
         self.file_manager.tosave.connect(self.save_files)
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
@@ -87,7 +95,8 @@ class FileImport(QWizard, Ui_FileImport):
         # get information about site from comboboxes
         if self.radio_site_auto.isChecked():
             for i in range(1, 4):
-                tmp = getattr(self, "combo_idx_" + str(i)).currentText().lower()
+                tmp = getattr(self, "combo_idx_" + str(i)
+                              ).currentText().lower()
                 site_info[tmp] = i
         else:
             site_info["site"] = self.input_site
@@ -98,7 +107,9 @@ class FileImport(QWizard, Ui_FileImport):
                                      "recursive": self.checkbox_subfolders.isChecked(),
                                      "recorder": self.radio_recorders.button(self.radio_recorders.checkedId()).text(),
                                      "folder_hierarchy": self.radio_site_auto.isChecked(),
-                                     "site_info": site_info}
+                                     "site_info": site_info,
+                                     "save_file_info": self.checkbox_save_info.isChecked(),
+                                     "load_file_info": self.checkbox_load_info.isChecked()}
         self.get_infos.emit()
         # self.file_manager.get_files()
 
@@ -116,6 +127,7 @@ class FileImport(QWizard, Ui_FileImport):
         opts = {"rename": self.checkbox_rename.isChecked(),
                 "move": self.checkbox_move.isChecked(),
                 "create_links": self.checkbox_link.isChecked(),
+                "remove_wac": False,
                 "overwrite": self.checkbox_overwrite.isChecked()
                 }
         self.file_manager.options.update(opts)
@@ -145,7 +157,8 @@ class FileImport(QWizard, Ui_FileImport):
         self.site_manual.setVisible(not self.radio_site_auto.isChecked())
 
     def subfolders_options(self):
-        self.radio_site_manual.setEnabled(not self.checkbox_subfolders.isChecked())
+        self.radio_site_manual.setEnabled(
+            not self.checkbox_subfolders.isChecked())
         if self.radio_folder.isChecked():
             self.radio_site_auto.setChecked(True)
             self.site_auto.setVisible(True)
@@ -206,7 +219,8 @@ class FileImport(QWizard, Ui_FileImport):
             self.table_files.resizeColumnsToContents()
         # self.log_console.clear()
         # self.log_console.append("\n".join(self.file_manager.file_paths))
-        self.lbl_status.setText("%d file(s) found" % self.file_manager.file_infos.shape[0])
+        self.lbl_status.setText("%d file(s) found" %
+                                self.file_manager.file_infos.shape[0])
 
     @Slot()
     def converting_files(self):
