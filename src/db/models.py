@@ -103,14 +103,17 @@ class TableModel():
             self.next_id = max(table["id"]) + 1
         return table
 
-    def remove_duplicates(self, df_remove, df_keep):
+    def get_duplicates_dict(self, df):
+        return df[self.DUPLICATE_COLUMNS].to_dict(orient='list')
+
+    def remove_duplicates(self, remove_in, remove_from):
         print("removing duplicates")
-        if df_keep.empty:
-            return df_remove
-        if df_remove.empty:
-            return df_keep
-        keep_dict = df_keep[self.DUPLICATE_COLUMNS].to_dict(orient='list')
-        res = df_remove[~df_remove[self.DUPLICATE_COLUMNS].isin(keep_dict).all(axis=1)]
+        if remove_from.empty:
+            return remove_in
+        if remove_in.empty:
+            return remove_from
+        duplicates_dict = self.get_duplicates_dict(remove_from)
+        res = remove_in[~remove_in[self.DUPLICATE_COLUMNS].isin(duplicates_dict).all(axis=1)]
         return res
 
     def add(self, new, save=False, replace=True):
