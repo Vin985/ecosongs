@@ -3,6 +3,7 @@ import os
 import re
 import zipfile
 from datetime import datetime
+import traceback
 
 import pandas as pd
 from wac2wav import wac2wav
@@ -48,14 +49,15 @@ class FileManager:
         self.options = {"recursive": True, "recorder": RECORDER_AUTO, "folder": False,
                         "site_info": {"site": 1, "year": 0, "plot": 2},
                         "folder_hierarchy": True}
-        self.regex = {key: re.compile(value) for (key, value) in self.PATTERNS.items()}
+        self.regex = {key: re.compile(value)
+                      for (key, value) in self.PATTERNS.items()}
 
     def log(self, text):
         print(text)
 
-    def get_files(self):
+    def get_infos(self):
         if self.options["folder"]:
-            file_infos = self.get_files_from_folder()
+            file_infos = self.get_from_folder()
         else:
             file_infos = self.extract_infos(None, self.file_paths)
         file_infos = list(filter(None, file_infos))
@@ -63,15 +65,15 @@ class FileManager:
         self.files_loaded()
         return self.file_infos
 
-    def get_files_from_folder(self):
+    def get_from_folder(self):
         self.log("Retrieving files from folder: " + self.root_dir)
         # Listing all files and folders in root directory
         file_infos = []
-        for (dirpath, dirnames, filenames) in os.walk(self.root_dir):
+        for (dirpath, _, filenames) in os.walk(self.root_dir):
             # if files are present
             if filenames:
                 # TODO: check for a conf file in order to update configurations
-                if (os.path.exists("info.txt")):
+                if os.path.exists("info.txt"):
                     print("file exists")
                 # TODO add extra information
                 # extract information from files
@@ -80,20 +82,12 @@ class FileManager:
                 break
         return file_infos
 
-    def get_files_to_convert(self):
-        df = self.file_infos
-        self.to_wav = df.loc[df.ext == "wac", 'path'].tolist()
-        if self.to_wav:
-            print(self.to_wav)
-
-    def files_loaded(self):
-        self.log("\n".join(self.file_paths))
-
     def extract_infos(self, path, files):
         file_infos = [self.extract_info(path, file) for file in files]
         return file_infos
 
     def extract_info(self, dirpath, file):
+        # TODO split in smaller functions
         if not dirpath:
             # Path to parent drectory not provided, extract it from filename
             fullpath = file
@@ -137,6 +131,7 @@ class FileManager:
 
         if self.options["folder_hierarchy"]:
             if len(path) < 4:
+                # TODO: handle errors
                 error = "Cannot extrapolate information from hierarchy, not enough folders"
             else:
                 res["site"] = path[self.options["site_info"]["site"] - 1]
@@ -172,7 +167,8 @@ class FileManager:
             m = reg.match(file)
             if m:
                 return(key, m)
-        logging.warning("Name does not match any known recorder, skipping automatic detection")
+        logging.warning(
+            "Name does not match any known recorder, skipping automatic detection")
         return (None, None)
 
     def extract_date(self, recorder, match):
@@ -190,8 +186,15 @@ class FileManager:
         logging.debug("extracting date SM2: " + str(date))
         return date
 
-    # TODO: set options as arguments like everywhere else
+    def get_files_to_convert(self):
+        self.to_wav = list(self.file_infos.loc[self.file_infos.ext == "wac", [
+            'path', 'old_name', 'name']].itertuples(index=False))
+        print(self.to_wav)
 
+    def files_loaded(self):
+        self.log("\n".join(self.file_paths))
+
+    # TODO: set options as arguments like everywhere else
     def set_args(self, dest="", compress_old=True):
         self.dest_dir = dest
         self.compress_old = compress_old
@@ -207,30 +210,43 @@ class FileManager:
         if self.archive:
             self.archive.close()
 
-    def files_to_wav(self, files):
+    def convert_files(self, files):
         for filename in files:
-            self.file_to_wav(filename)
+            self.convert_file(filename)
 
-    def file_to_wav(self, filename):
-        if self.dest_dir:
-            new = self.regex.sub(self.dest_dir + "\\1.wav", filename)
-            dirname = os.path.dirname(new)
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
-        else:
-            new = filename.replace(".wac", ".wav")
-        self.log("Converting {0} in {1}".format(filename, new))
-        wac2wav(filename, new)
+    def convert_file(self, filename):
+        print("in converting")
+        try:
+            # TODO: add options to change audio type
+            (path, old_name, new_name) = filename
+            print(filename)
+            new_path = self.get_new_path(path, old_name, new_name)
 
-        # Update file info with information about the wav file
-        headers = get_wav_headers(new)
-        mask = self.file_infos.path == filename
-        cols = ["duration", "sample_rate", "path", "ext"]
-        self.file_infos.loc[mask, cols] = [headers["Duration"], headers["SampleRate"], new, "wav"]
+            new_path = new_path + ".wav"
+            print(new_path)
 
-        if self.archive:
-            print("adding file to archive")
-            self.archive.write(filename, filename.replace(self.root_dir, ""))
+            if self.dest_dir:
+                # new_path = new_path.replace(self.root_dir, self.dest_dir)
+                dirname = os.path.dirname(new_path)
+                if not os.path.exists(dirname):
+                    os.makedirs(dirname)
+
+            self.log("Converting {0} in {1}".format(path, new_path))
+            # wac2wav(path, new_path)
+
+            # Update file info with information about the wav file
+            headers = get_wav_headers(new_path)
+            mask = self.file_infos.path == filename
+            cols = ["duration", "sample_rate", "path", "ext"]
+            self.file_infos.loc[mask, cols] = [
+                headers["Duration"], headers["SampleRate"], new_path, "wav"]
+
+            if self.archive:
+                print("adding file to archive")
+                self.archive.write(
+                    filename, filename.replace(self.root_dir, ""))
+        except Exception as e:
+            print(traceback.format_exc())
 
     def remove_files(self):
         self.log("removing files")
@@ -253,7 +269,8 @@ class FileManager:
 
     def create_links(self, overwrite=True):
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
-        new_paths = [self.get_new_path(*row) for row in cols.itertuples(index=False)]
+        new_paths = [self.get_new_path(*row)
+                     for row in cols.itertuples(index=False)]
         tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
         for old, new in tmp:
             self.log("Creating link " + new + " to " + old)
