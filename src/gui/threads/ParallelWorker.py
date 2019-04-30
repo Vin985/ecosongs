@@ -44,7 +44,7 @@ class ParallelWorker():
     def update_progress(self, step=1):
         if self.with_progress:
             self.progress += step
-            print("progress: " + str(int(self.progress/self.nitems * 100)))
+            print("progress: " + str(int(self.progress / self.nitems * 100)))
 
     def map(self, collection, func, *args, **kwargs):
         if self.with_progress:
@@ -61,7 +61,8 @@ class ParallelWorker():
         elif mp_method == "imap":
             res = self.mp_imap(collection, func, *args, **kwargs)
         else:
-            raise ValueError("Unsupported mp_value. Correct values are 'futures' or 'mp'")
+            raise ValueError(
+                "Unsupported mp_value. Correct values are 'futures' or 'mp'")
         return res
 
     # TODO accept function args to async
@@ -81,13 +82,16 @@ class ParallelWorker():
 
         # If chunksize is a percentage, compute chunksize
         if self.options["chunksize_percent"]:
-            chunksize = int(len(collection) * self.options["chunksize_percent"] / 100)
+            chunksize = max(int(len(collection) *
+                                self.options["chunksize_percent"] / 100), 1)
         else:
             chunksize = self.options["chunksize"]
 
+        print(chunksize)
         # Create chunks
         if len(collection) > 1:
-            chunks = [collection[x:x+chunksize] for x in range(0, len(collection), chunksize)]
+            chunks = [collection[x:x + chunksize]
+                      for x in range(0, len(collection), chunksize)]
         else:
             chunks = [collection]
 
@@ -95,13 +99,16 @@ class ParallelWorker():
         async_results = []
         print(processes)
         try:
-            self.pool = mp.Pool(processes=processes, initializer=initializer, initargs=initargs)
+            self.pool = mp.Pool(processes=processes,
+                                initializer=initializer, initargs=initargs)
             for chunk in chunks:
                 print("chunk: " + str(chunk))
-                async_results.append(self.pool.apply_async(func, args=(chunk, )))
+                async_results.append(
+                    self.pool.apply_async(func, args=(chunk, )))
             self.results = []
             for result in async_results:
-                self.results += self.process_chunk_result(result.get(), callback)
+                self.results += self.process_chunk_result(
+                    result.get(), callback)
             return self.results
         except Exception as exc:
             print(traceback.format_exc())
@@ -120,7 +127,8 @@ class ParallelWorker():
             else:
                 # Use all available cpus
                 processes = mp.cpu_count()
-        pool = mp.Pool(processes=processes, initializer=initializer, initargs=initargs)
+        pool = mp.Pool(processes=processes,
+                       initializer=initializer, initargs=initargs)
         tmp = pool.imap_unordered(func, collection, chunksize=chunksize)
         res = [self.process_chunk_result(result, callback) for result in tmp]
         pool.close()
@@ -135,18 +143,21 @@ class ParallelWorker():
             for item in collection:
                 # TODO : make sure this is properly interrupted
                 try:
-                    futures.append(executor.submit(func, item, *args, **kwargs))
+                    futures.append(executor.submit(
+                        func, item, *args, **kwargs))
                 # TODO: better exception handling
                 except Exception as exc:
                     print("Oh no! An exception occured! " + str(exc))
                     print(traceback.format_exc())
-            res = [self.get_result(future) for future in concurrent.futures.as_completed(futures)]
+            res = [self.get_result(future)
+                   for future in concurrent.futures.as_completed(futures)]
             res = list(filter(None, res))
         end = time.time()
-        print("time elapsed: {}".format(end-start))
+        print("time elapsed: {}".format(end - start))
         return res
 
     def map_single(self, collection, func, *args, **kwargs):
+        print(collection)
         return [self.apply_func(item, func, *args, **kwargs) for item in collection]
 
     def apply_func(self, item, func, *args, **kwargs):
