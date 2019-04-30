@@ -40,8 +40,7 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         self.options["multiprocess"] = False
 
     def import_files(self):
-        self.converting.emit()
-        self.files_to_wav()
+        self.convert_files()
         self.remove_wac()
         self.rename_files()
         self.save_recordings()
@@ -51,16 +50,19 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         # qApp.save_data("recordings", self.file_infos, format="t")
         self.filesLoaded.emit()
 
-    def files_to_wav(self):
+    def convert_files(self):
+        print("converting")
         self.converting.emit()
         # self.open_archive()
-        self.map(self.to_wav, self.file_to_wav)
+        self.map(self.to_wav, self.convert_file)
         # self.close_archive()
 
     def remove_wac(self):
+        # TODO: finish handling this
         self.removing.emit()
-        return
-        self.map(self.to_wav, os.remove)
+        if self.options["remove_wac"]:
+            pass
+            # self.map(self.to_wav, os.remove)
 
     def rename_files(self, create_links=True):
         # TODO: add checkbox test in option files
@@ -69,7 +71,8 @@ class QFileManager(QObject, ParallelWorker, FileManager):
             self.create_links()
         return
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
-        new_paths = [self.get_new_path(*row) for row in cols.itertuples(index=False)]
+        new_paths = [self.get_new_path(*row)
+                     for row in cols.itertuples(index=False)]
         tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
         self.map(tmp, self.rename_file_tuple)
 
@@ -77,7 +80,8 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         self.saving.emit()
         print("saving")
         # TODO: append to existing recordings
-        to_save = self.file_infos.loc[:, self.file_infos.columns.intersection(Recording.COLUMNS)]
+        to_save = self.file_infos.loc[:, self.file_infos.columns.intersection(
+            Recording.COLUMNS)]
         to_save["date"] = pd.to_datetime(to_save["date"])
         self.to_save = to_save
         self.tosave.emit()
