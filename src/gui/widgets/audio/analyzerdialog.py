@@ -25,12 +25,15 @@ class AnalyzerDialog(ProgressDialog):
 
         self.audio_analyzer.progressed.connect(self.update_progress,
                                                type=Qt.BlockingQueuedConnection)
-        self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
-        self.audio_analyzer.computing.connect(self.computing, type=Qt.BlockingQueuedConnection)
+        self.audio_analyzer.logging.connect(
+            self.log, type=Qt.BlockingQueuedConnection)
+        self.audio_analyzer.computing.connect(
+            self.computing, type=Qt.BlockingQueuedConnection)
 
         self.audio_analyzer.done.connect(self.process_results)
 
-        self.cancelling.connect(self.audio_analyzer.cancel_tasks, type=Qt.DirectConnection)
+        self.cancelling.connect(
+            self.audio_analyzer.cancel_tasks, type=Qt.DirectConnection)
         # Navigation: change page when icon is clicked
         # self.menu_categories.currentRowChanged.connect(self.menu_pages.setCurrentIndex)
 
@@ -74,8 +77,10 @@ class AnalyzerDialog(ProgressDialog):
         self.btn_cancel.hide()
         self.update_progress(100)
         # self.progress_bas.setEnabled(False)
-        self.log("Processed %d recordings in %0.3f seconds" %
-                 (len(self.audio_analyzer.recordings), (time.time() - self.started)))
+        total_time = (time.time() - self.started)
+        nrecs = len(self.audio_analyzer.recordings)
+        self.log("Processed %d recordings in %0.3f seconds (%0.3fs/recording)" %
+                 (nrecs, total_time, total_time / nrecs))
 
     @Slot()
     def close_dialog(self):
