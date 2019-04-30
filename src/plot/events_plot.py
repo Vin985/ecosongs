@@ -32,8 +32,8 @@ class EventsPlot(Plot):
             self.get_events()
         plot_data = self.events.copy()
         plot_data = self.subset_data(plot_data)
+        plot_data = plot_data.groupby(["plot"], as_index=False).apply(self.check_dates)
         plot_data = self.check_data_columns(plot_data)
-        plot_data = self.check_dates(plot_data)
         plot_data = self.aggregate(plot_data, "n_events")
         self.plot_data = plot_data
 
@@ -43,10 +43,13 @@ class EventsPlot(Plot):
             if isinstance(data, str):
                 # events is a path, load data file
                 path = data
+                data = feather.read_dataframe(path)
                 setattr(self, name + "_path", path)
-                setattr(self, name + "_raw", feather.read_dataframe(path))
+                setattr(self, name + "_raw", data)
             else:
                 print("Unsupported type provided for " + name)
+                return None
+        return data
 
     def get_events(self):
         # verify that events are correctly loaded
@@ -105,10 +108,10 @@ class EventsPlot(Plot):
             data = data.loc[(data["julian"] > min_j) & (data["julian"] < max_j)]
         return data
 
-    def check_dates(self, plot_data):
+    def check_dates(self, df):
+        # TODO: adapt code to current data handling
         if self.deployment_data_raw is not None:
-            self.get_data("deployment_data")
-            site_data = self.deployment_data_raw
+            site_data = self.get_data("deployment_data")
             plot = site_data.loc[site_data["plot"] == df.name]
             res = df
             if not plot.empty:
@@ -118,7 +121,8 @@ class EventsPlot(Plot):
                     res = df.loc[(df["date"] > start) & (df["date"] < end)]
                 res["lat"] = plot.lat.iloc[0]
                 res["lon"] = plot.lon.iloc[0]
-        return plot_data
+            return res
+        return df
 
     def aggregate(self, data, column, group_by=["site", "julian", "type"], agg_by={"value": "mean"}):
         group_by = self.opts.get("plt_group_by", group_by)
@@ -201,6 +205,7 @@ class EventsPlot(Plot):
         # save = self.opts.get("save", None)
 
         self.plt = self.__plot(self.plot_data, **plot_opts)
+        return self.plt
         # cbbPalette = ["#000000", "#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"]
 
     def __plot(self, plot_data, x, y, colour, lbl_x, lbl_y, facet, facet_scales,

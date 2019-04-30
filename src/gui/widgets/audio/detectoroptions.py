@@ -27,7 +27,8 @@ class DetectorOptions(QWidget, Ui_DetectorOptions):
 
     def link_events(self):
         self.slider_activity.valueChanged.connect(self.update_activity)
-        self.slider_end_threshold.valueChanged.connect(self.update_end_threshold)
+        self.slider_end_threshold.valueChanged.connect(
+            self.update_end_threshold)
 
     def update_end_threshold(self, activity):
         self.lbl_end_threshold.setText(str(activity))
@@ -53,6 +54,7 @@ class DetectorOptions(QWidget, Ui_DetectorOptions):
         opts = {"initargs": (options,
                              model_opts["weights_file"],
                              detection_options),
+                "multiprocess": True,
                 "nprocess": 1,
-                "chunksize_percent": 2}
+                "chunksize_percent": 100}
         return opts

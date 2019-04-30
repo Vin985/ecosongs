@@ -47,7 +47,8 @@ class SpecSampler(object):
         self.labels = np.hstack([blank_label] + labels + [blank_label])
 
         which_spec = [ii * np.ones(xx.shape[1]) for ii, xx in enumerate(X)]
-        self.which_spec = np.hstack([blank_label] + which_spec + [blank_label]).astype(np.int32)
+        self.which_spec = np.hstack(
+            [blank_label] + which_spec + [blank_label]).astype(np.int32)
 
         self.medians = np.zeros((len(X), X[0].shape[0]))
         for idx, spec in enumerate(X):
@@ -72,8 +73,9 @@ class SpecSampler(object):
                                                       class_size='smallest'):
 
             # extract the specs
-            bs = y.shape[0]  # avoid using self.batch_size as last batch may be smaller
-            X = np.zeros((bs, channels, height, self.hww_x*2), np.float32)
+            # avoid using self.batch_size as last batch may be smaller
+            bs = y.shape[0]
+            X = np.zeros((bs, channels, height, self.hww_x * 2), np.float32)
             y = np.zeros(bs) * np.nan
             if self.learn_log:
                 X_medians = np.zeros((bs, channels, height), np.float32)
@@ -82,17 +84,20 @@ class SpecSampler(object):
             for loc in sampled_locs:
                 which = self.which_spec[loc]
 
-                X[count] = self.specs[:, :, (loc-self.hww_x):(loc+self.hww_x)]
+                X[count] = self.specs[:, :,
+                                      (loc - self.hww_x):(loc + self.hww_x)]
 
                 if not self.learn_log:
                     X[count, 1] = X[count, 0] - self.medians[which][:, None]
                     # X[count, 0] = (X[count, 0] - X[count, 0].mean()) / X[count, 0].std()
-                    X[count, 0] = (X[count, 1] - X[count, 1].mean(1, keepdims=True)) / (X[count, 1].std(1, keepdims=True) + 0.001)
+                    X[count, 0] = (X[count, 1] - X[count, 1].mean(1, keepdims=True)
+                                   ) / (X[count, 1].std(1, keepdims=True) + 0.001)
 
-                    X[count, 2] = (X[count, 1] - X[count, 1].mean()) / X[count, 1].std()
+                    X[count, 2] = (
+                        X[count, 1] - X[count, 1].mean()) / X[count, 1].std()
                     X[count, 3] = X[count, 1] / X[count, 1].max()
 
-                y[count] = self.labels[(loc-self.hww_y):(loc+self.hww_y)].max()
+                y[count] = self.labels[(loc - self.hww_y)                                       :(loc + self.hww_y)].max()
                 if self.learn_log:
                     which = self.which_spec[loc]
                     X_medians[count] = self.medians[which]
@@ -112,7 +117,8 @@ class SpecSampler(object):
                         X += np.roll(X, 1, axis=0) * np.random.randn()
 
             if self.learn_log:
-                xb = {'input': X.astype(np.float32), 'input_med': X_medians.astype(np.float32)}
+                xb = {'input': X.astype(
+                    np.float32), 'input_med': X_medians.astype(np.float32)}
                 yield xb, y.astype(np.int32)
 
             else:
@@ -126,16 +132,17 @@ def create_net(SPEC_HEIGHT, HWW_X, LEARN_LOG, NUM_FILTERS,
     net = collections.OrderedDict()
 
     net['input'] = tf.placeholder(
-        tf.float32, (None, SPEC_HEIGHT, HWW_X*2, channels), name='input')
+        tf.float32, (None, SPEC_HEIGHT, HWW_X * 2, channels), name='input')
     net['conv1_1'] = slim.conv2d(
-        net['input'], NUM_FILTERS, (SPEC_HEIGHT - WIGGLE_ROOM, CONV_FILTER_WIDTH),
+        net['input'], NUM_FILTERS, (SPEC_HEIGHT -
+                                    WIGGLE_ROOM, CONV_FILTER_WIDTH),
         padding='valid', activation_fn=None, biases_initializer=None)
-    net['conv1_1'] = tf.nn.leaky_relu(net['conv1_1'], alpha=1/3)
+    net['conv1_1'] = tf.nn.leaky_relu(net['conv1_1'], alpha=1 / 3)
 
     net['conv1_2'] = slim.conv2d(
         net['conv1_1'], NUM_FILTERS, (1, 3), padding='valid',
         activation_fn=None, biases_initializer=None)
-    net['conv1_2'] = tf.nn.leaky_relu(net['conv1_2'], alpha=1/3)
+    net['conv1_2'] = tf.nn.leaky_relu(net['conv1_2'], alpha=1 / 3)
 
     W = net['conv1_2'].shape[2]
     net['pool2'] = slim.max_pool2d(
@@ -147,12 +154,12 @@ def create_net(SPEC_HEIGHT, HWW_X, LEARN_LOG, NUM_FILTERS,
     net['fc6'] = slim.fully_connected(
         net['pool2_flat'], NUM_DENSE_UNITS,
         activation_fn=None, biases_initializer=None)
-    net['fc6'] = tf.nn.leaky_relu(net['fc6'], alpha=1/3)
+    net['fc6'] = tf.nn.leaky_relu(net['fc6'], alpha=1 / 3)
 
     net['fc7'] = slim.fully_connected(
         net['fc6'], NUM_DENSE_UNITS,
         activation_fn=None, biases_initializer=None)
-    net['fc7'] = tf.nn.leaky_relu(net['fc7'], alpha=1/3)
+    net['fc7'] = tf.nn.leaky_relu(net['fc7'], alpha=1 / 3)
 
     net['fc8'] = slim.fully_connected(net['fc7'], 2, activation_fn=None)
     # net['fc8'] = tf.nn.leaky_relu(net['fc8'], alpha=1/3)

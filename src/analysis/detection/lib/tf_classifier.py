@@ -27,7 +27,8 @@ class TFClassifier(object):
         tf.reset_default_graph()
 
         # config = tf.ConfigProto(
-        #     device_count={'GPU': 0}
+        #     # device_count={'GPU': 0},
+        #     #log_device_placement=True
         # )
         # self.sess = tf.Session(config=config)
 

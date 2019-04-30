@@ -1,13 +1,19 @@
 import logging
+import sys
+import os
 
 from PySide2.QtWidgets import QApplication
 
 import db.dbutils as dbutils
 from analysis.image import ImageGenerator
-from db.feathermanager import FeatherManager
 from db.tablemanager import TableManager
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings
+
+# # print(os.environ['LD_LIBRARY_PATH'])
+#
+# print(sys.version)
+# print(sys.path)
 
 
 class Ecosongs(QApplication):
@@ -30,6 +36,10 @@ class Ecosongs(QApplication):
         settings = Settings()
 
         db_opts = settings.group_to_dict("database")
+        if not db_opts:
+            db_opts.update(
+                {"database": "ecosongs", "db_type": "feather", "path": "db"})
+        print(db_opts)
         self.dbmanager = dbutils.get_db_manager(**db_opts)
         # self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
         #                                         db_type=settings.db_type,

@@ -83,6 +83,7 @@ def mp_detect_songs(recording):
         preds = []
         # TODO: see if we can optimize with the recording object
         preds = DETECTOR.classify(recording.path)
+        print(preds)
 
         len_in_s = preds.shape[0] * HOP_LENGTH / DETECTOR.sample_rate
         timeseq = np.linspace(0, len_in_s, preds.shape[0])
@@ -106,7 +107,8 @@ def detect_songs(recording, classifier, detection_options):
     len_in_s = preds.shape[0] * HOP_LENGTH / classifier.sample_rate
     timeseq = np.linspace(0, len_in_s, preds.shape[0])
     res_df = pd.DataFrame({"time": timeseq, "activity": preds})
-    events = detect_songs_events(res_df, recording_id=recording.id, **detection_options)
+    events = detect_songs_events(
+        res_df, recording_id=recording.id, **detection_options)
     print("Took %0.3fs to detect events" % (time.time() - tic))
     return events
 
