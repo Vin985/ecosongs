@@ -93,8 +93,9 @@ class AudioManager(QWidget, Ui_AudioManager):
     @Slot()
     def tree_selection_changed(self, new, old):
         # TODO: handle multiple selection
-        if not new.indexes():
+        if not new.indexes() or len(new.indexes()) == 0:
             self.show_folder_details()
+            return
         # TODO: handle multiple selection
         index = new.indexes()[0]
         item = index.model().itemFromIndex(index)
@@ -113,15 +114,19 @@ class AudioManager(QWidget, Ui_AudioManager):
             events = events_table.get_events(self.current_recording.id)
             im_start = self.time_slider.value()
             im_end = self.time_slider.value() + duration
-            current_events = events[(events.start >= im_start) & (events.start < im_end)]
+            current_events = events[(events.start >= im_start) & (
+                events.start < im_end)]
             if len(current_events.index):
                 #  img = img.convert("RGB")
                 for event in current_events.itertuples():
                     # TODO: externalize color
                     draw = ImageDraw.Draw(img, "RGBA")
-                    start = self.sec2pixels(event.start - self.time_slider.value())
-                    end = self.sec2pixels(min(event.end, im_end) - self.time_slider.value())
-                    draw.rectangle(((start, 0), (end, 299)), fill=(255, 255, 0, 128))
+                    start = self.sec2pixels(
+                        event.start - self.time_slider.value())
+                    end = self.sec2pixels(
+                        min(event.end, im_end) - self.time_slider.value())
+                    draw.rectangle(((start, 0), (end, 299)),
+                                   fill=(255, 255, 0, 128))
 
         return img
 
@@ -139,7 +144,8 @@ class AudioManager(QWidget, Ui_AudioManager):
         spec = spectro.get_subspec(self.time_slider.value(), max_duration)
         # TODO: externalize ratio pixel/duration
         # TODO: save image somewhere
-        im = qApp.imgen.spec2img(spec, size=(self.sec2pixels(max_duration), 299))
+        im = qApp.imgen.spec2img(spec, size=(
+            self.sec2pixels(max_duration), 299))
         if self.checkbox_draw_events.isChecked():
             im = self.draw_events(im, max_duration)
         img = ImageQt.ImageQt(im)
@@ -184,7 +190,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         msgbox.setIcon(QMessageBox.Warning)
         ret = msgbox.exec()
         if ret == QMessageBox.Ok:
-            self.delete()
+            self.delete_recordings()
         else:
             print("not deleting")
 
@@ -208,15 +214,17 @@ class AudioManager(QWidget, Ui_AudioManager):
         recs = self.get_selected_recordings()
         print(recs)
 
-    def delete(self):
+    def delete_recordings(self):
         print("deleting...")
-        recs = self.get_selected_recordings()
+        recs = self.get_selected_recordings(type="index")
         idxs = self.tree_view.selectedIndexes()
         idx = idxs[0]
+        self.tree_view.clearSelection()
         self.tree_view.model().removeRow(idx.row(), idx.parent())
-        print(recs)
+        qApp.tables.recordings.delete(recs, save=True)
+        # TODO : delete other dependencies
 
-    def get_selected_recordings(self):
+    def get_selected_recordings(self, type=None):
         res = None
         sel_recs = []
         sel_folders = []
@@ -224,7 +232,6 @@ class AudioManager(QWidget, Ui_AudioManager):
         idxs = self.tree_view.selectedIndexes()
         for idx in idxs:
             item = idx.model().itemFromIndex(idx)
-            print(idx.row())
             data = item.data()
             if item.is_folder:
                 sel_folders.append(data)
@@ -238,10 +245,13 @@ class AudioManager(QWidget, Ui_AudioManager):
         tmp.append(recordings.loc[sel_recs])
         # Get one list of unique selected files
         res = pd.concat(tmp).drop_duplicates()
-        res = res[res["duration"] > 0]
         # Load files if not already in memory
-        recs = qApp.load_recordings(res.index.values)
-        return recs
+        if type == "index":
+            return res.index.values
+        elif type == "table":
+            return res
+        else:
+            return qApp.load_recordings(res.index.values)
 
     def show_folder_details(self, folder_info=None):
         if folder_info is not None:
