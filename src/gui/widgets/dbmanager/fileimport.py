@@ -49,11 +49,11 @@ class FileImport(QWizard, Ui_FileImport):
     def linkEvents(self):
         # Signals emitted
         self.get_infos.connect(
-            self.file_manager.get_infos, type=Qt.QueuedConnection)
+            self.file_manager.get_infos)
         self.import_files.connect(
-            self.file_manager.import_files, type=Qt.QueuedConnection)
+            self.file_manager.import_files)
         self.list_files_convert.connect(
-            self.file_manager.get_files_to_convert, type=Qt.QueuedConnection)
+            self.file_manager.get_files_to_convert)
 
         # Signals received
         # File manager
