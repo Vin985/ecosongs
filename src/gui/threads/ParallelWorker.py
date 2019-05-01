@@ -47,23 +47,27 @@ class ParallelWorker():
             print("progress: " + str(int(self.progress / self.nitems * 100)))
 
     def map(self, collection, func, *args, **kwargs):
-        if self.with_progress:
-            self.nitems = len(collection)
-            self.progress = 0
+        try:
+            if self.with_progress:
+                self.nitems = len(collection)
+                self.progress = 0
 
-        mp_method = self.options["mp_method"]
-        if not self.options["multiprocess"]:
-            res = self.map_single(collection, func, *args, **kwargs)
-        elif mp_method == "async":
-            res = self.mp_apply_async(collection, func, *args, **kwargs)
-        elif mp_method == "futures":
-            res = self.mp_apply_futures(collection, func, *args, **kwargs)
-        elif mp_method == "imap":
-            res = self.mp_imap(collection, func, *args, **kwargs)
-        else:
-            raise ValueError(
-                "Unsupported mp_value. Correct values are 'futures' or 'mp'")
-        return res
+            mp_method = self.options["mp_method"]
+            if not self.options["multiprocess"]:
+                res = self.map_single(collection, func, *args, **kwargs)
+            elif mp_method == "async":
+                res = self.mp_apply_async(collection, func, *args, **kwargs)
+            elif mp_method == "futures":
+                res = self.mp_apply_futures(collection, func, *args, **kwargs)
+            elif mp_method == "imap":
+                res = self.mp_imap(collection, func, *args, **kwargs)
+            else:
+                raise ValueError(
+                    "Unsupported mp_value. Correct values are 'futures' or 'mp'")
+            return res
+        except Exception as exc:
+            print(traceback.format_exc())
+            raise exc
 
     # TODO accept function args to async
     def mp_apply_async(self, collection, func, initializer=None, initargs=None, callback=None):
@@ -157,7 +161,6 @@ class ParallelWorker():
         return res
 
     def map_single(self, collection, func, *args, **kwargs):
-        print(collection)
         return [self.apply_func(item, func, *args, **kwargs) for item in collection]
 
     def apply_func(self, item, func, *args, **kwargs):
@@ -183,7 +186,7 @@ class ParallelWorker():
         try:
             res = item.result()
         except Exception as e:
-            print("Oh no! An exception occured! " + str(e))
+            print("Oh no! An exception occured when getting results! " + str(e))
             print(traceback.format_exc())
             return None
         return res
