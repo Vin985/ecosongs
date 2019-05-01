@@ -49,9 +49,11 @@ class TableModel():
     def load_data(self):
         try:
             if not self.dbmanager:
-                raise AttributeError("No database manager provided. Cannot load data")
+                raise AttributeError(
+                    "No database manager provided. Cannot load data")
             if not self.TABLE_NAME:
-                raise AttributeError("No table name provided. Cannot load data")
+                raise AttributeError(
+                    "No table name provided. Cannot load data")
             self.df = self.dbmanager.get_table(self.TABLE_NAME)
             return(self._df.loc[:, self._df.columns.intersection(self.columns)])
             # self._df["date"] = pd.to_datetime(self._df["date"])
@@ -98,7 +100,8 @@ class TableModel():
 
     def check_ids(self, table):
         if "id" not in table.columns:
-            table["id"] = list(range(self.next_id, self.next_id + table.shape[0]))
+            table["id"] = list(
+                range(self.next_id, self.next_id + table.shape[0]))
         if not table.empty:
             self.next_id = max(table["id"]) + 1
         return table
@@ -113,8 +116,15 @@ class TableModel():
         if remove_in.empty:
             return remove_from
         duplicates_dict = self.get_duplicates_dict(remove_from)
-        res = remove_in[~remove_in[self.DUPLICATE_COLUMNS].isin(duplicates_dict).all(axis=1)]
+        res = remove_in[~remove_in[self.DUPLICATE_COLUMNS].isin(
+            duplicates_dict).all(axis=1)]
         return res
+
+    def delete(self, idxs, save=False):
+        print(self.df)
+        new = self.df.drop(idxs)
+        self.update(table=new, save=save)
+        print(self.df)
 
     def add(self, new, save=False, replace=True):
         # TODO: check duplicates
