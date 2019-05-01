@@ -34,7 +34,7 @@ class RecordingsTreeModel(QStandardItemModel):
                     self.create_model(categories[1:], recs, path.copy(), item)
                 else:
                     # item is a recording. No path as whole recording will be in data
-                    self.add_recordings(recordings, item)
+                    self.add_recordings(recs, item)
                 if parent:
                     parent.appendRow(item)
                     # print(parent.child(0, 0).text())
