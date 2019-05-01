@@ -34,7 +34,7 @@ class FileManager:
     # TODO: put in config
     PATTERNS = {"Audiomoth": "([A-F0-9]{8})",
                 "SongMeter": "(.+)_(\d{8}_\d{6})",
-                "Ecosongs": "(.+)_(.+)_(\d{4}-\d{2}-\d{2})_(\d{2}:\d{2}:\d{2})"}
+                "Ecosongs": "(.+)_(.+)_(\d{4}-\d{2}-\d{2}_\d{2}:\d{2}:\d{2})"}
 
     def __init__(self, sites=None):
         self.file_infos = None
@@ -182,8 +182,13 @@ class FileManager:
         return date
 
     def extract_date_songmeter(self, match):
-        date = datetime.strptime(match.group(2), "%Y%m%d_%H%S%M")
+        date = datetime.strptime(match.group(2), "%Y%m%d_%H%M%S")
         logging.debug("extracting date SM2: " + str(date))
+        return date
+
+    def extract_date_ecosongs(self, match):
+        date = datetime.strptime(match.group(3), "%Y-%m-%d_%H:%M:%S")
+        logging.debug("extracting date Ecosongs: " + str(date))
         return date
 
     def get_files_to_convert(self):
