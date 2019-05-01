@@ -14,7 +14,7 @@ class RecordingsTreeView(QTreeView):
     compute_ACI = Signal()
 
     def __init__(self, parent):
-        super(self.__class__, self).__init__(parent)
+        super().__init__(parent)
         recordings = qApp.get_recordings()
         # Change to treeview
         self.setModel(RecordingsTreeModel(self, recordings))
