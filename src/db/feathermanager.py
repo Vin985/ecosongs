@@ -18,6 +18,7 @@ class FeatherManager(DBManager):
     def save(self, table, data):
         if not os.path.exists(self.db_root):
             os.makedirs(self.db_root)
+        data.reset_index(inplace=True, drop=True)
         data.to_feather(self.db_root + table + ".feather")
 
     def update(self, table, data):
