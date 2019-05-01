@@ -7,7 +7,8 @@ class RecordingsTable(TableModel):
     DUPLICATE_COLUMNS = ["name", "plot", "site", "year"]
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, Recording.COLUMNS, df=df, dbmanager=dbmanager)
+        TableModel.__init__(self, Recording.COLUMNS,
+                            df=df, dbmanager=dbmanager)
         self.recordings = {}
 
     def load_recordings(self, indexes, spec_opts=None):
