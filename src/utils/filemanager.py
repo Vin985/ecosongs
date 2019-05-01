@@ -56,14 +56,17 @@ class FileManager:
         print(text)
 
     def get_infos(self):
-        if self.options["folder"]:
-            file_infos = self.get_from_folder()
-        else:
-            file_infos = self.extract_infos(None, self.file_paths)
-        file_infos = list(filter(None, file_infos))
-        self.file_infos = pd.DataFrame(file_infos)
-        self.files_loaded()
-        return self.file_infos
+        try:
+            if self.options["folder"]:
+                file_infos = self.get_from_folder()
+            else:
+                file_infos = self.extract_infos(None, self.file_paths)
+            file_infos = list(filter(None, file_infos))
+            self.file_infos = pd.DataFrame(file_infos)
+            self.files_loaded()
+            return self.file_infos
+        except Exception:
+            print(traceback.format_exc())
 
     def get_from_folder(self):
         self.log("Retrieving files from folder: " + self.root_dir)
@@ -237,14 +240,15 @@ class FileManager:
                     os.makedirs(dirname)
 
             self.log("Converting {0} in {1}".format(path, new_path))
-            # wac2wav(path, new_path)
+            wac2wav(path, new_path)
 
             # Update file info with information about the wav file
-            headers = get_wav_headers(new_path)
-            mask = self.file_infos.path == filename
-            cols = ["duration", "sample_rate", "path", "ext"]
-            self.file_infos.loc[mask, cols] = [
-                headers["Duration"], headers["SampleRate"], new_path, "wav"]
+            if os.path.exists(new_path):
+                headers = get_wav_headers(new_path)
+                mask = self.file_infos.path == path
+                cols = ["duration", "sample_rate", "path", "ext"]
+                self.file_infos.loc[mask, cols] = [
+                    headers["Duration"], headers["SampleRate"], new_path, "wav"]
 
             if self.archive:
                 print("adding file to archive")
