@@ -11,6 +11,7 @@ class Settings(QSettings):
     #     super(self.__class__, self).__init__()
 
     GROUP_SPECTROGRAM = "spectrogram"
+    GROUP_IMAGE = "image"
 
     @property
     def spec_fft(self):
@@ -42,6 +43,13 @@ class Settings(QSettings):
         self.setValue(key, value)
         self.sync()
 
+    def save_group(self, group_name, values):
+        self.beginGroup(group_name)
+        for key, value in values.items():
+            self.save(key, value)
+        self.endGroup()
+        self.sync()
+
     def setValue(self, key, value):
         valrepr = repr(value)
         try:
@@ -69,7 +77,8 @@ class Settings(QSettings):
             context = "/" + context
         self.beginGroup(group + context)
         if context and not self.childKeys():
-            logging.info("No entries found for selected context, using default group")
+            logging.info(
+                "No entries found for selected context, using default group")
             self.endGroup()
             self.beginGroup(group)
         res["spec_window"] = self.get("window", "'hann'")
@@ -87,8 +96,9 @@ class Settings(QSettings):
 
     def image_settings(self):
         res = {}
-        self.beginGroup("image")
-        res["color_masks_str"] = self.get("color_masks", "['red', 'lime', 'blue']")
+        self.beginGroup(self.GROUP_IMAGE)
+        res["color_masks_str"] = self.get(
+            "color_masks", "['red', 'lime', 'blue']")
         res["contrast"] = self.get("contrast", "0")
         res["invert_colors"] = self.get("invert_colors", "False")
         res["composite_ffts"] = self.get("composite_ffts", "[128, 512, 2048]")

@@ -37,17 +37,12 @@ class Ecosongs(QApplication):
 
         db_opts = settings.group_to_dict("database")
         if not db_opts:
+            print("adding database defaults")
             db_opts.update(
                 {"database": "ecosongs", "db_type": "feather", "path": "db"})
-        print(db_opts)
-        self.dbmanager = dbutils.get_db_manager(**db_opts)
-        # self.dbmanager = dbutils.get_db_manager(database=settings.db_name,
-        #                                         db_type=settings.db_type,
-        #                                         path=settings.db_path)
-        # TODO: replace everything with feather?
-        # self.recordings = RecordingTable(dbmanager=self.dbmanager)
-        self.imgen = ImageGenerator(settings.image_settings())
 
+        self.dbmanager = dbutils.get_db_manager(**db_opts)
+        self.imgen = ImageGenerator(settings.image_settings())
         self.tables = TableManager(self.dbmanager)
 
 
