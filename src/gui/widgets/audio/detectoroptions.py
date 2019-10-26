@@ -56,5 +56,5 @@ class DetectorOptions(QWidget, Ui_DetectorOptions):
                              detection_options),
                 "multiprocess": True,
                 "nprocess": 1,
-                "chunksize_percent": 100}
+                "chunksize_percent": 5}
         return opts
