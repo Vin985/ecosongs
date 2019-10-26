@@ -3,8 +3,8 @@
 # Form implementation generated from reading ui file 'spectrogramsettings.ui',
 # licensing of 'spectrogramsettings.ui' applies.
 #
-# Created: Wed Jan  2 14:07:27 2019
-#      by: pyside2-uic  running on PySide2 5.12.0
+# Created: Sat Oct 26 12:49:18 2019
+#      by: pyside2-uic  running on PySide2 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -21,11 +21,11 @@ class Ui_SpectrogramSettings(object):
         self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
         self.label_4 = QtWidgets.QLabel(SpectrogramSettings)
         self.label_4.setObjectName("label_4")
-        self.gridLayout.addWidget(self.label_4, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_4, 6, 0, 1, 1)
         self.checkbox_normalize = QtWidgets.QCheckBox(SpectrogramSettings)
         self.checkbox_normalize.setText("")
         self.checkbox_normalize.setObjectName("checkbox_normalize")
-        self.gridLayout.addWidget(self.checkbox_normalize, 5, 1, 1, 1)
+        self.gridLayout.addWidget(self.checkbox_normalize, 6, 1, 1, 1)
         self.label_5 = QtWidgets.QLabel(SpectrogramSettings)
         self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 3, 0, 1, 1)
@@ -46,8 +46,6 @@ class Ui_SpectrogramSettings(object):
         self.combobox_scale.addItem("")
         self.combobox_scale.addItem("")
         self.gridLayout.addWidget(self.combobox_scale, 1, 1, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 7, 1, 1, 1)
         self.label_2 = QtWidgets.QLabel(SpectrogramSettings)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
@@ -60,12 +58,12 @@ class Ui_SpectrogramSettings(object):
         self.gridLayout.addWidget(self.label, 0, 0, 1, 2)
         self.label_6 = QtWidgets.QLabel(SpectrogramSettings)
         self.label_6.setObjectName("label_6")
-        self.gridLayout.addWidget(self.label_6, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_6, 5, 0, 1, 1)
         self.checkbox_to_db = QtWidgets.QCheckBox(SpectrogramSettings)
         self.checkbox_to_db.setText("")
         self.checkbox_to_db.setChecked(True)
         self.checkbox_to_db.setObjectName("checkbox_to_db")
-        self.gridLayout.addWidget(self.checkbox_to_db, 4, 1, 1, 1)
+        self.gridLayout.addWidget(self.checkbox_to_db, 5, 1, 1, 1)
         self.remove_noise = QtWidgets.QGroupBox(SpectrogramSettings)
         self.remove_noise.setCheckable(True)
         self.remove_noise.setObjectName("remove_noise")
@@ -89,7 +87,16 @@ class Ui_SpectrogramSettings(object):
         self.lineedit_noise_window = QtWidgets.QLineEdit(self.remove_noise)
         self.lineedit_noise_window.setObjectName("lineedit_noise_window")
         self.gridLayout_2.addWidget(self.lineedit_noise_window, 2, 1, 1, 1)
-        self.gridLayout.addWidget(self.remove_noise, 6, 0, 1, 2)
+        self.gridLayout.addWidget(self.remove_noise, 7, 0, 1, 2)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem, 8, 0, 1, 2)
+        self.label_10 = QtWidgets.QLabel(SpectrogramSettings)
+        self.label_10.setObjectName("label_10")
+        self.gridLayout.addWidget(self.label_10, 4, 0, 1, 1)
+        self.checkbox_pcen = QtWidgets.QCheckBox(SpectrogramSettings)
+        self.checkbox_pcen.setText("")
+        self.checkbox_pcen.setObjectName("checkbox_pcen")
+        self.gridLayout.addWidget(self.checkbox_pcen, 4, 1, 1, 1)
 
         self.retranslateUi(SpectrogramSettings)
         self.combobox_fft.setCurrentIndex(2)
@@ -120,4 +127,5 @@ class Ui_SpectrogramSettings(object):
         self.lineedit_noise_hist_rel_size.setText(QtWidgets.QApplication.translate("SpectrogramSettings", "2", None, -1))
         self.label_9.setText(QtWidgets.QApplication.translate("SpectrogramSettings", "window_smoothing", None, -1))
         self.lineedit_noise_window.setText(QtWidgets.QApplication.translate("SpectrogramSettings", "5", None, -1))
+        self.label_10.setText(QtWidgets.QApplication.translate("SpectrogramSettings", "Use PCEN", None, -1))
 

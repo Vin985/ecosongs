@@ -83,6 +83,7 @@ class Settings(QSettings):
             self.beginGroup(group)
         res["spec_window"] = self.get("window", "'hann'")
         res["n_fft"] = self.get("n_fft", "512")
+        res["pcen"] = self.get("pcen", "False")
         res["to_db"] = self.get("to_db", "True")
         res["normalize"] = self.get("normalize", "True")
         res["spec_hop_length"] = self.get("hop_length", "None")
