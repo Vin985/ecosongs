@@ -4,10 +4,13 @@ from db.models import TableModel
 
 class RecordingsTable(TableModel):
     TABLE_NAME = "recordings"
+    COLUMNS = ["name", "year", "site",
+               "plot", "date", "path",
+               "ext", "recorder", "duration", "sample_rate"]  # , "old_name"]
     DUPLICATE_COLUMNS = ["name", "plot", "site", "year"]
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, Recording.COLUMNS,
+        TableModel.__init__(self, self.COLUMNS,
                             df=df, dbmanager=dbmanager)
         self.recordings = {}
 

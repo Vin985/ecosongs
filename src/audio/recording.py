@@ -3,52 +3,10 @@ import time
 import librosa
 
 from audio import sample
-from db.models import BaseModel, TableModel
-
-
-class RecordingTable(TableModel):
-    TABLE_NAME = "recordings"
-    DUPLICATE_COLUMNS = ["name", "plot", "site", "year"]
-
-    def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, Recording.COLUMNS, df=df, dbmanager=dbmanager)
-        self.recordings = {}
-
-    def load_recordings(self, indexes, spec_opts=None):
-        """Create Recording objects from indexes if they had not been loaded
-        in memory before.
-
-        Parameters
-        ----------
-        indexes : type
-            Description of parameter `indexes`.
-
-        Returns
-        -------
-        type
-            Description of returned object.
-
-        """
-        to_load = [idx for idx in indexes if idx not in self.recordings]
-        if to_load:
-            to_load = self._df.iloc[indexes]
-            to_update = {row.Index: Recording(row._asdict(), spec_opts=spec_opts) for row in to_load.itertuples(index=True)}
-            self.recordings.update(to_update)
-        return [self.recordings[idx] for idx in indexes]
+from db.models import BaseModel
 
 
 class Recording(BaseModel, sample.Sample):
-
-    COLUMNS = ["name", "year", "site",
-               "plot", "date", "path",
-               "ext", "recorder", "duration", "sample_rate"]  # , "old_name"]
-    #
-    # def __init__(self, filepath, recorder=None, model=None):
-    #     self.filepath = filepath
-    #     if not model:
-    #         infos = metadata.extract_from_file(filepath, recorder)
-    #     self.model = models.RecordingModel(filepath=filepath, **infos)
-    #     self.audio = None
 
     # TODO: load from file_path only
     def __init__(self, attributes, spec_opts=None):

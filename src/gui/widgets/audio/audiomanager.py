@@ -107,9 +107,7 @@ class AudioManager(QWidget, Ui_AudioManager):
             self.show_recording_details(item.data())
 
     def draw_events(self, img, duration):
-        # TODO: add events table to qApp
         events_table = qApp.tables.song_events
-        # SongEventsTable(dbmanager=qApp.feather_manager)
         if not events_table.empty:
             events = events_table.get_events(self.current_recording.id)
             im_start = self.time_slider.value()
@@ -146,6 +144,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: save image somewhere
         im = qApp.imgen.spec2img(spec, size=(
             self.sec2pixels(max_duration), 299))
+        # TODO: change events when checkbox is checked
         if self.checkbox_draw_events.isChecked():
             im = self.draw_events(im, max_duration)
         img = ImageQt.ImageQt(im)
@@ -222,6 +221,8 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.tree_view.clearSelection()
         self.tree_view.model().removeRow(idx.row(), idx.parent())
         qApp.tables.recordings.delete(recs, save=True)
+        values_dict = {"recording_id": recs}
+        qApp.tables.song_events.delete(values_dict, columns=["recording_id"])
         # TODO : delete other dependencies
 
     def get_selected_recordings(self, type=None):

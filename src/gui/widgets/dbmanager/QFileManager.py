@@ -81,7 +81,7 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         print("saving")
         # TODO: append to existing recordings
         to_save = self.file_infos.loc[:, self.file_infos.columns.intersection(
-            Recording.COLUMNS)]
+            RecordingsTable.COLUMNS)]
         to_save["date"] = pd.to_datetime(to_save["date"])
         self.to_save = to_save
         self.tosave.emit()

@@ -3,6 +3,7 @@ import pandas as pd
 
 class BaseModel:
     COLUMNS = []
+    id = None
 
     def __init__(self, from_collection):
         if from_collection:
@@ -116,13 +117,21 @@ class TableModel():
         if remove_in.empty:
             return remove_from
         duplicates_dict = self.get_duplicates_dict(remove_from)
-        res = remove_in[~remove_in[self.DUPLICATE_COLUMNS].isin(
-            duplicates_dict).all(axis=1)]
+        # res = remove_in[~remove_in[self.DUPLICATE_COLUMNS].isin(
+        #     duplicates_dict).all(axis=1)]
+        res = self.remove_rows(
+            remove_in, self.DUPLICATE_COLUMNS, duplicates_dict)
         return res
 
-    def delete(self, idxs, save=False):
+    def remove_rows(self, data, columns, dict_values):
+        return data[~data[columns].isin(dict_values).all(axis=1)]
+
+    def delete(self, rows, columns=None, save=False):
         print(self.df)
-        new = self.df.drop(idxs)
+        if not columns:
+            new = self.df.drop(rows)
+        else:
+            new = self.remove_rows(self.df, columns, rows)
         self.update(table=new, save=save)
         print(self.df)
 
