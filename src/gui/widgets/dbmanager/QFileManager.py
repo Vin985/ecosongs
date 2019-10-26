@@ -1,12 +1,8 @@
 
-import os
-import time
-
 import pandas as pd
 from PySide2.QtCore import QObject, Signal
-from PySide2.QtGui import qApp
 
-from audio.recording import Recording
+from db.tables.recordings import RecordingsTable
 from gui.threads.ParallelWorker import ParallelWorker
 from gui.utils.settings import Settings
 from utils.filemanager import FileManager
@@ -38,9 +34,10 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         settings = Settings()
         FileManager.__init__(self, sites=settings.sites_path)
         self.options["multiprocess"] = False
+        self.to_save = None
 
     def import_files(self):
-        self.convert_files()
+        self.convert_files(self.to_wav)
         self.remove_wac()
         self.rename_files()
         self.save_recordings()
@@ -50,11 +47,11 @@ class QFileManager(QObject, ParallelWorker, FileManager):
         # qApp.save_data("recordings", self.file_infos, format="t")
         self.filesLoaded.emit()
 
-    def convert_files(self):
+    def convert_files(self, files):
         print("converting")
         self.converting.emit()
         # self.open_archive()
-        self.map(self.to_wav, self.convert_file)
+        self.map(files, self.convert_file)
         # self.close_archive()
 
     def remove_wac(self):
