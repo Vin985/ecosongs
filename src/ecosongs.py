@@ -1,6 +1,6 @@
 import logging
-import sys
 import os
+import sys
 
 from PySide2.QtWidgets import QApplication
 
