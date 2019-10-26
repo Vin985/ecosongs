@@ -13,3 +13,5 @@ feather-format
 matplotlib
 cython
 pyaml
+plotnine
+xlrd

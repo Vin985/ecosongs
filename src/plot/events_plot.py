@@ -32,7 +32,8 @@ class EventsPlot(Plot):
             self.get_events()
         plot_data = self.events.copy()
         plot_data = self.subset_data(plot_data)
-        plot_data = plot_data.groupby(["plot"], as_index=False).apply(self.check_dates)
+        plot_data = plot_data.groupby(
+            ["plot"], as_index=False).apply(self.check_dates)
         plot_data = self.check_data_columns(plot_data)
         plot_data = self.aggregate(plot_data, "n_events")
         self.plot_data = plot_data
@@ -93,7 +94,8 @@ class EventsPlot(Plot):
     def add_recording_info(self):
         # TODO: externalize columns selection
         recs = self.recordings_raw[["id", "date", "name", "site", "plot"]]
-        self.events = self.events.merge(recs, left_on="recording_id", right_on="id")
+        self.events = self.events.merge(
+            recs, left_on="recording_id", right_on="id")
 
     def check_data_columns(self, data):
         # if "duration" not in data:
@@ -105,7 +107,8 @@ class EventsPlot(Plot):
         data = data.sort_values(["site", "plot", "julian", "date"])
         if "julian_bounds" in self.opts:
             min_j, max_j = self.opts["julian_bounds"]
-            data = data.loc[(data["julian"] > min_j) & (data["julian"] < max_j)]
+            data = data.loc[(data["julian"] > min_j) &
+                            (data["julian"] < max_j)]
         return data
 
     def check_dates(self, df):
@@ -144,7 +147,7 @@ class EventsPlot(Plot):
     def plot_plots(self, site, plot_options, as_pdf):
         subset = self.plot_data.loc[self.plot_data["site"] == site]
         plots = subset["plot"].unique()
-        if len(plots) > 1:
+        if len(plots) > 0:
             if as_pdf:
                 plot_options["save"] = None
             else:
@@ -218,7 +221,8 @@ class EventsPlot(Plot):
         if facet:
             # TODO: use facet as save
             nrow, ncol = self.get_facet_rows(plot_data, facet_by)
-            plt += facet_wrap(facet_by, nrow=nrow, ncol=ncol, scales=facet_scales)
+            plt += facet_wrap(facet_by, nrow=nrow,
+                              ncol=ncol, scales=facet_scales)
         if points:
             plt += geom_point()
         if error_bars:
