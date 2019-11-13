@@ -17,6 +17,21 @@ except Exception:
     print("Woops, module EventsPlot not found")
 
 
+TAGS_ROOT_PATH = "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Reference/Priority"
+TAGS_LABELS_PATH = os.path.join(TAGS_ROOT_PATH, "labels")
+INCLUDE_TAG = ["Biophony", "Bird"]
+EXCLUDE_TAG = ["Human"]
+EVENTS_PATH = "../db/feather/song_events.feather"
+RECORDINGS_PATH = "../db/feather/recordings.feather"
+MATCHED_PATH = "matched_events.feather"
+
+TAGS_COLUMNS = {"Filename": "file_name", "Label": "tag", "Related": "related_tags",
+                "LabelStartTime_Seconds": "tag_start", "LabelEndTime_Seconds": "tag_end"}
+EVENTS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
+                  'recording_id': "recording_id", 'start': "event_start",
+                  'name': "file_name", "index": "event_index"}
+
+
 def get_done_files(path):
     local_conf = os.path.join(path, "config.conf")
     done_files = []
@@ -31,14 +46,15 @@ def get_done_files(path):
     return res
 
 
-def load_annotations(folder_path, labels_path, only_done=True, extensions=[".csv"], columns=None):
+def load_annotations(root_path, tags_path, only_done=True,  columns=None, extensions=[".csv"]):
     res_files = []
     dfs = []
     done_files = []
+    res = pd.DataFrame()
     # Only get done files. Load list of done files
     if only_done:
-        done_files = get_done_files(folder_path)
-    for root, dirs, files in os.walk(labels_path):
+        done_files = get_done_files(root_path)
+    for root, dirs, files in os.walk(tags_path):
         for f in sorted(files):
             # do not check hidden files or locked files
             if not f[0] == ".":
@@ -47,7 +63,7 @@ def load_annotations(folder_path, labels_path, only_done=True, extensions=[".csv
                 if ext in extensions:
                     file_id = f[:-14]
                     if (not only_done) or (only_done and (file_id in done_files)):
-                        df = pd.read_csv(os.path.join(labels_path, f))
+                        df = pd.read_csv(os.path.join(tags_path, f))
                         if columns:
                             if type(columns) is dict:
                                 df = df[columns.keys()]
@@ -64,35 +80,29 @@ def load_annotations(folder_path, labels_path, only_done=True, extensions=[".csv
     if dfs:
         res = pd.concat(dfs, ignore_index=True)
     return (res_files, res)
-
-
-ROOT_PATH = "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Reference/Priority"
-LABELS_PATH = os.path.join(ROOT_PATH, "labels")
-INCLUDE_TAG = ["Biophony", "Bird"]
-EXCLUDE_TAG = ["Human"]
-
-TAG_COLUMNS = {"Filename": "file_name", "Label": "tag", "Related": "related_tags",
-               "LabelStartTime_Seconds": "tag_start", "LabelEndTime_Seconds": "tag_end"}
-EVENTS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
-                  'recording_id': "recording_id", 'start': "event_start", 'name': "file_name", "index": "event_index"}
 # Load raw data
-events_data = feather.read_dataframe("../db/feather/song_events.feather")
-recordings_data = feather.read_dataframe("../db/feather/recordings.feather")
-# Load annotations
-files_with_annots, annots_df = load_annotations(
-    ROOT_PATH, LABELS_PATH, only_done=True, columns=TAG_COLUMNS)
-print(files_with_annots)
-print(annots_df)
+# events_data = feather.read_dataframe("../db/feather/song_events.feather")
+# recordings_data = feather.read_dataframe("../db/feather/recordings.feather")
+# # Load annotations
+# files_with_annots, annots_df = load_annotations(
+#     TAGS_ROOT_PATH, TAGS_LABELS_PATH, only_done=True, columns=TAG_COLUMNS)
+# print(files_with_annots)
+# print(annots_df)
 
-# Get only recordings
-recs_df = recordings_data.loc[recordings_data["name"].isin(files_with_annots)]
-events_df = events_data.loc[events_data.recording_id.isin(recs_df.id)]
-events_df = events_df.merge(
-    recs_df[["id", "name"]], left_on="recording_id", right_on="id")
-events_df.reset_index(inplace=True)
-events_df = events_df[EVENTS_COLUMNS.keys()]
-events_df.rename(columns=EVENTS_COLUMNS, inplace=True)
-print(events_df)
+
+def load_events(events_path, recordings_path, files_with_annots, events_columns):
+    # Load raw data
+    events_data = feather.read_dataframe(events_path)
+    recordings_data = feather.read_dataframe(recordings_path)
+    recs_df = recordings_data.loc[recordings_data["name"].isin(
+        files_with_annots)]
+    events_df = events_data.loc[events_data.recording_id.isin(recs_df.id)]
+    events_df = events_df.merge(
+        recs_df[["id", "name"]], left_on="recording_id", right_on="id")
+    events_df.reset_index(inplace=True)
+    events_df = events_df[EVENTS_COLUMNS.keys()]
+    events_df.rename(columns=EVENTS_COLUMNS, inplace=True)
+    return events_df
 
 
 def merge_annotations(annots):
@@ -171,29 +181,54 @@ def match_tags(file, annots_df, events_df):
     return match
 
 
-# Iterate over files to match events
-res = [match_tags(f, annots_df, events_df) for f in files_with_annots]
+def load_data(file_path="matched_events.feather", events_path="",
+              recordings_path="", tag_root_path="", tag_labels_path="",
+              only_done=True, columns={}, tag_extensions=[".csv"]):
+    files_with_annots, tags_df = load_annotations(root_path=tag_root_path,
+                                                  tags_path=tag_labels_path,
+                                                  only_done=only_done,
+                                                  columns=columns["tags_columns"],
+                                                  extensions=tag_extensions)
+    events_df = load_events(events_path, recordings_path,
+                            files_with_annots, columns["events_columns"])
+    if os.path.isfile(file_path):
+        match_df = pd.read_feather(file_path)
+    else:
+        res = [match_tags(f, tags_df, events_df) for f in files_with_annots]
+        match_df = pd.concat(res)
+    return events_df, tags_df, match_df
 
-match_df = pd.concat(res)
 
+def get_stats(match_df, events_df, tags_df):
+    # True pos: number of unique events that matched with a tag
+    true_pos = len(match_df[match_df.event_index != -1].event_index.unique())
+    # False neg: number of tags that did not have a match
+    false_neg = match_df[match_df.event_index == -1].shape[0]
+    # Number of tags that are matched
+    n_tags_matched = len(
+        match_df.loc[match_df.event_index != -1].tag_index.unique())
+
+    # Precision: TP / TP + FP
+    precision = true_pos / events_df.shape[0]
+    # Recall: TP / TP + FN
+    recall = true_pos / (true_pos + false_neg)
+    f1_score = 2 * (precision * recall) / (precision + recall)
+
+    return {"true_positive": true_pos, "false_negative": false_neg,
+            "n_tags_matched": n_tags_matched, "precision": precision,
+            "recall": recall, "F1_score": f1_score}
+
+
+events_df, tags_df, match_df = load_data(file_path=MATCHED_PATH,
+                                         events_path=EVENTS_PATH,
+                                         recordings_path=RECORDINGS_PATH,
+                                         tag_root_path=TAGS_ROOT_PATH,
+                                         tag_labels_path=TAGS_LABELS_PATH,
+                                         only_done=True,
+                                         columns={"events_columns": EVENTS_COLUMNS, "tags_columns": TAGS_COLUMNS})
 print(match_df)
-print(match_df.loc[match_df.event_index != -1].index)
+# match_df.reset_index(inplace=True)
+# match_df.to_feather("matched_events.feather")
 
-# True pos: number of unique events that matched with a tag
-true_pos = len(match_df[match_df.event_index != -1].event_index.unique())
-# False neg: number of tags that did not have a match
-false_neg = match_df[match_df.event_index == -1].shape[0]
-
-n_annots_matched = len(
-    match_df.loc[match_df.event_index != -1].tag_index.unique())
-print(true_pos)
-print(false_neg)
-print(n_annots_matched)
-
-precision = true_pos / events_df.shape[0]
-recall = true_pos / (true_pos + false_neg)
-f1 = 2 * (precision * recall) / (precision + recall)
-# recall = n_annots_matched / annots_df.shape[0]
-print(precision)
-print(recall)
-print(f1)
+stats = get_stats(match_df, events_df, tags_df)
+print(stats)
