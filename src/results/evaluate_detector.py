@@ -60,6 +60,8 @@ def load_annotations(folder_path, labels_path, only_done=True, extensions=[".csv
 
 ROOT_PATH = "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Reference/Priority"
 LABELS_PATH = os.path.join(ROOT_PATH, "labels")
+INCLUDE_TAG = ["Biophony", "Bird"]
+EXCLUDE_TAG = ["Human"]
 
 # Load raw data
 events_data = feather.read_dataframe("../db/feather/song_events.feather")
@@ -93,6 +95,7 @@ events_df["prop_overlap"] = 0
 events_df["dur_overestimate"] = 0
 events_df["prop_overestimate"] = 100
 events_df["tags_idx"] = ""
+print(events_df)
 
 
 def merge_annotations(annots):
@@ -167,6 +170,20 @@ def match_with_annotation(event, annots=None):
     return event
 
 
+def get_detected_tags_list(detected):
+    res = []
+    for tag in detected:
+        if tag == "":
+            continue
+        elif ',' in tag:
+            tmp = tag.split(",")
+            tmp = [item for item in tmp if item not in res]
+            res += tmp
+        elif tag not in res:
+            res.append(tag)
+    return res
+
+
 def match_events(file, annots_df, events_df):
     res = {}
     # Get annotations for the file
@@ -178,75 +195,94 @@ def match_events(file, annots_df, events_df):
     events = events_df.loc[events_df.name == file].copy()
     # Match events with annotations
     match = events.apply(match_with_annotation, axis=1, annots=annots)
+    detected = match.tags_idx.unique()
+    detected = get_detected_tags_list(detected)
+    n_detected = len(detected)
+    recall = n_detected / annots.shape[0]
+
     res["dur_total"] = recs_df.loc[recs_df.name == file, "duration"].values[0]
     res["n_tot_annots"] = annots.shape[0]
     res["n_tot_events"] = events.shape[0]
     res["dur_tot_annots"] = np.sum(annots.duration)
     res["dur_tot_events"] = np.sum(events.duration)
+    res["n_detected"] = n_detected
+    res["recall"] = recall
+
     return {"file": file, "global_stats": res, "events": match}
 
 
-res = [match_events(f, annots_df, events_df) for f in files_with_annots]
+def match_with_annotation2(event, annots=None):
+    dur_overlap = 0
+    prop_overlap = 0
+    dur_overestimate = event.duration
+    prop_overestimate = 100
 
+    # get tags that overlap with the detected event
+    tags = annots.loc[(event.start < annots.end) &
+                      (event.end > annots.start)]
+    tags.reset_index(inplace=True, drop=True)
+    tags.rename(columns={"start": "tag_start",
+                         "end": "tag_end", "duration": "tag_duration"})
+
+    ev = []
+    for i in range(0, tags.shape[0]):
+        ev.append(event)
+    tmp = pd.DataFrame(ev)
+    tmp.reset_index(inplace=True, drop=True)
+    print(tags)
+    print(tmp)
+    res = pd.concat([tags, tmp], join="outer", axis=1)
+    print(res)
+
+    return event
+
+
+def match_events2(file, annots_df, events_df):
+    res = {}
+    # Get annotations for the file
+    annots = annots_df.loc[annots_df.name == file]
+
+    # Get events detected for the file
+    events = events_df.loc[events_df.name == file].copy()
+    # Match events with annotations
+    match = events.apply(match_with_annotation2, axis=1, annots=annots)
+    # detected = match.tags_idx.unique()
+    # detected = get_detected_tags_list(detected)
+    # n_detected = len(detected)
+    # recall = n_detected / annots.shape[0]
+    #
+    # res["dur_total"] = recs_df.loc[recs_df.name == file, "duration"].values[0]
+    # res["n_tot_annots"] = annots.shape[0]
+    # res["n_tot_events"] = events.shape[0]
+    # res["dur_tot_annots"] = np.sum(annots.duration)
+    # res["dur_tot_events"] = np.sum(events.duration)
+    # res["n_detected"] = n_detected
+    # res["recall"] = recall
+    #
+    # return {"file": file, "global_stats": res, "events": match}
+
+
+res = [match_events2(f, annots_df, events_df) for f in files_with_annots]
+
+# Iterate over files to match events
+res = [match_events(f, annots_df, events_df) for f in files_with_annots]
+# Create final data_frame
 final_df = pd.concat([x["events"] for x in res])
+
 print(final_df)
 true_pos = final_df[final_df["matched"] == True]
 
+# Calculate precision
 precision = true_pos.shape[0] / final_df.shape[0]
 print(precision)
+
+recall = [item["global_stats"]["recall"] for item in res]
+mean_recall = sum(recall) / float(len(recall))
+print(recall)
+print(mean_recall)
 
 stats_df = true_pos[["ntags", "dur_overlap",
                      "prop_overlap", "dur_overestimate", "prop_overestimate"]]
 stats = stats_df.agg("mean")
 
 print(stats)
-
-
-# for file in files_with_annots:
-#     print(file)
-#     res = {}
-#     annots = annots_df[annots_df.name == file]
-#     # merge overlapping annotations into one
-#     annots = merge_annotations(annots)
-#     events = events_df.loc[events_df.name == file].copy()
-#     test = events.apply(match_with_annotation, axis=1, annots=annots)
-#     print(test)
-#     res["dur_total"] = recs_df.loc[recs_df.name == file, "duration"].values[0]
-#     res["n_tot_annots"] = annots.shape[0]
-#     res["n_tot_events"] = events.shape[0]
-#     res["dur_tot_annots"] = np.sum(annots.duration)
-#     res["dur_tot_events"] = np.sum(events.duration)
-
-# tmp = []
-# for index, event in events.iterrows():
-#
-#     dur_overlap = 0
-#     prop_overlap = 0
-#     dur_overestimate = event.duration
-#     prop_overestimate = 100
-#
-#     # get tags that overlap with the detected event
-#     tags = annots.loc[(event.start < annots.end) &
-#                       (event.end > annots.start)]
-#
-#     ntags = tags.shape[0]
-#     if ntags > 0:
-#         events_df.loc[index, "matched"] = True
-#         for idx, tag in tags.iterrows():
-#             dur_overlap = min(tag.end, event.end) - \
-#                 max(tag.start, event.start)
-#             prop_overlap = dur_overlap / tag.duration * 100
-#             dur_overestimate = event.duration - dur_overlap
-#             prop_overestimate = dur_overestimate / event.duration * 100
-#             print("found overlapping annotation for: " +
-#                   str(dur_overlap))
-#     tmp_res = {"ntags": ntags,
-#                "dur_overlap": dur_overlap,
-#                "prop_overlap": prop_overlap,
-#                "dur_overestimate": dur_overestimate,
-#                "prop_overestimate": prop_overestimate}
-#     tmp.append(tmp_res)
-# over_res = pd.DataFrame(tmp)
-# print(over_res.agg("mean"))
-# print(res)
-# break
