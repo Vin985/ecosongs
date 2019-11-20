@@ -81,6 +81,12 @@ class DetectorDialog(AnalyzerDialog, Ui_DetectorDialog):
         super().process_results()
         events = self.audio_analyzer.results
         print(events)
-        if self.checkbox_save.isChecked():
+        if self.options.checkbox_save.isChecked():
             events_table = qApp.tables.song_events
-            events_table.add(events, save=True, replace=self.checkbox_overwrite.isChecked())
+            analysis_options = qApp.tables.analysis_options
+            options_id = analysis_options.add(
+                self.audio_analyzer.options, type="event_detection", save=True)
+            events["analysis_options"] = options_id
+            print(events)
+            events_table.add(events, save=True,
+                             replace=self.options.checkbox_overwrite.isChecked())
