@@ -5,7 +5,7 @@ import os
 import feather
 import numpy as np
 import pandas as pd
-from plotnine import (aes, element_text, facet_grid, geom_histogram,
+from plotnine import (aes, element_text, facet_grid, geom_bar, geom_histogram,
                       geom_point, geom_smooth, ggplot, ggtitle,
                       scale_x_continuous, theme)
 
@@ -27,11 +27,12 @@ EVENTS_PATH = "../db/feather/song_events_good_bak_151119.feather"
 RECORDINGS_PATH = "../db/feather/recordings.feather"
 MATCHED_PATH = "matched_events.feather"
 
-TAGS_COLUMNS = {"Filename": "file_name", "Label": "tag", "Related": "related_tags",
+TAGS_COLUMNS = {"Filename": "file_name", "tags": "tags",
                 "LabelStartTime_Seconds": "tag_start", "LabelEndTime_Seconds": "tag_end"}
 EVENTS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
                   'recording_id': "recording_id", 'start': "event_start",
                   'name': "file_name", "index": "event_index"}
+SPECIES_LIST = ["AMGP", "SESA", "WRSA", "LALO", "UNKN"]
 
 
 def get_done_files(path):
@@ -69,6 +70,8 @@ def load_annotations(root_path, tags_path, only_done=True,  columns=None, extens
                         if columns:
                             if type(columns) is dict:
                                 try:
+                                    df["tags"] = df["Label"] + \
+                                        "," + df["Related"]
                                     df = df[columns.keys()]
                                     df.rename(columns=columns, inplace=True)
                                     df.file_name = df.file_name.apply(
@@ -86,7 +89,6 @@ def load_annotations(root_path, tags_path, only_done=True,  columns=None, extens
         break
     if dfs:
         res = pd.concat(dfs, ignore_index=True)
-        print(res)
     return (res_files, res)
 # Load raw data
 # events_data = feather.read_dataframe("../db/feather/song_events.feather")
@@ -150,7 +152,8 @@ def match_events(tag, events_df=None):
     tmp = [tag]
     if events.shape[0] == 0:
         empty_event = pd.Series(
-            {"event_end": 0, "event_id": -1, "event_start": 0, "event_index": -1, "event_duration": 0})
+            {"event_end": 0, "event_id": -1, "event_start": 0,
+             "event_index": -1, "event_duration": 0})
         events = pd.DataFrame([empty_event])
     else:
         for i in range(1, events.shape[0]):
@@ -160,20 +163,6 @@ def match_events(tag, events_df=None):
     tmp_df.rename(columns={"index": "tag_index"}, inplace=True)
     res = pd.concat([tmp_df, events], join="outer", axis=1)
 
-    return res
-
-
-def get_detected_tags_list(detected):
-    res = []
-    for tag in detected:
-        if tag == "":
-            continue
-        elif ',' in tag:
-            tmp = tag.split(",")
-            tmp = [item for item in tmp if item not in res]
-            res += tmp
-        elif tag not in res:
-            res.append(tag)
     return res
 
 
@@ -254,12 +243,6 @@ def get_tag_overlap(events, only_matched=False):
             # There is no overlap of events, just add the duration overlapping with annotation
             dur_overlap += min(event.tag_end, event.event_end) - \
                 max(event.tag_start, event.event_start)
-            if dur_overlap < 0:
-                print(event.file_name)
-                print(event.tag_start)
-                print(event.tag_end)
-                print(event.event_start)
-                print(event.event_end)
 
     res["tag_id"] = tmp.iloc[0].tag_index
     res["file_name"] = tmp.iloc[0].file_name
@@ -277,6 +260,28 @@ def get_tags_overlap(match_df):
     return res
 
 
+def filter_tags(df, *args, **kwargs):
+    return df.loc[df.tags.apply(keep_tag, *args, **kwargs)]
+
+
+def keep_tag(raw_tags, has_tags=[], exclude_tags=[], keep_by_default=False):
+    tags = raw_tags.split(",")
+    for tag in tags:
+        if tag in exclude_tags:
+            return False
+        if tag in has_tags:
+            return True
+    return keep_by_default
+
+
+def get_species(raw_tags, species):
+    tags = raw_tags.split(",")
+    for tag in tags:
+        if tag in species:
+            return tag
+    return None
+
+
 events_df, tags_df, match_df = load_data(file_path=MATCHED_PATH,
                                          events_path=EVENTS_PATH,
                                          recordings_path=RECORDINGS_PATH,
@@ -288,10 +293,10 @@ events_df, tags_df, match_df = load_data(file_path=MATCHED_PATH,
 # match_df.reset_index(inplace=True)
 # match_df.to_feather("matched_events.feather")
 
+match_df = filter_tags(match_df, has_tags=["Bird"])
+
 stats = get_stats(match_df, events_df, tags_df)
 print(stats)
-
-print(match_df)
 
 overlap = get_tags_overlap(match_df)
 overlap["log_tag_dur"] = np.log(overlap["tag_duration"])
@@ -303,29 +308,25 @@ more_1s = overlap.loc[overlap["tag_duration"] >= 1]
 # vals = less_1s["prop_overlap"].value_counts(bins=5)
 
 
-# plt = (ggplot(data=overlap, mapping=aes(x='tag_duration', y='n_events')) +
-#        geom_point())  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
-# plt.save("test_dur_nevents.png")
+match_df["species"] = match_df.tags.apply(get_species, species=SPECIES_LIST)
+print(match_df)
+
+plt = (ggplot(data=overlap, mapping=aes(x='tag_duration', y='n_events')) +
+       geom_point())
+plt.save("dur_nevents_nohuman.png")
 #
 # plt = (ggplot(data=overlap, mapping=aes(x='log_tag_dur', y='prop_overlap')) +
-#        geom_point())  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+#        geom_point())
 # plt.save("test_dur_propover.png")
 
-# plt = (ggplot(data=less_1s, mapping=aes(x='log_tag_dur', y='prop_overlap')) +
-#        geom_point())  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
-# plt.save("test_dur_propover.png")
+#
+# plt = (ggplot(data=less_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
+#        geom_histogram(bins=5))
+# plt.save("less1s_hist_nohuman.png")
+# plt = (ggplot(data=more_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
+#        geom_histogram(bins=5))
+# plt.save("more1s_hist_nohuman.png")
 
-# plt = (ggplot(data=less_1s, mapping=aes(x='prop_overlap')) +
-#        geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
-# plt.save("less1s_hist2.png")
-# plt = (ggplot(data=more_1s, mapping=aes(x='prop_overlap')) +
-#        geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
-# plt.save("more1s_hist2.png")
-
-
-plt = (ggplot(data=less_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
-       geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
-plt.save("less1s_hist.png")
-plt = (ggplot(data=more_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
-       geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
-plt.save("more1s_hist.png")
+plt = (ggplot(data=match_df, mapping=aes(x='factor(species)', fill="factor(species)")) +
+       geom_bar())
+plt.save("species_repartition.png")
