@@ -12,7 +12,7 @@ from audio.recording import Recording
 from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.acidialog import AciDialog
-from gui.widgets.audio.detectordialog2 import DetectorDialog
+from gui.widgets.audio.detectordialog import DetectorDialog
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 
 
@@ -124,7 +124,7 @@ class AudioManager(QWidget, Ui_AudioManager):
                     end = self.sec2pixels(
                         min(event.end, im_end) - self.time_slider.value())
                     draw.rectangle(((start, 0), (end, 299)),
-                                   fill=(255, 255, 0, 128))
+                                   fill=(255, 255, 0, 100))
 
         return img
 
