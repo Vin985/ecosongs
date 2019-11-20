@@ -5,7 +5,9 @@ import os
 import feather
 import numpy as np
 import pandas as pd
-from plotnine import element_text, ggtitle, theme
+from plotnine import (aes, element_text, facet_grid, geom_histogram,
+                      geom_point, geom_smooth, ggplot, ggtitle,
+                      scale_x_continuous, theme)
 
 currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
@@ -21,7 +23,7 @@ TAGS_ROOT_PATH = "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Refer
 TAGS_LABELS_PATH = os.path.join(TAGS_ROOT_PATH, "labels")
 INCLUDE_TAG = ["Biophony", "Bird"]
 EXCLUDE_TAG = ["Human"]
-EVENTS_PATH = "../db/feather/song_events.feather"
+EVENTS_PATH = "../db/feather/song_events_good_bak_151119.feather"
 RECORDINGS_PATH = "../db/feather/recordings.feather"
 MATCHED_PATH = "matched_events.feather"
 
@@ -66,10 +68,15 @@ def load_annotations(root_path, tags_path, only_done=True,  columns=None, extens
                         df = pd.read_csv(os.path.join(tags_path, f))
                         if columns:
                             if type(columns) is dict:
-                                df = df[columns.keys()]
-                                df.rename(columns=columns, inplace=True)
-                                df.file_name = df.file_name.apply(
-                                    lambda x: x[:-4])
+                                try:
+                                    df = df[columns.keys()]
+                                    df.rename(columns=columns, inplace=True)
+                                    df.file_name = df.file_name.apply(
+                                        lambda x: x[:-4])
+                                except KeyError as ke:
+                                    print("Key Error {0} found for file {1}. Skipping. Please make sure the file is correct and has all columns".format(
+                                        ke, file_id))
+                                    continue
                             else:
                                 raise ValueError(
                                     "columns must be a dict with old labels as keys and new labels as values")
@@ -79,6 +86,7 @@ def load_annotations(root_path, tags_path, only_done=True,  columns=None, extens
         break
     if dfs:
         res = pd.concat(dfs, ignore_index=True)
+        print(res)
     return (res_files, res)
 # Load raw data
 # events_data = feather.read_dataframe("../db/feather/song_events.feather")
@@ -142,7 +150,7 @@ def match_events(tag, events_df=None):
     tmp = [tag]
     if events.shape[0] == 0:
         empty_event = pd.Series(
-            {"event_end": 0, "event_id": -1, "event_start": 0, "event_index": -1})
+            {"event_end": 0, "event_id": -1, "event_start": 0, "event_index": -1, "event_duration": 0})
         events = pd.DataFrame([empty_event])
     else:
         for i in range(1, events.shape[0]):
@@ -191,6 +199,9 @@ def load_data(file_path="matched_events.feather", events_path="",
                                                   extensions=tag_extensions)
     events_df = load_events(events_path, recordings_path,
                             files_with_annots, columns["events_columns"])
+    tags_df["tag_duration"] = tags_df["tag_end"] - tags_df["tag_start"]
+    events_df["event_duration"] = events_df["event_end"] - \
+        events_df["event_start"]
     if os.path.isfile(file_path):
         match_df = pd.read_feather(file_path)
     else:
@@ -219,6 +230,53 @@ def get_stats(match_df, events_df, tags_df):
             "recall": recall, "F1_score": f1_score}
 
 
+def get_tag_overlap(events, only_matched=False):
+    res = {}
+    n_events = events.shape[0]
+    dur_overlap = 0
+
+    tmp = events.sort_values(by=["event_start"])
+    tag_duration = tmp.iloc[0].tag_duration
+
+    if only_matched:
+        # Only keep tags that have been matched
+        tmp = tmp.loc[tmp["event_id"] != -1]
+        # If no results, return nothing
+        if tmp.shape[0] == 0:
+            return
+    # Iterate over events
+    for _, event in tmp.iterrows():
+        if not tag_duration:
+            tag_duration = event.tag_duration
+
+            # tmp["tag_duration"] = tag_duration
+        if event["event_duration"] > 0:
+            # There is no overlap of events, just add the duration overlapping with annotation
+            dur_overlap += min(event.tag_end, event.event_end) - \
+                max(event.tag_start, event.event_start)
+            if dur_overlap < 0:
+                print(event.file_name)
+                print(event.tag_start)
+                print(event.tag_end)
+                print(event.event_start)
+                print(event.event_end)
+
+    res["tag_id"] = tmp.iloc[0].tag_index
+    res["file_name"] = tmp.iloc[0].file_name
+    res["tag_duration"] = tmp.iloc[0].tag_duration
+    res["n_events"] = n_events
+    res["dur_overlap"] = dur_overlap
+    res["prop_overlap"] = dur_overlap / tag_duration
+    res["event_avg_duration"] = tmp["event_duration"].agg("mean")
+    return pd.Series(res)
+
+
+def get_tags_overlap(match_df):
+    res = match_df.groupby(
+        ["tag_index"], as_index=False).apply(get_tag_overlap)
+    return res
+
+
 events_df, tags_df, match_df = load_data(file_path=MATCHED_PATH,
                                          events_path=EVENTS_PATH,
                                          recordings_path=RECORDINGS_PATH,
@@ -226,9 +284,48 @@ events_df, tags_df, match_df = load_data(file_path=MATCHED_PATH,
                                          tag_labels_path=TAGS_LABELS_PATH,
                                          only_done=True,
                                          columns={"events_columns": EVENTS_COLUMNS, "tags_columns": TAGS_COLUMNS})
-print(match_df)
+# print(match_df)
 # match_df.reset_index(inplace=True)
 # match_df.to_feather("matched_events.feather")
 
 stats = get_stats(match_df, events_df, tags_df)
 print(stats)
+
+print(match_df)
+
+overlap = get_tags_overlap(match_df)
+overlap["log_tag_dur"] = np.log(overlap["tag_duration"])
+# overlap.to_feather("overlap.feather")
+print(overlap)
+
+less_1s = overlap.loc[overlap["tag_duration"] < 1]
+more_1s = overlap.loc[overlap["tag_duration"] >= 1]
+# vals = less_1s["prop_overlap"].value_counts(bins=5)
+
+
+# plt = (ggplot(data=overlap, mapping=aes(x='tag_duration', y='n_events')) +
+#        geom_point())  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+# plt.save("test_dur_nevents.png")
+#
+# plt = (ggplot(data=overlap, mapping=aes(x='log_tag_dur', y='prop_overlap')) +
+#        geom_point())  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+# plt.save("test_dur_propover.png")
+
+# plt = (ggplot(data=less_1s, mapping=aes(x='log_tag_dur', y='prop_overlap')) +
+#        geom_point())  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+# plt.save("test_dur_propover.png")
+
+# plt = (ggplot(data=less_1s, mapping=aes(x='prop_overlap')) +
+#        geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+# plt.save("less1s_hist2.png")
+# plt = (ggplot(data=more_1s, mapping=aes(x='prop_overlap')) +
+#        geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+# plt.save("more1s_hist2.png")
+
+
+plt = (ggplot(data=less_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
+       geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+plt.save("less1s_hist.png")
+plt = (ggplot(data=more_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
+       geom_histogram(bins=5))  # .save("ACI_all_noise.png", height=10, width=8, dpi=150)
+plt.save("more1s_hist.png")
