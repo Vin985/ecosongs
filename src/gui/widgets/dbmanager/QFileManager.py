@@ -61,12 +61,14 @@ class QFileManager(QObject, ParallelWorker, FileManager):
             pass
             # self.map(self.to_wav, os.remove)
 
-    def rename_files(self, create_links=True):
+    def rename_files(self):
         # TODO: add checkbox test in option files
         self.renaming.emit()
+        self.rename(
+            create_links=self.options["create_links"], overwrite=self.options["overwrite"])
+        return
         if self.options["create_links"]:
             self.create_links()
-        return
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
         new_paths = [self.get_new_path(*row)
                      for row in cols.itertuples(index=False)]

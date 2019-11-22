@@ -1,9 +1,9 @@
 import logging
 import os
 import re
+import traceback
 import zipfile
 from datetime import datetime
-import traceback
 
 import pandas as pd
 from wac2wav import wac2wav
@@ -229,8 +229,6 @@ class FileManager:
             (path, old_name, new_name) = filename
             print(filename)
             new_path = self.get_new_path(path, old_name, new_name)
-
-            new_path = new_path + ".wav"
             print(new_path)
 
             if self.dest_dir:
@@ -262,11 +260,31 @@ class FileManager:
         for fn in self.files:
             os.remove(fn)
 
+    def rename(self, create_links=False, overwrite=True):
+        print(self.file_infos)
+        cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
+        new_paths = [self.get_new_path(*row)
+                     for row in cols.itertuples(index=False)]
+        tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
+        for old, new in tmp:
+            if not os.path.exists(os.path.dirname(new)):
+                os.makedirs(os.path.dirname(new))
+            if (os.path.exists(new) and overwrite):
+                self.log(new + " already exists. Overwriting!")
+                os.remove(new)
+            if create_links:
+                self.log("Creating link " + new + " to " + old)
+                os.symlink(old, new)
+            else:
+                os.rename(old, new)
+                mask = self.file_infos.path == old
+                self.file_infos.loc[mask, "path"] = new
+
     def rename_file_tuple(self, tuple):
         (old, new) = tuple
         if old != new:
             # TODO: error catching
-            os.rename(old, new)
+            # os.rename(old, new)
             mask = self.file_infos.path == old
             self.file_infos.loc[mask, "path"] = new
 
@@ -274,6 +292,7 @@ class FileManager:
         new_path = path.replace(old, new)
         if self.dest_dir:
             new_path = new_path.replace(self.root_dir, self.dest_dir)
+        new_path += ".wav"
         return(new_path)
 
     def create_links(self, overwrite=True):
