@@ -164,19 +164,9 @@ sites = ["Igloolik", "East Bay", "Barrow",
          "Burntpoint Creek", "Canning River", "Svalbard"]
 plot_excl = ["BARW_8"]
 
-# The palette with black:
-cbbPalette = ["#000000", "#E69F00", "#56B4E9",
-              "#009E73", "#0072B2", "#D55E00", "#CC79A7"]
-
 site_data = pd.read_excel(
     "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/sites_deployment_2018.xlsx")
-# site_data = pd.read_excel(
-#     "C:\\UMoncton\\Doctorat\\data\\datasheet\\2018\\sites_deployment_2018.xlsx")
-
-# aci = feather.read_dataframe("src/plots/ACI.feather")
-aci = feather.read_dataframe("data/ACI.feather")
-print(aci)
-# aci.date = aci.date.dt.tz_localize("UTC")
+aci = feather.read_dataframe("../plot/data/ACI.feather")
 aci = aci.loc[aci.site.isin(sites)]
 aci = aci.loc[~aci["plot"].isin(plot_excl)]
 aci["julian"] = aci["date"].dt.dayofyear
@@ -186,16 +176,24 @@ aci = aci.loc[(aci["julian"] > 155) & (aci["julian"] < 220)]
 aci = aci.loc[(aci["ACI"] < 50000)]
 aci = aci.loc[aci["denoised"] == False]
 
-print(aci.loc[aci["plot"] == "EABA_1"])
 aci = aci.reset_index()
 res = aci.groupby(["plot"], as_index=False).apply(check_dates, site_data)
-print(res)
 res.index = res.index.droplevel()
-print(res)
 res = res.groupby(["site", "julian"], as_index=False).agg(
     {"ACI": ["mean", "std"]})
 res.columns = pd.Index(join_tuple(i, "_") for i in res.columns)
-res
+aci_test = res
+aci_test["value"] = res.ACI_mean
+
+
+(iglo_aci, iglo_inc) = incubation_plot(aci_test, "Igloolik",
+                                       "/home/vin/Doctorat/data/datasheet/2018/IGLO/IGLO_nest_2018.xlsx",
+                                       # save=False,
+                                       prefix="asm2019_ACI")
+(barw_aci, barw_inc) = incubation_plot(aci_test, "Barrow",
+                                       "/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_nest_2018.xlsx",
+                                       # save=False,
+                                       prefix="asm2019_ACI")
 
 # plt.plot()
 # print(plt.plot_data)
