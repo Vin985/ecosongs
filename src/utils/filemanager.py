@@ -260,8 +260,9 @@ class FileManager:
         for fn in self.files:
             os.remove(fn)
 
-    def rename(self, create_links=False, overwrite=True):
-        print(self.file_infos)
+    def rename(self, rename=False, create_links=False, overwrite=False):
+        if not rename and not create_links:
+            return
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
         new_paths = [self.get_new_path(*row)
                      for row in cols.itertuples(index=False)]

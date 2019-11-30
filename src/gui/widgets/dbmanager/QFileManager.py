@@ -64,16 +64,15 @@ class QFileManager(QObject, ParallelWorker, FileManager):
     def rename_files(self):
         # TODO: add checkbox test in option files
         self.renaming.emit()
-        self.rename(
-            create_links=self.options["create_links"], overwrite=self.options["overwrite"])
-        return
-        if self.options["create_links"]:
-            self.create_links()
-        cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
-        new_paths = [self.get_new_path(*row)
-                     for row in cols.itertuples(index=False)]
-        tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
-        self.map(tmp, self.rename_file_tuple)
+        self.rename(rename=self.options["rename"],
+                    create_links=self.options["create_links"], overwrite=self.options["overwrite"])
+        # if self.options["create_links"]:
+        #     self.create_links()
+        # cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
+        # new_paths = [self.get_new_path(*row)
+        #              for row in cols.itertuples(index=False)]
+        # tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
+        # self.map(tmp, self.rename_file_tuple)
 
     def save_recordings(self):
         self.saving.emit()
