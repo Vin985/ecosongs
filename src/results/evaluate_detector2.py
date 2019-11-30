@@ -6,8 +6,9 @@ import feather
 import numpy as np
 import pandas as pd
 from plotnine import (aes, element_text, facet_grid, geom_bar, geom_histogram,
-                      geom_point, geom_smooth, ggplot, ggtitle,
-                      scale_x_continuous, theme)
+                      geom_point, geom_smooth, ggplot, ggtitle, position_dodge,
+                      scale_fill_discrete, scale_x_continuous,
+                      scale_x_discrete, theme, xlab, ylab)
 
 currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
@@ -32,7 +33,14 @@ TAGS_COLUMNS = {"Filename": "file_name", "tags": "tags",
 EVENTS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
                   'recording_id': "recording_id", 'start': "event_start",
                   'name': "file_name", "index": "event_index"}
-SPECIES_LIST = ["AMGP", "SESA", "WRSA", "LALO", "UNKN"]
+SPECIES_LIST = ["AMGP", "SESA", "WRSA", "LALO", "UNKN", "Human", "Insect"]
+SPECIES_LABELS = {"AMGP": "American Golden Plover",
+                  "SESA": "Semipalmated Sandpiper",
+                  "WRSA": "White-rumped Sandpiper",
+                  "LALO": "Lapland Longspur",
+                  "UNKN": "Unknown",
+                  "Human": "Human",
+                  "Insect": "Insect"}
 
 
 def get_done_files(path):
@@ -47,6 +55,21 @@ def get_done_files(path):
         # remove extension
         res = [f[:-4] for f in done_files]
     return res
+
+
+def check_tags_columns(df, columns):
+    if columns:
+        if type(columns) is dict:
+            df["tags"] = df["Label"] + \
+                "," + df["Related"]
+            df = df[columns.keys()]
+            df = df.rename(columns=columns)
+            df.file_name = df.file_name.apply(
+                lambda x: x[:-4])
+        else:
+            raise ValueError(
+                "columns must be a dict with old labels as keys and new labels as values")
+    return df
 
 
 def load_annotations(root_path, tags_path, only_done=True,  columns=None, extensions=[".csv"]):
@@ -67,22 +90,12 @@ def load_annotations(root_path, tags_path, only_done=True,  columns=None, extens
                     file_id = f[:-14]
                     if (not only_done) or (only_done and (file_id in done_files)):
                         df = pd.read_csv(os.path.join(tags_path, f))
-                        if columns:
-                            if type(columns) is dict:
-                                try:
-                                    df["tags"] = df["Label"] + \
-                                        "," + df["Related"]
-                                    df = df[columns.keys()]
-                                    df.rename(columns=columns, inplace=True)
-                                    df.file_name = df.file_name.apply(
-                                        lambda x: x[:-4])
-                                except KeyError as ke:
-                                    print("Key Error {0} found for file {1}. Skipping. Please make sure the file is correct and has all columns".format(
-                                        ke, file_id))
-                                    continue
-                            else:
-                                raise ValueError(
-                                    "columns must be a dict with old labels as keys and new labels as values")
+                        try:
+                            df = check_tags_columns(df, columns)
+                        except KeyError as ke:
+                            print("Key Error {0} found for file {1}. Skipping. Please make sure the file is correct and has all columns".format(
+                                ke, file_id))
+                            continue
                         dfs.append(df)
                         res_files.append(file_id)
         # only walk through the first level of the directory
@@ -293,7 +306,7 @@ events_df, tags_df, match_df = load_data(file_path=MATCHED_PATH,
 # match_df.reset_index(inplace=True)
 # match_df.to_feather("matched_events.feather")
 
-match_df = filter_tags(match_df, has_tags=["Bird"])
+# match_df = filter_tags(match_df, has_tags=["Bird"])
 
 stats = get_stats(match_df, events_df, tags_df)
 print(stats)
@@ -303,8 +316,49 @@ overlap["log_tag_dur"] = np.log(overlap["tag_duration"])
 # overlap.to_feather("overlap.feather")
 print(overlap)
 
+
+overlap["prop_overlap"].agg("mean")
+
+tags_df.shape[0]
+
+
+# import math
+# from sklearn import linear_model
+#
+# # Create linear regression object
+# regr = linear_model.LinearRegression()
+# X = overlap["tag_duration"].values
+# X = X.reshape(-1, 1)
+#
+# Y = overlap["prop_overlap"].values.reshape(-1, 1)
+# Y
+#
+# # Train the model using the training sets
+# regr.fit(X, Y)
+# import matplotlib.pyplot as plt
+#
+# plt.scatter(X, Y,  color='black')
+# plt.plot(X, regr.predict(X), color='blue', linewidth=3)
+# plt.xticks(())
+# plt.yticks(())
+# plt.show()
+#
+# regr.score(X, Y)
+#
+# pd.DataFrame.hist(overlap, "tag_duration", bins=20)
+
+ov_plot = ggplot(data=overlap, mapping=aes(
+    x="np.log(tag_duration)", y="prop_overlap"))
+ov_plot += geom_point()
+print(ov_plot)
+
 less_1s = overlap.loc[overlap["tag_duration"] < 1]
+less_1s["prop_overlap"].agg("mean")
+less_1s.shape[0] / overlap.shape[0]
+
+
 more_1s = overlap.loc[overlap["tag_duration"] >= 1]
+more_1s["prop_overlap"].agg("mean")
 # vals = less_1s["prop_overlap"].value_counts(bins=5)
 
 
@@ -326,7 +380,18 @@ plt.save("dur_nevents_nohuman.png")
 # plt = (ggplot(data=more_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
 #        geom_histogram(bins=5))
 # plt.save("more1s_hist_nohuman.png")
-
-plt = (ggplot(data=match_df, mapping=aes(x='factor(species)', fill="factor(species)")) +
-       geom_bar())
-plt.save("species_repartition.png")
+xlabels = [lab.replace(" ", "\n") for lab in SPECIES_LABELS.values()]
+xlabels
+plt = (ggplot(data=match_df, mapping=aes(x='factor(species, ordered=False)', fill="factor(species, ordered=False)"))
+       # , width=0.4,    position=position_dodge(width=0.5))
+       + xlab("Species")
+       + ylab("Number of annotations")
+       + geom_bar(show_legend=False)
+       + theme(axis_title=element_text(size=18),
+               axis_text=element_text(size=10))
+       # + theme(legend_title="Species")
+       # + scale_fill_discrete(guide=False, limits=SPECIES_LIST,
+       #                       labels=list(SPECIES_LABELS.values()))
+       + scale_x_discrete(limits=SPECIES_LIST, labels=xlabels))
+print(plt)
+plt.save("species_repartition_all.png", width=10, height=8)
