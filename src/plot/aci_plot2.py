@@ -71,6 +71,8 @@ res.columns = pd.Index(join_tuple(i, "_") for i in res.columns)
 # print(aci.loc[aci["site"] == "Igloolik"])
 # print(aci)
 res
+
+res["value"] = res["ACI_mean"]
 # res.to_feather("data_glm.feather")
 
 

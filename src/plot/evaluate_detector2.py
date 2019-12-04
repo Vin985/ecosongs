@@ -6,9 +6,9 @@ import feather
 import numpy as np
 import pandas as pd
 from plotnine import (aes, element_text, facet_grid, geom_bar, geom_histogram,
-                      geom_point, geom_smooth, ggplot, ggtitle, position_dodge,
-                      scale_fill_discrete, scale_x_continuous,
-                      scale_x_discrete, theme, xlab, ylab)
+                      geom_point, geom_smooth, geom_text, ggplot, ggtitle,
+                      position_dodge, scale_fill_discrete, scale_x_continuous,
+                      scale_x_discrete, theme, theme_classic, xlab, ylab)
 
 currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
@@ -33,11 +33,17 @@ TAGS_COLUMNS = {"Filename": "file_name", "tags": "tags",
 EVENTS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
                   'recording_id': "recording_id", 'start': "event_start",
                   'name': "file_name", "index": "event_index"}
-SPECIES_LIST = ["AMGP", "SESA", "WRSA", "LALO", "UNKN", "Human", "Insect"]
-SPECIES_LABELS = {"AMGP": "American Golden Plover",
-                  "SESA": "Semipalmated Sandpiper",
-                  "WRSA": "White-rumped Sandpiper",
-                  "LALO": "Lapland Longspur",
+# SPECIES_LIST = ["AMGP", "SESA", "WRSA", "LALO", "UNKN", "Human", "Insect"]
+# SPECIES_LABELS = {"AMGP": "American Golden Plover",
+#                   "SESA": "Semipalmated Sandpiper",
+#                   "WRSA": "White-rumped Sandpiper",
+#                   "LALO": "Lapland Longspur",
+#                   "UNKN": "Unknown",
+#                   "Human": "Human",
+#                   "Insect": "Insect"}
+SPECIES_LIST = ["Shorebird", "LALO", "UNKN", "Human", "Insect"]
+SPECIES_LABELS = {"Shorebird": "Shorebird",
+                  "LALO": "Passerine",
                   "UNKN": "Unknown",
                   "Human": "Human",
                   "Insect": "Insect"}
@@ -308,6 +314,12 @@ events_df, tags_df, match_df = load_data(file_path=MATCHED_PATH,
 
 # match_df = filter_tags(match_df, has_tags=["Bird"])
 
+print(tags_df)
+tags_df.tags.unique()
+
+tags_df["species"] = tags_df.tags.apply(get_species, species=SPECIES_LIST)
+
+
 stats = get_stats(match_df, events_df, tags_df)
 print(stats)
 
@@ -362,7 +374,6 @@ more_1s["prop_overlap"].agg("mean")
 # vals = less_1s["prop_overlap"].value_counts(bins=5)
 
 
-match_df["species"] = match_df.tags.apply(get_species, species=SPECIES_LIST)
 print(match_df)
 
 plt = (ggplot(data=overlap, mapping=aes(x='tag_duration', y='n_events')) +
@@ -380,9 +391,38 @@ plt.save("dur_nevents_nohuman.png")
 # plt = (ggplot(data=more_1s, mapping=aes(x='prop_overlap', y="stat(width*density)*100")) +
 #        geom_histogram(bins=5))
 # plt.save("more1s_hist_nohuman.png")
+tags_summary = tags_df.groupby(["species"]).agg(
+    {"tag_duration": "sum", "species": "count"})
+tags_summary.rename(columns={"species": "count"}, inplace=True)
+
+tags_summary["tag_duration"] = tags_summary.tag_duration.astype(int)
+tags_summary["duration"] = tags_summary.tag_duration.astype(str) + "s"
+tags_summary = tags_summary.reindex(list(SPECIES_LABELS.keys()))
+# tags_summary["species"] = tags_summary.index
+tags_summary.reset_index(inplace=True)
+tags_summary
+(ggplot(data=tags_summary,
+        mapping=aes(x="factor(species, ordered=False)", y="tag_duration", fill="factor(species, ordered=False)"))
+ + geom_bar(stat="identity", show_legend=False)
+ + xlab("Species")
+ + ylab("Duration of annotations (s)")
+ + geom_text(mapping=aes(label="count"), nudge_y=15)
+ + theme_classic()
+ + scale_x_discrete(limits=SPECIES_LIST, labels=xlabels)).save("species_repartition_duration_mini.png", width=10, height=8)
+
+(ggplot(data=tags_summary,
+        mapping=aes(x="factor(species, ordered=False)", y="count", fill="factor(species, ordered=False)"))
+ + geom_bar(stat="identity", show_legend=False)
+ + xlab("Species")
+ + ylab("Number of annotations")
+ + geom_text(mapping=aes(label="duration"), nudge_y=15)
+ + theme_classic()
+ + scale_x_discrete(limits=SPECIES_LIST, labels=xlabels)).save("species_repartition_count_mini.png", width=10, height=8)
+print(tags_summary)
+
 xlabels = [lab.replace(" ", "\n") for lab in SPECIES_LABELS.values()]
 xlabels
-plt = (ggplot(data=match_df, mapping=aes(x='factor(species, ordered=False)', fill="factor(species, ordered=False)"))
+plt = (ggplot(data=tags_df, mapping=aes(x='factor(species, ordered=False)', fill="factor(species, ordered=False)"))
        # , width=0.4,    position=position_dodge(width=0.5))
        + xlab("Species")
        + ylab("Number of annotations")

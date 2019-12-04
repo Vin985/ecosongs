@@ -5,10 +5,11 @@ import os
 
 import feather
 import pandas as pd
-from plotnine import (aes, annotate, facet_grid, facet_wrap, geom_errorbar,
-                      geom_line, geom_point, geom_rect, geom_smooth, ggplot,
-                      save_as_pdf_pages, scale_colour_manual,
-                      scale_x_continuous, theme, theme_classic, xlab, xlim,
+from plotnine import (aes, annotate, element_blank, facet_grid, facet_wrap,
+                      geom_errorbar, geom_line, geom_point, geom_rect,
+                      geom_smooth, ggplot, save_as_pdf_pages,
+                      scale_colour_manual, scale_x_continuous,
+                      scale_y_continuous, theme, theme_classic, xlab, xlim,
                       ylab, ylim)
 from plotnine.facets.facet_wrap import n2mfrow
 
@@ -107,18 +108,27 @@ def incubation_plot(data, site, nest_data_path, save=True, ext=".png", prefix=""
 
     df_inc = df_nest.groupby(
         ["julian", "type"], as_index=False).uniqueID.count().reset_index().copy()
+
+    print(df_inc)
+    print(df_inc.loc[df_inc.type == "incubation", "uniqueID"].max())
     inc_plot = (ggplot(data=df_inc, mapping=aes(x="julian", y="uniqueID"))
                 + xlab("Day")
                 + ylab("Number of nest initiation/hatch")
                 + theme_classic()
+                + theme(axis_line=element_blank(),
+                        axis_title_y=element_blank(), axis_ticks_major_y=element_blank(), axis_text_y=element_blank())
                 # + geom_line()
+                # + geom_smooth(data=df_inc, linetype="dashed",
+                #               method="mavg", se=False,
+                #               method_args={"window": 2, "center": True, "min_periods": 1})
                 + geom_smooth(data=df_inc.loc[df_inc["type"] == "incubation"], linetype="dashed",
                               method="mavg", se=False,
-                              method_args={"window": 4, "center": True, "min_periods": 1})
+                              method_args={"window": 3, "center": True, "min_periods": 1})
                 + geom_smooth(data=df_inc.loc[df_inc["type"] == "hatch"], linetype="dotted",
                               method="mavg", se=False,
-                              method_args={"window": 4, "center": True, "min_periods": 1})
-                + scale_x_continuous(labels=label_x, limits=[xmin, xmax]))
+                              method_args={"window": 3, "center": True, "min_periods": 1})
+                + scale_x_continuous(labels=label_x, limits=[xmin, xmax])
+                + scale_y_continuous(position="right", limits=[0, df_inc.uniqueID.max() * 1.2]))
 
     if save:
         se_name = create_file_name("sound_events", site, prefix, suffix)
@@ -128,14 +138,16 @@ def incubation_plot(data, site, nest_data_path, save=True, ext=".png", prefix=""
     return (se_plot, inc_plot)
 
 
-(iglo_se, iglo_inc) = incubation_plot(plt.plot_data, "Igloolik",
-                                      "/home/vin/Doctorat/data/datasheet/2018/IGLO/IGLO_nest_2018.xlsx",
-                                      # save=False,
-                                      prefix="asm2019")
-(barw_se, barw_inc) = incubation_plot(plt.plot_data, "Barrow",
-                                      "/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_nest_2018.xlsx",
-                                      # save=False,
-                                      prefix="asm2019")
+label_x([175])
+
+# (iglo_se, iglo_inc) = incubation_plot(plt.plot_data, "Igloolik",
+#                                      "/home/vin/Doctorat/data/datasheet/2018/IGLO/IGLO_nest_2018.xlsx",
+#                                      # save=False,
+#                                      prefix="asm2019")
+# (barw_se, barw_inc) = incubation_plot(plt.plot_data, "Barrow",
+#                                      "/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_nest_2018.xlsx",
+#                                      # save=False,
+#                                      prefix="asm2019")
 
 
 def join_tuple(tuple, sep):
@@ -189,11 +201,11 @@ aci_test["value"] = res.ACI_mean
 (iglo_aci, iglo_inc) = incubation_plot(aci_test, "Igloolik",
                                        "/home/vin/Doctorat/data/datasheet/2018/IGLO/IGLO_nest_2018.xlsx",
                                        # save=False,
-                                       prefix="asm2019_ACI")
+                                       prefix="asm2019_ACI2")
 (barw_aci, barw_inc) = incubation_plot(aci_test, "Barrow",
                                        "/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_nest_2018.xlsx",
                                        # save=False,
-                                       prefix="asm2019_ACI")
+                                       prefix="asm2019_ACI2")
 
 # plt.plot()
 # print(plt.plot_data)

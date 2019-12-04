@@ -213,6 +213,8 @@ class EventsPlot(Plot):
 
     def __plot(self, plot_data, x, y, colour, lbl_x, lbl_y, facet, facet_scales,
                facet_by, smoothed, points, error_bars, save):
+        cbbPalette = ["#000000", "#E69F00", "#56B4E9",
+                      "#009E73", "#0072B2", "#D55E00", "#CC79A7"]
         plt = ggplot(data=plot_data, mapping=aes(x=x, y=y, colour=colour))
         plt += xlab(lbl_x)
         plt += ylab(lbl_y)
@@ -235,7 +237,7 @@ class EventsPlot(Plot):
                                method_args={"window": 4, "center": True, "min_periods": 1})
         else:
             plt += geom_line()
-        # + scale_colour_manual(values=cbbPalette, guide=False)
+        plt += scale_colour_manual(values=cbbPalette, guide=False)
         plt += scale_x_continuous(labels=label_x)
 
         plt += theme(figure_size=(15, 18), dpi=150)
