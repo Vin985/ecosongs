@@ -6,7 +6,7 @@ class Spectrogram:
 
     def __init__(self, sample, n_fft=None, to_db=None, pcen=None,
                  remove_noise=None, normalize=None,
-                 spec_hop_length=-1, spec_window=-1, scale="Linear",
+                 hop_length=-1, spec_window=-1, scale="Linear",
                  nr_hist_rel_size=2, nr_N=0.1, nr_window_smoothing=5):
 
         self.n_fft = n_fft
@@ -17,7 +17,7 @@ class Spectrogram:
         self.pcen = pcen
         self.denoised = remove_noise
         self.window = spec_window
-        self.hop_length = spec_hop_length
+        self.hop_length = hop_length
         self.scale = scale
         self.normalize = normalize
         self.nr_N = nr_N
