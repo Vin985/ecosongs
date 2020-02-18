@@ -26,7 +26,7 @@ class AnalysisOptionsTable(TableModel):
                 self.df["options"] == opts)]
             print("existing: " + str(existing))
 
-        if existing.shape[0] > 0:
+        if existing is not None and existing.shape[0] > 0:
             opt_id = int(existing.id.iloc[0])
         else:
             opt_id = self.next_id
