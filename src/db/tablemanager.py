@@ -1,11 +1,12 @@
 import utils.commons as utils
 
 from .models import TableModel
+import os
 
 
 class TableManager:
 
-    TABLE_MODULE = "db.tables."
+    TABLE_MODULE = "db.tables"
 
     def __init__(self, dbmanager=None):
         if not dbmanager:
@@ -19,10 +20,12 @@ class TableManager:
     def get_class(self, name):
         try:
             model_name = self.table_classname(name)
-            mod = __import__(self.TABLE_MODULE + name, fromlist=[model_name])
+            mod = __import__(".".join([self.TABLE_MODULE, name]),
+                             fromlist=[model_name])
             cls = getattr(mod, model_name)
             if not issubclass(cls, TableModel):
-                raise ImportError("%s must subclass %s" % (model_name, TableModel))
+                raise ImportError("%s must subclass %s" %
+                                  (model_name, TableModel))
         except ModuleNotFoundError:
             print(utils.fullclassname(TableModel))
             msg = ("No class named {0} was found."
@@ -42,3 +45,10 @@ class TableManager:
         cls = self.get_class(name)
         instance = cls(*args, dbmanager=self._dbmanager, **kwargs)
         return instance
+
+    def list_tables(self):
+        module_path = os.path.join(*self.TABLE_MODULE.split("."))
+        path = os.path.join(os.getcwd(), module_path)
+        tables = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(
+            os.path.join(path, f)) and f.endswith(".py")]
+        return tables
