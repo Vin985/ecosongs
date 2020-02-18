@@ -1,9 +1,8 @@
 import traceback
 
 import pandas as pd
-from PIL import ImageDraw, ImageQt
 from PySide2.QtCore import Slot
-from PySide2.QtGui import QPixmap, qApp
+from PySide2.QtGui import qApp, QColor
 from PySide2.QtWidgets import QMenu, QMessageBox, QWidget
 
 import utils.commons as utils
@@ -75,9 +74,10 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.action_delete.triggered.connect(self.show_delete_msg)
         self.action_create_links.triggered.connect(self.show_create_links_msg)
 
-        self.time_slider.valueChanged.connect(self.update_spectrogram)
+        # self.time_slider.valueChanged.connect(self.update_spectrogram)
 
         self.btn_export_pdf.clicked.connect(self.export_pdf)
+        self.checkbox_draw_events.toggled.connect(self.draw_events)
 
         # self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
 
@@ -106,58 +106,18 @@ class AudioManager(QWidget, Ui_AudioManager):
             # item is recording
             self.show_recording_details(item.data())
 
-    def draw_events(self, img, duration):
-        events_table = qApp.tables.song_events
-        if not events_table.empty:
-            events = events_table.get_events(self.current_recording.id)
-            im_start = self.time_slider.value()
-            im_end = self.time_slider.value() + duration
-            current_events = events[(events.start >= im_start) & (
-                events.start < im_end)]
-            if len(current_events.index):
-                #  img = img.convert("RGB")
-                for event in current_events.itertuples():
-                    # TODO: externalize color
-                    draw = ImageDraw.Draw(img, "RGBA")
-                    start = self.sec2pixels(
-                        event.start - self.time_slider.value())
-                    end = self.sec2pixels(
-                        min(event.end, im_end) - self.time_slider.value())
-                    draw.rectangle(((start, 0), (end, 299)),
-                                   fill=(255, 255, 0, 100))
-
-        return img
-
-    def sec2pixels(self, sec, to_int=True):
-        pix = 299 * sec / 1.5
-        if to_int:
-            return int(pix)
-        return pix
-
-    @Slot()
-    def update_spectrogram(self):
-        # TODO: add spectrogram options
-        max_duration = self.lbl_spectro.width() * 1.5 / 299
-        spectro = self.current_recording.spectrogram
-        spec = spectro.get_subspec(self.time_slider.value(), max_duration)
-        # TODO: externalize ratio pixel/duration
-        # TODO: save image somewhere
-        im = qApp.imgen.spec2img(spec, size=(
-            self.sec2pixels(max_duration), 299))
-        # TODO: change events when checkbox is checked
-        if self.checkbox_draw_events.isChecked():
-            im = self.draw_events(im, max_duration)
-        img = ImageQt.ImageQt(im)
-        pixmap = QPixmap.fromImage(img)
-        # TODO: add multiple spectrograms?
-        self.lbl_spectro.setPixmap(pixmap)
-        self.update_duration_lbl()
-
-    def update_duration_lbl(self):
-        duration = utils.format_s2hms(self.current_recording.duration)
-        current = utils.format_s2hms(self.time_slider.value())
-        lbl = current + "/" + duration
-        self.lbl_duration.setText(lbl)
+    def draw_events(self, draw=True):
+        if draw:
+            events_table = qApp.tables.song_events
+            if not events_table.empty:
+                events = events_table.get_events(self.current_recording.id)
+                if not events.empty:
+                    for event in events.itertuples():
+                        # # TODO: externalize color
+                        self.spectrogram_visualizer.draw_rect(
+                            event.start, event.end, color="#99ebef00")
+        else:
+            self.spectrogram_visualizer.clear_rects()
 
     @Slot()
     def compute_ACI(self):
@@ -275,8 +235,10 @@ class AudioManager(QWidget, Ui_AudioManager):
         else:
             duration = "0 seconds "
 
-        self.lbl_spectro.setText(
-            "{} recordings representing {}of audio found!".format(res.shape[0], duration))
+        details = "{} recordings representing {}of audio found!".format(
+            res.shape[0], duration)
+        self.spectrogram_visualizer.show_text(details)
+        # self.lbl_spectro.setText(details)
 
     def show_recording_info(self, infos):
         for info in infos:
@@ -292,12 +254,18 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: improve performance to avoid reloading everything.
         # TODO: add generators to qApp?
         settings = Settings()
+        print(file_info)
         self.current_recording = Recording(file_info,
                                            spec_opts=settings.spectrogram_settings())
         self.show_recording_info(["id", "name", "path", "year"])
-        self.update_spectrogram()
-        self.time_slider.setMaximum(self.current_recording.duration)
-        self.update_duration_lbl()
+        self.spectrogram_visualizer.load_file(self.current_recording.path)
+        self.draw_events()
+        # self.update_spectrogram()
+        # self.update_spectrogram2()
+        # self.time_slider.setMaximum(self.current_recording.duration)
+        # self.update_duration_lbl()
 
     def folder_query(self, folder_info):
         return ' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])
+
+    # Scene utils

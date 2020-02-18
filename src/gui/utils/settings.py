@@ -86,7 +86,7 @@ class Settings(QSettings):
         res["pcen"] = self.get("pcen", "False")
         res["to_db"] = self.get("to_db", "True")
         res["normalize"] = self.get("normalize", "True")
-        res["spec_hop_length"] = self.get("hop_length", "None")
+        res["hop_length"] = self.get("hop_length", "None")
         res["scale"] = self.get("scale", "'Linear'")
         res["remove_noise"] = self.get("remove_noise", "True")
         res["nr_hist_rel_size"] = self.get("nr_hist_rel_size", "2")
