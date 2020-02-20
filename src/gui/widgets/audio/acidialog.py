@@ -1,4 +1,5 @@
 import time
+import pandas as pd
 
 from PySide2.QtCore import Qt, Signal, Slot
 
@@ -21,7 +22,8 @@ class AciDialog(AnalyzerDialog, Ui_AciDialog):
 
     def link_events(self):
         super().link_events()
-        self.compute_index.connect(self.audio_analyzer.compute_index, type=Qt.QueuedConnection)
+        self.compute_index.connect(
+            self.audio_analyzer.compute_index, type=Qt.QueuedConnection)
 
     @Slot()
     def start(self):
@@ -35,5 +37,5 @@ class AciDialog(AnalyzerDialog, Ui_AciDialog):
     @Slot()
     def process_results(self):
         super().process_results()
-        acis = self.audio_analyzer.results
+        acis = pd.DataFrame(self.audio_analyzer.results)
         print(acis)

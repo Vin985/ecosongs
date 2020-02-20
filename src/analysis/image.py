@@ -15,7 +15,8 @@ class ImageGenerator:
         # TODO: add parent class?
         for key in config:
             setattr(self, key, config[key])
-        self.color_masks = [self.__get_color_rgb(col) for col in self.color_masks_str]
+        self.color_masks = [self.__get_color_rgb(
+            col) for col in self.color_masks_str]
 
     def __get_color_rgb(self, color):
         if type(color) is tuple:
@@ -72,7 +73,7 @@ class ImageGenerator:
 
     def create_composite_part(self, spec, color_mask):
         img = self.spec2img(
-            spec.spec, color_mask, size=(int(299 * spec.duration / 1.5), 299))
+            spec.spec, color_mask, size=(int(299 * spec.duration), 400))
         return np.asarray(img)
 
     def generate_composite(self, sample):
