@@ -10,35 +10,37 @@ from analysis.detection.lib.tf_classifier import HOP_LENGTH, TFClassifier
 from db.models import TableModel
 
 
-class SongEventsTable(TableModel):
-    TABLE_NAME = "song_events"
-    COLUMNS = ["event_id", "recording_id", "start", "end"]
+# class SongEventsTable(TableModel):
+#     TABLE_NAME = "song_events"
+#     COLUMNS = ["event_id", "recording_id", "start", "end"]
 
-    def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+#     def __init__(self, df=None, dbmanager=None):
+#         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
-    def add(self, new, save=False, replace=True):
-        # TODO: check duplicates
-        # TODO: add idx column?
-        # TODO: check duplicates
-        print(self.df)
-        new = self.check_ids(new)
-        if replace:
-            to_remove = new["recording_id"].unique()
-            self.df = self.df.loc[~self.df.recording_id.isin(to_remove)]
-        self.df = self.df.append(new, ignore_index=True, sort=True)
-        self.save(update=True)
+#     def add(self, new, save=False, replace=True):
+#         # TODO: check duplicates
+#         # TODO: add idx column?
+#         # TODO: check duplicates
+#         print(self.df)
+#         new = self.check_ids(new)
+#         if replace:
+#             to_remove = new["recording_id"].unique()
+#             self.df = self.df.loc[~self.df.recording_id.isin(to_remove)]
+#         self.df = self.df.append(new, ignore_index=True, sort=True)
+#         if save:
+#             self.save()
+#         # self.update(save=save)
 
-    def get_events(self, recording_id):
-        return self.df[self.df["recording_id"] == recording_id]
+#     def get_events(self, recording_id):
+#         return self.df[self.df["recording_id"] == recording_id]
 
 
-class SongsSummaryTable(TableModel):
-    TABLE_NAME = "songs_summary"
-    COLUMNS = ["recording_id", "n_events", "path", "name"]
+# class SongsSummaryTable(TableModel):
+#     TABLE_NAME = "songs_summary"
+#     COLUMNS = ["recording_id", "n_events", "path", "name"]
 
-    def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+#     def __init__(self, df=None, dbmanager=None):
+#         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
 
 def mp_initialize_detector(model_options, weight_path, detection_options):
@@ -83,19 +85,22 @@ def mp_detect_songs(recording):
         preds = []
         # TODO: see if we can optimize with the recording object
         preds = DETECTOR.classify(recording.path)
-        print(preds)
 
         len_in_s = preds.shape[0] * HOP_LENGTH / DETECTOR.sample_rate
         timeseq = np.linspace(0, len_in_s, preds.shape[0])
-        res_df = pd.DataFrame({"time": timeseq, "activity": preds})
+        res_df = pd.DataFrame(
+            {"recording_id": recording.id, "time": timeseq, "activity": preds})
+        # print(res_df)
         # with open('demo/predictions2.pkl', 'wb') as f:
         #     pickle.dump(test, f, -1)
         if DETECTION_OPTIONS.get("export_pdf", False):
             predictions2pdf(res_df, recording)
-        events = detect_songs_events(res_df, recording_id=recording.id,
-                                     detection_options=DETECTION_OPTIONS)
-        print("Took %0.3fs to detect events mp" % (time.time() - tic))
-        return events
+        # events = detect_songs_events(res_df, recording_id=recording.id,
+
+        #                              detection_options=DETECTION_OPTIONS)
+        # print("Took %0.3fs to detect events mp" % (time.time() - tic))
+        # return events
+        return [res_df]
     return None
 
 
@@ -144,4 +149,5 @@ def detect_songs_events(predictions, recording_id=-1, detection_options=None):
             if (end - start) > min_duration:
                 events.append({"event_id": event_id, "recording_id": recording_id,
                                "start": start, "end": end})
+    events = pd.DataFrame(events)
     return events

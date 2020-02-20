@@ -55,5 +55,10 @@ class QAudioAnalyzer(QObject, ParallelWorker):
         if self.recordings:
             # TODO: put chunksize as option
             self.map(self.recordings, function, *args, **kwargs)
-        self.results = pd.DataFrame(self.results)
+        # self.results = pd.DataFrame(self.results)
         self.done.emit()
+
+    # def test(self, result):
+    #     print("in test callback")
+    #     print(result)
+    #     return result
