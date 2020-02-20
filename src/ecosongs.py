@@ -1,11 +1,10 @@
 import logging
-import os
 import sys
 
 from PySide2.QtWidgets import QApplication
 
-import db.dbutils as dbutils
 from analysis.image import ImageGenerator
+from db import dbutils
 from db.tablemanager import TableManager
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings
@@ -23,10 +22,8 @@ class Ecosongs(QApplication):
             return self.tables.recordings.df
         return self.tables.recordings.recordings
 
-    def load_recordings(self, indexes, spec_opts=None):
-        settings = Settings()
-        spec_opts = spec_opts or settings.spectrogram_settings()
-        return self.tables.recordings.load_recordings(indexes, spec_opts)
+    def load_recordings(self, indexes):
+        return self.tables.recordings.load_recordings(indexes)
 
     def __init__(self, argv):
         super().__init__(argv)
@@ -39,7 +36,7 @@ class Ecosongs(QApplication):
         if not db_opts:
             print("adding database defaults")
             db_opts.update(
-                {"database": "ecosongs", "db_type": "feather", "path": "db"})
+                {"database": "ecosongs", "db_type": "feather", "path": "/mnt/win/UMoncton/Doctorat/dev/ecosongs/src/db"})
 
         self.dbmanager = dbutils.get_db_manager(**db_opts)
         self.imgen = ImageGenerator(settings.image_settings())
@@ -47,7 +44,7 @@ class Ecosongs(QApplication):
 
 
 if __name__ == '__main__':
-    import sys
+
     # logging.basicConfig(filename='example.log', level=logging.DEBUG)
     logging.basicConfig(level=logging.DEBUG)
     app = Ecosongs(sys.argv)

@@ -14,7 +14,7 @@ class RecordingsTable(TableModel):
                             df=df, dbmanager=dbmanager)
         self.recordings = {}
 
-    def load_recordings(self, indexes, spec_opts=None):
+    def load_recordings(self, indexes):
         """Create Recording objects from indexes if they had not been loaded
         in memory before.
 
@@ -32,15 +32,15 @@ class RecordingsTable(TableModel):
         to_load = [idx for idx in indexes if idx not in self.recordings]
         if to_load:
             to_load = self._df.loc[indexes]
-            to_update = {row.id: Recording(row._asdict(), spec_opts=spec_opts)
+            to_update = {row.id: Recording(row._asdict())
                          for row in to_load.itertuples(index=True)}
             self.recordings.update(to_update)
         return [self.recordings[idx] for idx in indexes]
 
-    def get_recording(self, idx, spec_opts=None):
+    def get_recording(self, idx):
         if idx in self.recordings.keys():
             rec = self.recordings[idx]
         else:
-            rec = Recording(self._df.loc[idx].to_dict(), spec_opts=spec_opts)
+            rec = Recording(self._df.loc[idx].to_dict())
             self.recordings[idx] = rec
         return rec
