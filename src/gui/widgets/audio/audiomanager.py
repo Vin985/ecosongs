@@ -2,7 +2,7 @@ import traceback
 
 import pandas as pd
 from PySide2.QtCore import Slot
-from PySide2.QtGui import qApp, QColor
+from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QMenu, QMessageBox, QWidget
 
 import utils.commons as utils
@@ -13,6 +13,7 @@ from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.acidialog import AciDialog
 from gui.widgets.audio.detectordialog import DetectorDialog
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
+from pysoundplayer.gui.settings import SoundPlayerSettings
 
 
 def get_ACI(rec):
@@ -33,6 +34,9 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.song_classifier = None
         self.action_dialog = None
 
+        self.settings = SoundPlayerSettings()
+        self.share_settings()
+
         self.init_tree()
         self.link_events()
 
@@ -51,6 +55,11 @@ class AudioManager(QWidget, Ui_AudioManager):
         # aci_table.save()
 
         self.tree_view.setRootIsDecorated(True)
+
+    def share_settings(self):
+        self.spectrogram_viewer.settings = self.settings
+        self.spectrogram_options.options = self.settings.spectrogram_options
+        self.image_options.options = self.settings.image_options
 
     def init_tree(self):
         recordings = qApp.get_recordings()
@@ -77,7 +86,20 @@ class AudioManager(QWidget, Ui_AudioManager):
         # self.time_slider.valueChanged.connect(self.update_spectrogram)
 
         self.btn_export_pdf.clicked.connect(self.export_pdf)
-        self.checkbox_draw_events.toggled.connect(self.draw_events)
+        # self.checkbox_draw_events.toggled.connect(self.draw_events)
+
+        self.group_draw_events.toggled.connect(self.draw_events)
+        self.slider_activity.valueChanged.connect(self.draw_events)
+        self.slider_end_threshold.valueChanged.connect(self.draw_events)
+        self.spin_min_duration.valueChanged.connect(self.draw_events)
+
+        self.sound_player.update_position.connect(
+            self.spectrogram_viewer.update_sound_marker)
+        self.spectrogram_viewer.seek.connect(self.sound_player.seek)
+        self.image_options.option_updated.connect(
+            self.spectrogram_viewer.update_image)
+        self.spectrogram_options.option_updated.connect(
+            self.spectrogram_viewer.update_spectrogram)
 
         # self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
 
@@ -107,17 +129,28 @@ class AudioManager(QWidget, Ui_AudioManager):
             self.show_recording_details(item.data())
 
     def draw_events(self, draw=True):
+        self.spectrogram_viewer.clear_rects()
         if draw:
-            events_table = qApp.tables.song_events
-            if not events_table.empty:
-                events = events_table.get_events(self.current_recording.id)
+            predictions_table = qApp.tables.activity_predictions
+            if not predictions_table.empty:
+                event_options = {"min_activity": self.slider_activity.value() / 100,
+                                 "min_duration": self.spin_min_duration.value(),
+                                 "end_threshold": self.slider_end_threshold.value() / 100}
+                events = predictions_table.get_events(
+                    self.current_recording.id, event_options)
                 if not events.empty:
                     for event in events.itertuples():
                         # # TODO: externalize color
-                        self.spectrogram_visualizer.draw_rect(
+                        self.spectrogram_viewer.draw_rect(
                             event.start, event.end, color="#99ebef00")
-        else:
-            self.spectrogram_visualizer.clear_rects()
+            # events_table = qApp.tables.song_events
+            # if not events_table.empty:
+            #     events = events_table.get_events(self.current_recording.id)
+            #     if not events.empty:
+            #         for event in events.itertuples():
+            #             # # TODO: externalize color
+            #             self.spectrogram_visualizer.draw_rect(
+            #                 event.start, event.end, color="#99ebef00")
 
     @Slot()
     def compute_ACI(self):
@@ -237,7 +270,7 @@ class AudioManager(QWidget, Ui_AudioManager):
 
         details = "{} recordings representing {}of audio found!".format(
             res.shape[0], duration)
-        self.spectrogram_visualizer.show_text(details)
+        self.spectrogram_viewer.display_text(details)
         # self.lbl_spectro.setText(details)
 
     def show_recording_info(self, infos):
@@ -255,15 +288,19 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: add generators to qApp?
         settings = Settings()
         print(file_info)
-        self.current_recording = Recording(file_info,
-                                           spec_opts=settings.spectrogram_settings())
+        self.current_recording = Recording(file_info)
         self.show_recording_info(["id", "name", "path", "year"])
-        self.spectrogram_visualizer.load_file(self.current_recording.path)
+        self.load_file(self.current_recording.path)
         self.draw_events()
         # self.update_spectrogram()
         # self.update_spectrogram2()
         # self.time_slider.setMaximum(self.current_recording.duration)
         # self.update_duration_lbl()
+
+    def load_file(self, path):
+        audio = self.sound_player.load_file(file_path=path)
+        self.spectrogram_viewer.audio = audio
+        return audio
 
     def folder_query(self, folder_info):
         return ' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])
