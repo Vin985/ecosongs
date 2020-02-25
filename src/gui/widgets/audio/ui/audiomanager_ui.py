@@ -115,6 +115,14 @@ class Ui_AudioManager(object):
 
         self.gridLayout_2.addWidget(self.lbl_path, 2, 3, 1, 1)
 
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_2.addItem(self.horizontalSpacer_2, 2, 4, 1, 1)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_2.addItem(self.horizontalSpacer_3, 0, 4, 1, 1)
+
 
         self.verticalLayout.addLayout(self.gridLayout_2)
 
