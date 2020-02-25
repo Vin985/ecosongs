@@ -143,14 +143,15 @@ class AudioManager(QWidget, Ui_AudioManager):
                         # # TODO: externalize color
                         self.spectrogram_viewer.draw_rect(
                             event.start, event.end, color="#99ebef00")
-            # events_table = qApp.tables.song_events
-            # if not events_table.empty:
-            #     events = events_table.get_events(self.current_recording.id)
-            #     if not events.empty:
-            #         for event in events.itertuples():
-            #             # # TODO: externalize color
-            #             self.spectrogram_visualizer.draw_rect(
-            #                 event.start, event.end, color="#99ebef00")
+        self.draw_silences()
+
+    def draw_silences(self, draw=True):
+        silences = self.sound_player.audio.get_silences(top_db=80)
+        print(silences)
+        if silences:
+            for start, end in silences:
+                self.spectrogram_viewer.draw_rect(
+                    start/self.sound_player.audio.sr, end/self.sound_player.audio.sr, color="#99ff0000")
 
     @Slot()
     def compute_ACI(self):
