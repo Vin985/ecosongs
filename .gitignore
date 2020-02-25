@@ -3,7 +3,7 @@ __pycache__
 .ropeproject
 test/*
 *.h5
-results
+/results
 *.log
 *.Rhistory
 *.feather
@@ -11,7 +11,8 @@ results
 .vscode
 *.lprof
 src/db/feather
-src/plot/figs
-src/plot/pdf
+src/resultstest_
+src/results
+src/plots
 Ecosongs.mm
 *.pro.user
