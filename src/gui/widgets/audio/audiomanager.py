@@ -147,8 +147,7 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     def draw_silences(self, draw=True):
         silences = self.sound_player.audio.get_silences(top_db=80)
-        print(silences)
-        if silences:
+        if silences and draw:
             for start, end in silences:
                 self.spectrogram_viewer.draw_rect(
                     start/self.sound_player.audio.sr, end/self.sound_player.audio.sr, color="#99ff0000")
@@ -216,7 +215,12 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.tree_view.model().removeRow(idx.row(), idx.parent())
         qApp.tables.recordings.delete(recs, save=True)
         values_dict = {"recording_id": recs}
-        qApp.tables.song_events.delete(values_dict, columns=["recording_id"])
+        qApp.tables.song_events.delete(
+            values_dict, columns=["recording_id"], save=True)
+        print(qApp.tables.activity_predictions)
+        qApp.tables.activity_predictions.delete(
+            values_dict, columns=["recording_id"], save=True)
+        print(qApp.tables.activity_predictions)
         # TODO : delete other dependencies
 
     def get_selected_recordings(self, type=None):
