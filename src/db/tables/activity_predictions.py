@@ -1,6 +1,6 @@
 import pandas as pd
 
-from analysis.detection import song_detector
+from analysis.detection import predictions_utils
 from db.models import TableModel
 
 
@@ -16,7 +16,6 @@ class ActivityPredictionsTable(TableModel):
         preds = self.df[self.df["recording_id"] == recording_id]
         events = pd.DataFrame()
         if not preds.empty:
-            print(preds)
-            events = song_detector.detect_songs_events(
+            events = predictions_utils.detect_songs_events(
                 preds[["time", "activity"]], recording_id, event_options)
         return events
