@@ -86,7 +86,7 @@ QListView::text:selected {
        </property>
       </widget>
       <widget class="AudioManager" name="audio_page"/>
-      <widget class="QWidget" name="page"/>
+      <widget class="Analysis" name="analysis_page"/>
      </widget>
     </item>
     <item>
@@ -185,7 +185,7 @@ QListView::text:selected {
        <bool>true</bool>
       </property>
       <property name="currentRow">
-       <number>-1</number>
+       <number>1</number>
       </property>
       <item>
        <property name="text">
@@ -257,7 +257,7 @@ QListView::text:selected {
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -424,13 +424,19 @@ QListView::text:selected {
   <customwidget>
    <class>DBExplorer</class>
    <extends>QWidget</extends>
-   <header>gui/widgets/dbmanager/dbexplorer.h</header>
+   <header>gui.widgets.dbmanager.dbexplorer.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AudioManager</class>
    <extends>QWidget</extends>
-   <header>gui/widgets/audio/audiomanager.h</header>
+   <header>gui.widgets.audio.audiomanager.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Analysis</class>
+   <extends>QWidget</extends>
+   <header>gui.widgets.analysis.analysis.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
