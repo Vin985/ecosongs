@@ -44,3 +44,20 @@ class RecordingsTable(TableModel):
             rec = Recording(self._df.loc[idx].to_dict())
             self.recordings[idx] = rec
         return rec
+
+    def get_recordings_by_column(self, column, values, df):
+        print(values)
+        print(column)
+        print(self._df[column].isin(values))
+        recs = self._df.loc[self._df[column].isin(values)]
+        if df:
+            return recs
+        else:
+            return self.load_recordings(recs.id)
+
+    def get_recordings_by_name(self, names, df=True):
+        return self.get_recordings_by_column("name", names, df)
+
+    def get_recordings_by_path(self, paths, df=True):
+
+        return self.get_recordings_by_column("path", paths, df)
