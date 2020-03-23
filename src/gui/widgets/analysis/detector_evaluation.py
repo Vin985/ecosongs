@@ -1,7 +1,7 @@
 import os
 
-from PySide2.QtCore import Slot
-from PySide2.QtWidgets import QApplication, QWidget, QFileDialog, qApp
+from PySide2 import QtCore
+from PySide2.QtWidgets import QWidget, QFileDialog, qApp
 
 from gui.widgets.analysis.ui.detector_evaluation_ui import \
     Ui_DetectorEvaluation
@@ -42,6 +42,33 @@ class DetectorEvaluation(QWidget, Ui_DetectorEvaluation):
         self.slider_end_threshold.sliderMoved.connect(
             self.update_end_threshold)
         self.slider_min_duration.sliderMoved.connect(self.update_min_duration)
+
+        self.list_include_tag.itemSelectionChanged.connect(self.include_tag)
+        self.list_exclude_tag.itemSelectionChanged.connect(self.exclude_tag)
+
+    def include_tag(self):
+        items = [item.text() for item in self.list_include_tag.selectedItems()]
+        self.change_items_status(self.list_exclude_tag, items)
+        print("including")
+
+    def exclude_tag(self):
+        items = [item.text() for item in self.list_exclude_tag.selectedItems()]
+        self.change_items_status(self.list_include_tag, items)
+        print("excluding")
+
+    def change_items_status(self, dest, disable_list):
+        for i in range(dest.count()):
+            item = dest.item(i)
+            if item.text() in disable_list:
+                self.disable_item(item)
+            else:
+                self.enable_item(item)
+
+    def enable_item(self, item):
+        item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+
+    def disable_item(self, item):
+        item.setFlags(QtCore.Qt.NoItemFlags)
 
     def init_form(self):
         pass

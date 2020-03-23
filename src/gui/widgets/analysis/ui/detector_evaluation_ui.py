@@ -20,7 +20,7 @@ class Ui_DetectorEvaluation(object):
     def setupUi(self, DetectorEvaluation):
         if DetectorEvaluation.objectName():
             DetectorEvaluation.setObjectName(u"DetectorEvaluation")
-        DetectorEvaluation.resize(754, 544)
+        DetectorEvaluation.resize(754, 584)
         self.gridLayout = QGridLayout(DetectorEvaluation)
         self.gridLayout.setObjectName(u"gridLayout")
         self.input_audio_folder = QLineEdit(DetectorEvaluation)
@@ -66,6 +66,7 @@ class Ui_DetectorEvaluation(object):
 
         self.list_exclude_tag = QListWidget(self.groupBox_2)
         self.list_exclude_tag.setObjectName(u"list_exclude_tag")
+        self.list_exclude_tag.setSelectionMode(QAbstractItemView.MultiSelection)
 
         self.gridLayout_4.addWidget(self.list_exclude_tag, 1, 2, 1, 1)
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>754</width>
-    <height>544</height>
+    <height>584</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,7 +88,11 @@
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QListWidget" name="list_exclude_tag"/>
+          <widget class="QListWidget" name="list_exclude_tag">
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QListWidget" name="list_include_tag">
