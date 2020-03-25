@@ -24,6 +24,12 @@ EVENTS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
                   'recording_id': "recording_id", 'start': "event_start",
                   'name': "file_name", "index": "event_index", "event_duration": "event_duration"}
 
+DEFAULT_EVENT = pd.DataFrame.from_dict({"event_end": [0],
+                                        "event_id": [-1],
+                                        "event_start": [0],
+                                        "event_index": [-1],
+                                        "event_duration": [0]})
+
 
 def get_done_files(path):
     local_conf = os.path.join(path, "config.conf")
@@ -116,7 +122,9 @@ def get_events(predictions, options):
     return events
 
 
-def prepare_events(events, recordings, columns):
+def prepare_events(events, recordings, columns=EVENTS_COLUMNS):
+    events["event_duration"] = events["end"] - \
+        events["start"]
     events = events.merge(
         recordings[["id", "name"]], left_on="recording_id", right_on="id")
     events.reset_index(inplace=True)
@@ -167,23 +175,26 @@ def merge_annotations(annots):
     return res
 
 
-def match_events(tag, events_df=None):
+def match_events(tag, events_df=None, default_event=DEFAULT_EVENT):
     # get tags that overlap with the detected event
     events_df = events_df.drop(["file_name", "recording_id"], axis=1)
     events = events_df.loc[(events_df.event_start < tag.tag_end) &
                            (events_df.event_end > tag.tag_start)]
     events.reset_index(inplace=True, drop=True)
 
-    tmp = [tag]
+    # tmp = [tag]
+    n = events.shape[0] or 1
     if events.shape[0] == 0:
-        empty_event = pd.Series(
-            {"event_end": 0, "event_id": -1, "event_start": 0,
-             "event_index": -1, "event_duration": 0})
-        events = pd.DataFrame([empty_event])
-    else:
-        for i in range(1, events.shape[0]):
-            tmp.append(tag)
-    tmp_df = pd.DataFrame(tmp)
+        # empty_event = pd.Series(
+        #     {"event_end": 0, "event_id": -1, "event_start": 0,
+        #      "event_index": -1, "event_duration": 0})
+        # events = pd.DataFrame([empty_event])
+        events = default_event
+    # else:
+    #     for i in range(1, events.shape[0]):
+    #         tmp.append(tag)
+
+    tmp_df = pd.DataFrame([tag] * n)
     tmp_df.reset_index(inplace=True)
     tmp_df.rename(columns={"index": "tag_index"}, inplace=True)
     res = pd.concat([tmp_df, events], join="outer", axis=1)
@@ -191,24 +202,48 @@ def match_events(tag, events_df=None):
     return res
 
 
-def match_tags(filename, annots_df, events_df):
-    res = {}
-    annots = annots_df.loc[annots_df.file_name == filename]
+# def match_tags(file_name, annots_df, events_df):
+#     res = []
+#     annots = annots_df.loc[annots_df.file_name == file_name]
+#     # Get events detected for the file
+#     # See implementation notes: Detector evaluation #1
+#     file_id = file_name[:-4]
+#     events = events_df.loc[events_df.file_name == file_id]
+#     # Match events with annotations
+#     res = [match_events(row, events) for _, row in annots.iterrows()]
+#     match = pd.concat(res)
+
+#     return match
+
+
+def match_tags(annots, events_df):
     # Get events detected for the file
-    events = events_df.loc[events_df.file_name == filename]
+    # See implementation notes: Detector evaluation #1
+    file_id = annots.name[:-4]
+    events = events_df.loc[events_df.file_name == file_id]
     # Match events with annotations
-    res = [match_events(row, events) for _, row in annots.iterrows()]
+    res = [match_events(row, events) for row in annots.itertuples()]
     match = pd.concat(res)
 
     return match
 
 
-def get_matches(events, tags, file_list, saved_file=""):
+# def get_matches(events, tags, file_list, saved_file=""):
+#     if os.path.isfile(saved_file):
+#         match_df = pd.read_feather(saved_file)
+#     else:
+#         res = [match_tags(f, tags, events) for f in file_list]
+#         match_df = pd.concat(res)
+#     return match_df
+
+
+def get_matches(events, tags, saved_file=""):
     if os.path.isfile(saved_file):
         match_df = pd.read_feather(saved_file)
     else:
-        res = [match_tags(f, tags, events) for f in file_list]
-        match_df = pd.concat(res)
+        match_df = tags.groupby(
+            "file_name", as_index=False).apply(match_tags, events)
+        match_df.reset_index(inplace=True)
     return match_df
 
 
@@ -309,44 +344,44 @@ def get_species(raw_tags, species):
     return None
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    split_file = "matched_events_split.feather"
+#     split_file = "matched_events_split.feather"
 
-    filter_opts = {"exclude_tags": EXCLUDE_TAG, "has_tags": INCLUDE_TAG}
+#     filter_opts = {"exclude_tags": EXCLUDE_TAG, "has_tags": INCLUDE_TAG}
 
-    files_with_annots, tags_df = load_annotations(root_path=TAGS_ROOT_PATH,
-                                                  tags_path=TAGS_LABELS_PATH,
-                                                  only_done=True,
-                                                  columns=TAGS_COLUMNS,
-                                                  columns_type=TAGS_COLUMNS_TYPE,
-                                                  filter_options=filter_opts)
+#     files_with_annots, tags_df = load_annotations(root_path=TAGS_ROOT_PATH,
+#                                                   tags_path=TAGS_LABELS_PATH,
+#                                                   only_done=True,
+#                                                   columns=TAGS_COLUMNS,
+#                                                   columns_type=TAGS_COLUMNS_TYPE,
+#                                                   filter_options=filter_opts)
 
-    print(tags_df)
-    recordings_df = load_recordings(RECORDINGS_PATH, files_with_annots)
+#     print(tags_df)
+#     recordings_df = load_recordings(RECORDINGS_PATH, files_with_annots)
 
-    predictions_df = load_predictions(
-        PREDICTIONS_PATH, recordings_df.id.unique())
+#     predictions_df = load_predictions(
+#         PREDICTIONS_PATH, recordings_df.id.unique())
 
-    event_options = {"min_activity": 0.95,
-                     "min_duration": 0.01,
-                     "end_threshold": 0.1}
-    events_df = get_events(predictions_df, event_options)
-    events_df = prepare_events(events_df, recordings_df, EVENTS_COLUMNS)
+#     event_options = {"min_activity": 0.95,
+#                      "min_duration": 0.01,
+#                      "end_threshold": 0.1}
+#     events_df = get_events(predictions_df, event_options)
+#     events_df = prepare_events(events_df, recordings_df, EVENTS_COLUMNS)
 
-    # if not os.path.isfile(split_file):
-    matches_df = get_matches(events_df, tags_df, files_with_annots)
-    matches_df.reset_index(inplace=True)
-    #     matches_df.to_feather("matched_events_split.feather")
-    # else:
-    #     matches_df = feather.read_dataframe(split_file)
+#     # if not os.path.isfile(split_file):
+#     matches_df = get_matches(events_df, tags_df, files_with_annots)
+#     matches_df.reset_index(inplace=True)
+#     #     matches_df.to_feather("matched_events_split.feather")
+#     # else:
+#     #     matches_df = feather.read_dataframe(split_file)
 
-    # match_df = filter_tags(match_df, has_tags=["Bird"])
+#     # match_df = filter_tags(match_df, has_tags=["Bird"])
 
-    tags_df["species"] = tags_df.tags.apply(get_species, species=SPECIES_LIST)
+#     tags_df["species"] = tags_df.tags.apply(get_species, species=SPECIES_LIST)
 
-    total_stats = get_stats(matches_df, events_df)
-    print(total_stats)
+#     total_stats = get_stats(matches_df, events_df)
+#     print(total_stats)
 
     # fg_matches = matches_df.loc[matches_df.background == False]
     # fg_stats = get_stats(fg_matches, events_df)
