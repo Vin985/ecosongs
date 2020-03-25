@@ -93,17 +93,17 @@ class FileManager:
         # TODO split in smaller functions
         if not dirpath:
             # Path to parent drectory not provided, extract it from filename
-            fullpath = file
-            dirpath = os.path.dirname(file)
-            file = os.path.basename(file)
+            fullpath = file_name
+            dirpath = os.path.dirname(file_name)
+            file_name = os.path.basename(file_name)
         else:
-            fullpath = os.path.join(dirpath, file)
+            fullpath = os.path.join(dirpath, file_name)
 
         # Initialize result dict. Defaults added for table display
         self.log("Extracting information from: " + fullpath)
 
         # Get extension
-        f = file.split(".")
+        f = file_name.split(".")
         ext = f[len(f) - 1].lower()
         # Check if file is a supported audio file
         if ext not in self.FILE_EXT:
@@ -115,7 +115,7 @@ class FileManager:
         res = {"error": 0, "site": None, "plot": None, "date": None,
                "year": None, "name": None, "path": fullpath, "recorder": None}
         res["ext"] = ext
-        res["old_name"] = file
+        res["old_name"] = file_name
 
         # Split path and reverse it
         path = dirpath.split("/")
