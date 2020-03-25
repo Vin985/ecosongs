@@ -136,7 +136,7 @@ class AudioManager(QWidget, Ui_AudioManager):
                 event_options = {"min_activity": self.slider_activity.value() / 100,
                                  "min_duration": self.spin_min_duration.value(),
                                  "end_threshold": self.slider_end_threshold.value() / 100}
-                events = predictions_table.get_events(
+                events = predictions_table.get_events_by_id(
                     self.current_recording.id, event_options)
                 if not events.empty:
                     for event in events.itertuples():
