@@ -20,7 +20,7 @@ class Ui_DetectorEvaluation(object):
     def setupUi(self, DetectorEvaluation):
         if DetectorEvaluation.objectName():
             DetectorEvaluation.setObjectName(u"DetectorEvaluation")
-        DetectorEvaluation.resize(754, 584)
+        DetectorEvaluation.resize(754, 645)
         self.gridLayout = QGridLayout(DetectorEvaluation)
         self.gridLayout.setObjectName(u"gridLayout")
         self.input_audio_folder = QLineEdit(DetectorEvaluation)
@@ -30,7 +30,7 @@ class Ui_DetectorEvaluation(object):
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.gridLayout.addItem(self.verticalSpacer, 9, 0, 1, 3)
+        self.gridLayout.addItem(self.verticalSpacer, 11, 0, 1, 3)
 
         self.options_widget = QWidget(DetectorEvaluation)
         self.options_widget.setObjectName(u"options_widget")
@@ -223,26 +223,33 @@ class Ui_DetectorEvaluation(object):
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.groupBox_3 = QGroupBox(self.results_widget)
         self.groupBox_3.setObjectName(u"groupBox_3")
-        self.groupBox_3.setEnabled(False)
         self.gridLayout_2 = QGridLayout(self.groupBox_3)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.lbl_recall = QLabel(self.groupBox_3)
         self.lbl_recall.setObjectName(u"lbl_recall")
+        font = QFont()
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lbl_recall.setFont(font)
 
         self.gridLayout_2.addWidget(self.lbl_recall, 2, 3, 1, 1)
 
         self.lbl_precision = QLabel(self.groupBox_3)
         self.lbl_precision.setObjectName(u"lbl_precision")
+        self.lbl_precision.setFont(font)
 
         self.gridLayout_2.addWidget(self.lbl_precision, 2, 1, 1, 1)
 
         self.label_15 = QLabel(self.groupBox_3)
         self.label_15.setObjectName(u"label_15")
+        self.label_15.setFont(font)
 
         self.gridLayout_2.addWidget(self.label_15, 2, 2, 1, 1)
 
         self.label_13 = QLabel(self.groupBox_3)
         self.label_13.setObjectName(u"label_13")
+        self.label_13.setFont(font)
 
         self.gridLayout_2.addWidget(self.label_13, 2, 0, 1, 1)
 
@@ -302,11 +309,11 @@ class Ui_DetectorEvaluation(object):
         self.horizontalLayout_3.setContentsMargins(10, 10, 10, 10)
         self.btn_load_data = QPushButton(DetectorEvaluation)
         self.btn_load_data.setObjectName(u"btn_load_data")
-        font = QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.btn_load_data.setFont(font)
+        font1 = QFont()
+        font1.setPointSize(12)
+        font1.setBold(True)
+        font1.setWeight(75)
+        self.btn_load_data.setFont(font1)
 
         self.horizontalLayout_3.addWidget(self.btn_load_data)
 
@@ -323,6 +330,18 @@ class Ui_DetectorEvaluation(object):
         self.input_label_folder.setFrame(True)
 
         self.gridLayout.addWidget(self.input_label_folder, 3, 1, 1, 1)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(10, 10, 10, 10)
+        self.btn_calculate = QPushButton(DetectorEvaluation)
+        self.btn_calculate.setObjectName(u"btn_calculate")
+        self.btn_calculate.setFont(font1)
+
+        self.horizontalLayout_2.addWidget(self.btn_calculate)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_2, 6, 2, 1, 1)
 
 
         self.retranslateUi(DetectorEvaluation)
@@ -372,5 +391,6 @@ class Ui_DetectorEvaluation(object):
         self.label_12.setText(QCoreApplication.translate("DetectorEvaluation", u"Reference audio files folder", None))
         self.btn_load_data.setText(QCoreApplication.translate("DetectorEvaluation", u"Load data", None))
         self.label.setText(QCoreApplication.translate("DetectorEvaluation", u"Reference labels folder:", None))
+        self.btn_calculate.setText(QCoreApplication.translate("DetectorEvaluation", u"Calculate statistics", None))
     # retranslateUi
 
