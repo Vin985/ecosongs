@@ -255,11 +255,6 @@ class FileManager:
         except Exception as e:
             print(traceback.format_exc())
 
-    def remove_files(self):
-        self.log("removing files")
-        for fn in self.files:
-            os.remove(fn)
-
     def rename(self, rename=False, create_links=False, overwrite=False):
         if not rename and not create_links:
             return
