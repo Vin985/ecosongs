@@ -153,3 +153,8 @@ class TableModel():
         if not new.empty:
             self.update(table=dest.append(new, ignore_index=True, sort=True),
                         save=save)
+
+    def get_rows_by_column(self, column, values):
+        rows = self.df.loc[self.df[column].isin(values)]
+        rows.reset_index(inplace=True, drop=True)
+        return rows
