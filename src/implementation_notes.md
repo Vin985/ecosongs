@@ -1,0 +1,3 @@
+### Detector evaluation
+
+1. Since we cannot infer the name of an audio file from the annotation filename (we don't know the extension of the file) recordings are loaded from the database using the absolute path found in the annotation file. However, when loading the events, the path is not used, just the file name without extension. This is why before matching events, it is important to remove the extension to select events.
