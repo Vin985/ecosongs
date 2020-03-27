@@ -15,7 +15,6 @@ currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 os.sys.path.insert(0, parentdir)
-print(parentdir)
 try:
     from plot.events_plot import EventsPlot
     from analysis.detection import predictions_utils
@@ -35,7 +34,8 @@ RECORDINGS_PATH = "../db/feather/recordings.feather"
 MATCHED_PATH = "matched_events.feather"
 
 TAGS_COLUMNS = {"Filename": "file_name", "tags": "tags",
-                "LabelStartTime_Seconds": "tag_start", "LabelEndTime_Seconds": "tag_end"}
+                "LabelStartTime_Seconds": "tag_start", "LabelEndTime_Seconds": "tag_end", "overlap": "overlap", "background": "background"}
+TAGS_COLUMNS_TYPE = {"overlap": "str"}
 PREDICTIONS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
                        'recording_id': "recording_id", 'start': "event_start",
                        'name': "file_name", "index": "event_index"}
@@ -98,7 +98,7 @@ def has_excluded_tags(df, filter_options):
     return res
 
 
-def load_annotations(root_path, tags_path, only_done=True, columns=None, extensions=[".csv"], filter_options=None):
+def load_annotations(root_path, tags_path, only_done=True, columns=None, columns_type=None, extensions=[".csv"], filter_options=None):
     res_files = []
     dfs = []
     done_files = []
@@ -115,7 +115,8 @@ def load_annotations(root_path, tags_path, only_done=True, columns=None, extensi
                 if ext in extensions:
                     file_id = f[:-14]
                     if (not only_done) or (only_done and (file_id in done_files)):
-                        df = pd.read_csv(os.path.join(tags_path, f))
+                        df = pd.read_csv(os.path.join(
+                            tags_path, f), dtype=columns_type)
                         try:
                             df = check_tags_columns(df, columns)
                             if filter_options:
@@ -246,9 +247,12 @@ def get_matches(events, tags, file_list, saved_file=""):
     return match_df
 
 
-def get_stats(match_df, events_df, tags_df):
+def get_stats(match_df, events_df):
     # True pos: number of unique events that matched with a tag
-    true_pos = len(match_df[match_df.event_index != -1].event_index.unique())
+    true_pos_events = len(
+        match_df[match_df.event_index != -1].event_index.unique())
+    true_pos_tags = len(
+        match_df[match_df.event_index != -1].tag_index.unique())
     # False neg: number of tags that did not have a match
     false_neg = match_df[match_df.event_index == -1].shape[0]
     # Number of tags that are matched
@@ -256,13 +260,17 @@ def get_stats(match_df, events_df, tags_df):
         match_df.loc[match_df.event_index != -1].tag_index.unique())
 
     # Precision: TP / TP + FP
-    precision = true_pos / events_df.shape[0]
+    precision = true_pos_events / events_df.shape[0]
     # Recall: TP / TP + FN
-    recall = true_pos / (true_pos + false_neg)
+    recall = true_pos_tags / (true_pos_tags + false_neg)
     f1_score = 2 * (precision * recall) / (precision + recall)
 
-    return {"true_positive": true_pos, "false_negative": false_neg,
-            "n_tags_matched": n_tags_matched, "precision": precision,
+    return {"n_events": events_df.shape[0], "n_tags": len(match_df.tag_index.unique()),
+            "true_positive_events": true_pos_events,
+            "true_positive_tags": true_pos_tags,
+            "false_negative": false_neg,
+            "n_tags_matched": n_tags_matched,
+            "precision": precision,
             "recall": recall, "F1_score": f1_score}
 
 
@@ -313,12 +321,19 @@ def filter_tags(df, *args, **kwargs):
 
 def keep_tag(raw_tags, has_tags=[], exclude_tags=[], keep_by_default=False):
     tags = raw_tags.split(",")
-    for tag in tags:
-        if tag in exclude_tags:
-            return False
-        if tag in has_tags:
-            return True
+    exclude = any([tag in exclude_tags for tag in tags])
+    if exclude:
+        return False
+    include = any([tag in has_tags for tag in tags])
+    if include:
+        return True
     return keep_by_default
+    # for tag in tags:
+    #     if tag in exclude_tags:
+    #         return False
+    #     if tag in has_tags:
+    #         return True
+    # return keep_by_default
 
 
 def get_species(raw_tags, species):
@@ -331,12 +346,18 @@ def get_species(raw_tags, species):
 
 if __name__ == '__main__':
 
+    split_file = "matched_events_split.feather"
+
     filter_opts = {"exclude_tags": EXCLUDE_TAG, "has_tags": INCLUDE_TAG}
+
     files_with_annots, tags_df = load_annotations(root_path=TAGS_ROOT_PATH,
                                                   tags_path=TAGS_LABELS_PATH,
                                                   only_done=True,
-                                                  columns=TAGS_COLUMNS, filter_options=filter_opts)
+                                                  columns=TAGS_COLUMNS,
+                                                  columns_type=TAGS_COLUMNS_TYPE,
+                                                  filter_options=filter_opts)
 
+    print(tags_df)
     recordings_df = load_recordings(RECORDINGS_PATH, files_with_annots)
 
     predictions_df = load_predictions(
@@ -344,46 +365,39 @@ if __name__ == '__main__':
 
     event_options = {"min_activity": 0.95,
                      "min_duration": 0.01,
-                     "end_threshold": 0.6}
+                     "end_threshold": 0.1}
     events_df = get_events(predictions_df, event_options)
-
     events_df = prepare_events(events_df, recordings_df, EVENTS_COLUMNS)
 
+    # if not os.path.isfile(split_file):
     matches_df = get_matches(events_df, tags_df, files_with_annots)
-    print(matches_df)
-
-    # predictions_data, tags_data = load_data(file_path=MATCHED_PATH,
-    #                                         predictions_path=PREDICTIONS_PATH,
-    #                                         recordings_path=RECORDINGS_PATH,
-    #                                         tag_root_path=TAGS_ROOT_PATH,
-    #                                         tag_labels_path=TAGS_LABELS_PATH,
-    #                                         only_done=True,
-    #                                         tag_columns=TAGS_COLUMNS)
-
-    # print(predictions_df)
-    # print(tags_df)
-    # print(match_df)
     matches_df.reset_index(inplace=True)
-    matches_df.to_feather("matched_events_split.feather")
+    #     matches_df.to_feather("matched_events_split.feather")
+    # else:
+    #     matches_df = feather.read_dataframe(split_file)
 
     # match_df = filter_tags(match_df, has_tags=["Bird"])
 
-    print(tags_df)
-    tags_df.tags.unique()
-
     tags_df["species"] = tags_df.tags.apply(get_species, species=SPECIES_LIST)
 
-    stats = get_stats(matches_df, events_df, tags_df)
-    print(stats)
+    total_stats = get_stats(matches_df, events_df)
+    print(total_stats)
 
-    overlap = get_tags_overlap(matches_df)
-    overlap["log_tag_dur"] = np.log(overlap["tag_duration"])
-    # overlap.to_feather("overlap.feather")
-    print(overlap)
+    # fg_matches = matches_df.loc[matches_df.background == False]
+    # fg_stats = get_stats(fg_matches, events_df)
+    # print(fg_stats)
 
-    overlap["prop_overlap"].agg("mean")
+    # bg_matches = matches_df.loc[matches_df.background == True]
+    # bg_stats = get_stats(bg_matches, events_df)
+    # print(bg_stats)
 
-    tags_df.shape[0]
+    # overlap = get_tags_overlap(matches_df)
+    # overlap["log_tag_dur"] = np.log(overlap["tag_duration"])
+    # print(overlap)
+
+    # overlap["prop_overlap"].agg("mean")
+
+    # tags_df.shape[0]
 
     # # import math
     # # from sklearn import linear_model
