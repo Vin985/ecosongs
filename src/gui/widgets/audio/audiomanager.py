@@ -29,7 +29,6 @@ class AudioManager(QWidget, Ui_AudioManager):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        # self.audio_analyzer = QAudioAnalyzer()
         self.current_recording = None
         self.song_classifier = None
         self.action_dialog = None
