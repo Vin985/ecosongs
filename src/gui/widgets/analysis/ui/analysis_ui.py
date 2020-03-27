@@ -15,7 +15,7 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QRadialGradient)
 from PySide2.QtWidgets import *
 
-from gui.widgets.analysis.detector_evaluation import DetectorEvaluation
+from gui.widgets.analysis.detection_evaluator import DetectionEvaluator
 
 
 class Ui_Analysis(object):
@@ -27,7 +27,7 @@ class Ui_Analysis(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.analysis_tabs = QTabWidget(Analysis)
         self.analysis_tabs.setObjectName(u"analysis_tabs")
-        self.detector_evaluation = DetectorEvaluation()
+        self.detector_evaluation = DetectionEvaluator()
         self.detector_evaluation.setObjectName(u"detector_evaluation")
         self.analysis_tabs.addTab(self.detector_evaluation, "")
         self.tab_2 = QWidget()

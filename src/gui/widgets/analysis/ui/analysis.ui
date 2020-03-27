@@ -16,7 +16,7 @@
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QTabWidget" name="analysis_tabs">
-     <widget class="DetectorEvaluation" name="detector_evaluation">
+     <widget class="DetectionEvaluator" name="detector_evaluation">
       <attribute name="title">
        <string>Evaluate detector</string>
       </attribute>
@@ -32,9 +32,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DetectorEvaluation</class>
+   <class>DetectionEvaluator</class>
    <extends>QWidget</extends>
-   <header>gui.widgets.analysis.detector_evaluation.h</header>
+   <header>gui.widgets.analysis.detection_evaluator.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
