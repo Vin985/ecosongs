@@ -24,30 +24,31 @@ class DetectorDialog(AnalyzerDialog):
     def link_events(self):
         super().link_events()
         self.detect_songs.connect(
-            self.audio_analyzer.detect_songs, type=Qt.QueuedConnection)
+            self.worker.detect_songs, type=Qt.QueuedConnection)
 
     @Slot()
     def start(self):
         print("clicking start")
         # TODO: add detection options in UI
-        self.audio_analyzer.options = self.options.get_options()
+        self.worker.options = self.options.get_options()
         self.detect_songs.emit()
         self.started = time.time()
 
     @Slot()
     def process_results(self):
         super().process_results()
-        res = self.audio_analyzer.results
-        events = pd.concat(res)
-        if self.options.checkbox_save.isChecked():
-            activity_table = qApp.tables.activity_predictions
-            analysis_options = qApp.tables.analysis_options
-            options_id = analysis_options.add(
-                self.audio_analyzer.options, type="activity_prediction", save=True)
-            events["analysis_options"] = options_id
-            print(events)
-            activity_table.add(events, save=True,
-                               replace=self.options.checkbox_overwrite.isChecked())
+        res = self.worker.results
+        if res:
+            events = pd.concat(res)
+            if self.options.checkbox_save.isChecked():
+                activity_table = qApp.tables.activity_predictions
+                analysis_options = qApp.tables.analysis_options
+                options_id = analysis_options.add(
+                    self.worker.options, type="activity_prediction", save=True)
+                events["analysis_options"] = options_id
+                print(events)
+                activity_table.add(events, save=True,
+                                   replace=self.options.checkbox_overwrite.isChecked())
 
         # if self.options.checkbox_save.isChecked():
         #     events_table = qApp.tables.song_events
