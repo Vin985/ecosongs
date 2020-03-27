@@ -72,7 +72,6 @@ class ParallelWorker():
     # TODO accept function args to async
     def mp_apply_async(self, collection, func, initializer=None, initargs=None, callback=None):
         print("async")
-        res = []
         # If no number of processes provided
         if not self.options["nprocess"]:
             # If there is less items than cpus, do not instantiate all processes
