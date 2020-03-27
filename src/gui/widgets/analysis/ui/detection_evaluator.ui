@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DetectorEvaluation</class>
- <widget class="QWidget" name="DetectorEvaluation">
+ <class>DetectionEvaluator</class>
+ <widget class="QWidget" name="DetectionEvaluator">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>754</width>
-    <height>645</height>
+    <height>740</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,7 +54,7 @@
          <string>Tag filtering</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="2" column="0" colspan="2">
+         <item row="3" column="0" colspan="2">
           <widget class="QCheckBox" name="cb_keep_by_default">
            <property name="text">
             <string>Keep tags by default</string>
@@ -87,21 +87,21 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
+         <item row="2" column="2">
           <widget class="QListWidget" name="list_exclude_tag">
            <property name="selectionMode">
             <enum>QAbstractItemView::MultiSelection</enum>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="QListWidget" name="list_include_tag">
            <property name="selectionMode">
             <enum>QAbstractItemView::MultiSelection</enum>
            </property>
           </widget>
          </item>
-         <item row="1" column="3">
+         <item row="2" column="3">
           <spacer name="horizontalSpacer_3">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -116,6 +116,13 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>PushButton</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -559,6 +566,36 @@
        </property>
        <property name="text">
         <string>Calculate statistics</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="9" column="2">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <property name="leftMargin">
+      <number>10</number>
+     </property>
+     <property name="topMargin">
+      <number>10</number>
+     </property>
+     <property name="rightMargin">
+      <number>10</number>
+     </property>
+     <property name="bottomMargin">
+      <number>10</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="btn_sensitivity">
+       <property name="font">
+        <font>
+         <pointsize>9</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Launch sensistivity analysis</string>
        </property>
       </widget>
      </item>

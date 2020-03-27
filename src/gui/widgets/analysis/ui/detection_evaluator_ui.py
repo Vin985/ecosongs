@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'detector_evaluation.ui'
+## Form generated from reading UI file 'detection_evaluator.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -16,14 +16,14 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
 from PySide2.QtWidgets import *
 
 
-class Ui_DetectorEvaluation(object):
-    def setupUi(self, DetectorEvaluation):
-        if DetectorEvaluation.objectName():
-            DetectorEvaluation.setObjectName(u"DetectorEvaluation")
-        DetectorEvaluation.resize(754, 645)
-        self.gridLayout = QGridLayout(DetectorEvaluation)
+class Ui_DetectionEvaluator(object):
+    def setupUi(self, DetectionEvaluator):
+        if DetectionEvaluator.objectName():
+            DetectionEvaluator.setObjectName(u"DetectionEvaluator")
+        DetectionEvaluator.resize(754, 740)
+        self.gridLayout = QGridLayout(DetectionEvaluator)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.input_audio_folder = QLineEdit(DetectorEvaluation)
+        self.input_audio_folder = QLineEdit(DetectionEvaluator)
         self.input_audio_folder.setObjectName(u"input_audio_folder")
 
         self.gridLayout.addWidget(self.input_audio_folder, 2, 1, 1, 1)
@@ -32,7 +32,7 @@ class Ui_DetectorEvaluation(object):
 
         self.gridLayout.addItem(self.verticalSpacer, 11, 0, 1, 3)
 
-        self.options_widget = QWidget(DetectorEvaluation)
+        self.options_widget = QWidget(DetectionEvaluator)
         self.options_widget.setObjectName(u"options_widget")
         self.options_widget.setEnabled(False)
         self.verticalLayout = QVBoxLayout(self.options_widget)
@@ -45,7 +45,7 @@ class Ui_DetectorEvaluation(object):
         self.cb_keep_by_default = QCheckBox(self.groupBox_2)
         self.cb_keep_by_default.setObjectName(u"cb_keep_by_default")
 
-        self.gridLayout_4.addWidget(self.cb_keep_by_default, 2, 0, 1, 2)
+        self.gridLayout_4.addWidget(self.cb_keep_by_default, 3, 0, 1, 2)
 
         self.label_8 = QLabel(self.groupBox_2)
         self.label_8.setObjectName(u"label_8")
@@ -68,17 +68,22 @@ class Ui_DetectorEvaluation(object):
         self.list_exclude_tag.setObjectName(u"list_exclude_tag")
         self.list_exclude_tag.setSelectionMode(QAbstractItemView.MultiSelection)
 
-        self.gridLayout_4.addWidget(self.list_exclude_tag, 1, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.list_exclude_tag, 2, 2, 1, 1)
 
         self.list_include_tag = QListWidget(self.groupBox_2)
         self.list_include_tag.setObjectName(u"list_include_tag")
         self.list_include_tag.setSelectionMode(QAbstractItemView.MultiSelection)
 
-        self.gridLayout_4.addWidget(self.list_include_tag, 1, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.list_include_tag, 2, 0, 1, 1)
 
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_4.addItem(self.horizontalSpacer_3, 1, 3, 1, 1)
+        self.gridLayout_4.addItem(self.horizontalSpacer_3, 2, 3, 1, 1)
+
+        self.pushButton = QPushButton(self.groupBox_2)
+        self.pushButton.setObjectName(u"pushButton")
+
+        self.gridLayout_4.addWidget(self.pushButton, 1, 2, 1, 1)
 
 
         self.verticalLayout.addWidget(self.groupBox_2)
@@ -164,12 +169,12 @@ class Ui_DetectorEvaluation(object):
 
         self.gridLayout.addWidget(self.options_widget, 5, 0, 1, 3)
 
-        self.btn_label_folder = QPushButton(DetectorEvaluation)
+        self.btn_label_folder = QPushButton(DetectionEvaluator)
         self.btn_label_folder.setObjectName(u"btn_label_folder")
 
         self.gridLayout.addWidget(self.btn_label_folder, 3, 2, 1, 1)
 
-        self.cb_only_done = QCheckBox(DetectorEvaluation)
+        self.cb_only_done = QCheckBox(DetectionEvaluator)
         self.cb_only_done.setObjectName(u"cb_only_done")
         self.cb_only_done.setChecked(True)
 
@@ -177,7 +182,7 @@ class Ui_DetectorEvaluation(object):
 
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.lbl_message = QLabel(DetectorEvaluation)
+        self.lbl_message = QLabel(DetectionEvaluator)
         self.lbl_message.setObjectName(u"lbl_message")
 
         self.horizontalLayout_5.addWidget(self.lbl_message)
@@ -191,18 +196,18 @@ class Ui_DetectorEvaluation(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
-        self.cb_check_label = QCheckBox(DetectorEvaluation)
+        self.cb_check_label = QCheckBox(DetectionEvaluator)
         self.cb_check_label.setObjectName(u"cb_check_label")
         self.cb_check_label.setChecked(True)
 
         self.horizontalLayout.addWidget(self.cb_check_label)
 
-        self.cb_autosave = QCheckBox(DetectorEvaluation)
+        self.cb_autosave = QCheckBox(DetectionEvaluator)
         self.cb_autosave.setObjectName(u"cb_autosave")
 
         self.horizontalLayout.addWidget(self.cb_autosave)
 
-        self.cb_recalculate = QCheckBox(DetectorEvaluation)
+        self.cb_recalculate = QCheckBox(DetectionEvaluator)
         self.cb_recalculate.setObjectName(u"cb_recalculate")
 
         self.horizontalLayout.addWidget(self.cb_recalculate)
@@ -210,12 +215,12 @@ class Ui_DetectorEvaluation(object):
 
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 3)
 
-        self.btn_audio_folder = QPushButton(DetectorEvaluation)
+        self.btn_audio_folder = QPushButton(DetectionEvaluator)
         self.btn_audio_folder.setObjectName(u"btn_audio_folder")
 
         self.gridLayout.addWidget(self.btn_audio_folder, 2, 2, 1, 1)
 
-        self.results_widget = QWidget(DetectorEvaluation)
+        self.results_widget = QWidget(DetectionEvaluator)
         self.results_widget.setObjectName(u"results_widget")
         self.results_widget.setEnabled(False)
         self.verticalLayout_2 = QVBoxLayout(self.results_widget)
@@ -299,7 +304,7 @@ class Ui_DetectorEvaluation(object):
 
         self.gridLayout.addWidget(self.results_widget, 8, 0, 1, 3)
 
-        self.label_12 = QLabel(DetectorEvaluation)
+        self.label_12 = QLabel(DetectionEvaluator)
         self.label_12.setObjectName(u"label_12")
 
         self.gridLayout.addWidget(self.label_12, 2, 0, 1, 1)
@@ -307,7 +312,7 @@ class Ui_DetectorEvaluation(object):
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout_3.setContentsMargins(10, 10, 10, 10)
-        self.btn_load_data = QPushButton(DetectorEvaluation)
+        self.btn_load_data = QPushButton(DetectionEvaluator)
         self.btn_load_data.setObjectName(u"btn_load_data")
         font1 = QFont()
         font1.setPointSize(12)
@@ -320,12 +325,12 @@ class Ui_DetectorEvaluation(object):
 
         self.gridLayout.addLayout(self.horizontalLayout_3, 4, 2, 1, 1)
 
-        self.label = QLabel(DetectorEvaluation)
+        self.label = QLabel(DetectionEvaluator)
         self.label.setObjectName(u"label")
 
         self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
 
-        self.input_label_folder = QLineEdit(DetectorEvaluation)
+        self.input_label_folder = QLineEdit(DetectionEvaluator)
         self.input_label_folder.setObjectName(u"input_label_folder")
         self.input_label_folder.setFrame(True)
 
@@ -334,7 +339,7 @@ class Ui_DetectorEvaluation(object):
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(10, 10, 10, 10)
-        self.btn_calculate = QPushButton(DetectorEvaluation)
+        self.btn_calculate = QPushButton(DetectionEvaluator)
         self.btn_calculate.setObjectName(u"btn_calculate")
         self.btn_calculate.setFont(font1)
 
@@ -343,54 +348,72 @@ class Ui_DetectorEvaluation(object):
 
         self.gridLayout.addLayout(self.horizontalLayout_2, 6, 2, 1, 1)
 
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setContentsMargins(10, 10, 10, 10)
+        self.btn_sensitivity = QPushButton(DetectionEvaluator)
+        self.btn_sensitivity.setObjectName(u"btn_sensitivity")
+        font2 = QFont()
+        font2.setPointSize(9)
+        font2.setBold(True)
+        font2.setWeight(75)
+        self.btn_sensitivity.setFont(font2)
 
-        self.retranslateUi(DetectorEvaluation)
+        self.horizontalLayout_4.addWidget(self.btn_sensitivity)
 
-        QMetaObject.connectSlotsByName(DetectorEvaluation)
+
+        self.gridLayout.addLayout(self.horizontalLayout_4, 9, 2, 1, 1)
+
+
+        self.retranslateUi(DetectionEvaluator)
+
+        QMetaObject.connectSlotsByName(DetectionEvaluator)
     # setupUi
 
-    def retranslateUi(self, DetectorEvaluation):
-        DetectorEvaluation.setWindowTitle(QCoreApplication.translate("DetectorEvaluation", u"Form", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("DetectorEvaluation", u"Tag filtering", None))
-        self.cb_keep_by_default.setText(QCoreApplication.translate("DetectorEvaluation", u"Keep tags by default", None))
-        self.label_8.setText(QCoreApplication.translate("DetectorEvaluation", u"Include labels", None))
-        self.label_10.setText(QCoreApplication.translate("DetectorEvaluation", u"Exclude labels", None))
-        self.groupBox.setTitle(QCoreApplication.translate("DetectorEvaluation", u"Event filter options", None))
-        self.label_4.setText(QCoreApplication.translate("DetectorEvaluation", u"End threshold", None))
+    def retranslateUi(self, DetectionEvaluator):
+        DetectionEvaluator.setWindowTitle(QCoreApplication.translate("DetectionEvaluator", u"Form", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("DetectionEvaluator", u"Tag filtering", None))
+        self.cb_keep_by_default.setText(QCoreApplication.translate("DetectionEvaluator", u"Keep tags by default", None))
+        self.label_8.setText(QCoreApplication.translate("DetectionEvaluator", u"Include labels", None))
+        self.label_10.setText(QCoreApplication.translate("DetectionEvaluator", u"Exclude labels", None))
+        self.pushButton.setText(QCoreApplication.translate("DetectionEvaluator", u"PushButton", None))
+        self.groupBox.setTitle(QCoreApplication.translate("DetectionEvaluator", u"Event filter options", None))
+        self.label_4.setText(QCoreApplication.translate("DetectionEvaluator", u"End threshold", None))
         self.lbl_end_threshold.setText("")
-        self.label_6.setText(QCoreApplication.translate("DetectorEvaluation", u"Minimum duration", None))
+        self.label_6.setText(QCoreApplication.translate("DetectionEvaluator", u"Minimum duration", None))
         self.lbl_min_activity.setText("")
-        self.label_2.setText(QCoreApplication.translate("DetectorEvaluation", u"Min activity", None))
+        self.label_2.setText(QCoreApplication.translate("DetectionEvaluator", u"Min activity", None))
         self.lbl_min_duration.setText("")
-        self.btn_label_folder.setText(QCoreApplication.translate("DetectorEvaluation", u"Choose folder", None))
-        self.cb_only_done.setText(QCoreApplication.translate("DetectorEvaluation", u"Only use completely done files", None))
+        self.btn_label_folder.setText(QCoreApplication.translate("DetectionEvaluator", u"Choose folder", None))
+        self.cb_only_done.setText(QCoreApplication.translate("DetectionEvaluator", u"Only use completely done files", None))
         self.lbl_message.setText("")
 #if QT_CONFIG(tooltip)
-        self.cb_check_label.setToolTip(QCoreApplication.translate("DetectorEvaluation", u"Automatically check if a 'labels' folder exists below the selected audio folder", None))
+        self.cb_check_label.setToolTip(QCoreApplication.translate("DetectionEvaluator", u"Automatically check if a 'labels' folder exists below the selected audio folder", None))
 #endif // QT_CONFIG(tooltip)
-        self.cb_check_label.setText(QCoreApplication.translate("DetectorEvaluation", u"Check for label folder", None))
-        self.cb_autosave.setText(QCoreApplication.translate("DetectorEvaluation", u"Autosave simulations", None))
+        self.cb_check_label.setText(QCoreApplication.translate("DetectionEvaluator", u"Check for label folder", None))
+        self.cb_autosave.setText(QCoreApplication.translate("DetectionEvaluator", u"Autosave simulations", None))
 #if QT_CONFIG(tooltip)
-        self.cb_recalculate.setToolTip(QCoreApplication.translate("DetectorEvaluation", u"Will not load previously saved results and perform the analysis again", None))
+        self.cb_recalculate.setToolTip(QCoreApplication.translate("DetectionEvaluator", u"Will not load previously saved results and perform the analysis again", None))
 #endif // QT_CONFIG(tooltip)
-        self.cb_recalculate.setText(QCoreApplication.translate("DetectorEvaluation", u"Recalculate", None))
-        self.btn_audio_folder.setText(QCoreApplication.translate("DetectorEvaluation", u"Choose folder", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("DetectorEvaluation", u"Results", None))
+        self.cb_recalculate.setText(QCoreApplication.translate("DetectionEvaluator", u"Recalculate", None))
+        self.btn_audio_folder.setText(QCoreApplication.translate("DetectionEvaluator", u"Choose folder", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("DetectionEvaluator", u"Results", None))
         self.lbl_recall.setText("")
         self.lbl_precision.setText("")
-        self.label_15.setText(QCoreApplication.translate("DetectorEvaluation", u"Recall:", None))
-        self.label_13.setText(QCoreApplication.translate("DetectorEvaluation", u"Precision:", None))
+        self.label_15.setText(QCoreApplication.translate("DetectionEvaluator", u"Recall:", None))
+        self.label_13.setText(QCoreApplication.translate("DetectionEvaluator", u"Precision:", None))
         self.lbl_n_events.setText("")
         self.lbl_n_annots.setText("")
-        self.label_17.setText(QCoreApplication.translate("DetectorEvaluation", u"N Events detected:", None))
-        self.label_18.setText(QCoreApplication.translate("DetectorEvaluation", u"N annotations:", None))
-        self.label_21.setText(QCoreApplication.translate("DetectorEvaluation", u"N events matched:", None))
-        self.label_22.setText(QCoreApplication.translate("DetectorEvaluation", u"N annotations matched:", None))
+        self.label_17.setText(QCoreApplication.translate("DetectionEvaluator", u"N Events detected:", None))
+        self.label_18.setText(QCoreApplication.translate("DetectionEvaluator", u"N annotations:", None))
+        self.label_21.setText(QCoreApplication.translate("DetectionEvaluator", u"N events matched:", None))
+        self.label_22.setText(QCoreApplication.translate("DetectionEvaluator", u"N annotations matched:", None))
         self.lbl_events_matched.setText("")
         self.lbl_annots_matched.setText("")
-        self.label_12.setText(QCoreApplication.translate("DetectorEvaluation", u"Reference audio files folder", None))
-        self.btn_load_data.setText(QCoreApplication.translate("DetectorEvaluation", u"Load data", None))
-        self.label.setText(QCoreApplication.translate("DetectorEvaluation", u"Reference labels folder:", None))
-        self.btn_calculate.setText(QCoreApplication.translate("DetectorEvaluation", u"Calculate statistics", None))
+        self.label_12.setText(QCoreApplication.translate("DetectionEvaluator", u"Reference audio files folder", None))
+        self.btn_load_data.setText(QCoreApplication.translate("DetectionEvaluator", u"Load data", None))
+        self.label.setText(QCoreApplication.translate("DetectionEvaluator", u"Reference labels folder:", None))
+        self.btn_calculate.setText(QCoreApplication.translate("DetectionEvaluator", u"Calculate statistics", None))
+        self.btn_sensitivity.setText(QCoreApplication.translate("DetectionEvaluator", u"Launch sensistivity analysis", None))
     # retranslateUi
 

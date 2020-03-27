@@ -5,12 +5,12 @@ from PySide2 import QtCore
 from PySide2.QtWidgets import QFileDialog, QWidget, qApp
 
 from analysis.detection import detector_evaluation
-from gui.utils.progress import QProgressIndicator
-from gui.widgets.analysis.ui.detector_evaluation_ui import \
-    Ui_DetectorEvaluation
+from gui.widgets.analysis.ui.detection_evaluator_ui import \
+    Ui_DetectionEvaluator
+from gui.widgets.analysis.sensitivity_dialog import SensitivityDialog
 
 
-class DetectorEvaluation(QWidget, Ui_DetectorEvaluation):
+class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):
 
     DEFAULT_LABEL_FOLDER = "labels"
     MSG_LABEL_COLOR = {"info": "blue", "warning": "orange", "error": "red"}
@@ -36,6 +36,7 @@ class DetectorEvaluation(QWidget, Ui_DetectorEvaluation):
         self.btn_label_folder.clicked.connect(self.select_label_folder)
         self.btn_load_data.clicked.connect(self.load_data)
         self.btn_calculate.clicked.connect(self.calculate)
+        self.btn_sensitivity.clicked.connect(self.launch_sensitivity_analysis)
 
         # sliders
         self.slider_min_activity.sliderMoved.connect(self.update_min_activity)
@@ -115,8 +116,9 @@ class DetectorEvaluation(QWidget, Ui_DetectorEvaluation):
         tic = time()
         matches_df = detector_evaluation.get_matches(events_df, self.tags_df)
         print("Took %0.6fs to match events" % (time() - tic))
-
+        tic = time()
         stats = detector_evaluation.get_stats(matches_df, events_df)
+        print("Took %0.6fs to get_stats" % (time() - tic))
         self.display_stats(stats)
 
     def display_stats(self, stats):
@@ -142,6 +144,16 @@ class DetectorEvaluation(QWidget, Ui_DetectorEvaluation):
     def exclude_tag(self):
         items = [item.text() for item in self.list_exclude_tag.selectedItems()]
         self.change_items_status(self.list_include_tag, items)
+
+    @QtCore.Slot()
+    def launch_sensitivity_analysis(self):
+        print("launching")
+        self.sensitivity_dialog = SensitivityDialog(parent=self,
+                                                    recordings=self.recordings_df,
+                                                    tags=self.tags_df,
+                                                    predictions=self.predictions_df)
+        self.sensitivity_dialog.setModal(True)
+        self.sensitivity_dialog.show()
 
     ####################
     ### GUI Updating ###
