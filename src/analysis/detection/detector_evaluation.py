@@ -152,7 +152,7 @@ def merge_annotations(annots):
     res = []
     previous = {}
     annots.sort_values(by=['start'])
-    for idx, annot in annots.iterrows():
+    for _, annot in annots.iterrows():
         if not previous:
             previous = {"start": annot.start, "end": annot.end,
                         "duration": annot.duration, "n_annot": 1}
@@ -175,42 +175,55 @@ def merge_annotations(annots):
     return res
 
 
-def match_events(tag, events_df=None, default_event=DEFAULT_EVENT):
+# def match_events(tag, events_df=None, default_event=DEFAULT_EVENT):
+#     # get tags that overlap with the detected event
+#     events_df = events_df.drop(["file_name", "recording_id"], axis=1)
+#     events = events_df.loc[(events_df.event_start < tag.tag_end) &
+#                            (events_df.event_end > tag.tag_start)]
+#     events.reset_index(inplace=True, drop=True)
+
+#     # tmp = [tag]
+#     n = events.shape[0] or 1
+#     if events.shape[0] == 0:
+#         # empty_event = pd.Series(
+#         #     {"event_end": 0, "event_id": -1, "event_start": 0,
+#         #      "event_index": -1, "event_duration": 0})
+#         # events = pd.DataFrame([empty_event])
+#         events = default_event
+#     # else:
+#     #     for i in range(1, events.shape[0]):
+#     #         tmp.append(tag)
+
+#     tmp_df = pd.DataFrame([tag] * n)
+#     tmp_df.reset_index(inplace=True)
+#     tmp_df.rename(columns={"index": "tag_index"}, inplace=True)
+#     res = pd.concat([tmp_df, events], join="outer", axis=1)
+
+#     return res
+
+
+def match_events(tag, events_df=None):
     # get tags that overlap with the detected event
-    events_df = events_df.drop(["file_name", "recording_id"], axis=1)
+    # events_df = events_df.drop(["file_name", "recording_id"], axis=1)
     events = events_df.loc[(events_df.event_start < tag.tag_end) &
                            (events_df.event_end > tag.tag_start)]
-    events.reset_index(inplace=True, drop=True)
+    events_idx = events.event_index.to_list()
 
     # tmp = [tag]
-    n = events.shape[0] or 1
-    if events.shape[0] == 0:
-        # empty_event = pd.Series(
-        #     {"event_end": 0, "event_id": -1, "event_start": 0,
-        #      "event_index": -1, "event_duration": 0})
-        # events = pd.DataFrame([empty_event])
-        events = default_event
-    # else:
-    #     for i in range(1, events.shape[0]):
-    #         tmp.append(tag)
+    n = len(events_idx) or 1
+    if not events_idx:
+        events_idx = [-1]
 
-    tmp_df = pd.DataFrame([tag] * n)
-    tmp_df.reset_index(inplace=True)
-    tmp_df.rename(columns={"index": "tag_index"}, inplace=True)
-    res = pd.concat([tmp_df, events], join="outer", axis=1)
-
-    return res
+    return ([tag.Index] * n, events_idx)
 
 
-# def match_tags(file_name, annots_df, events_df):
-#     res = []
-#     annots = annots_df.loc[annots_df.file_name == file_name]
+# def match_tags(annots, events_df):
 #     # Get events detected for the file
 #     # See implementation notes: Detector evaluation #1
-#     file_id = file_name[:-4]
+#     file_id = annots.name[:-4]
 #     events = events_df.loc[events_df.file_name == file_id]
 #     # Match events with annotations
-#     res = [match_events(row, events) for _, row in annots.iterrows()]
+#     res = [match_events(row, events) for row in annots.itertuples()]
 #     match = pd.concat(res)
 
 #     return match
@@ -223,7 +236,14 @@ def match_tags(annots, events_df):
     events = events_df.loc[events_df.file_name == file_id]
     # Match events with annotations
     res = [match_events(row, events) for row in annots.itertuples()]
-    match = pd.concat(res)
+    tags_id = []
+    events_id = []
+    for item in res:
+        tags, events = item
+        tags_id.extend(tags)
+        events_id.extend(events)
+    match = pd.DataFrame.from_dict(
+        {"tag_index": tags_id, "event_index": events_id})
 
     return match
 
