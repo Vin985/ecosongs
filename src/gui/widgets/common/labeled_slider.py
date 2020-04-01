@@ -22,7 +22,6 @@ class LabeledSlider(QWidget, Ui_LabeledSlider):
         self.slider.sliderMoved.connect(self.update_value)
         self.slider.valueChanged.connect(self.update_value)
 
-    @property
     def display_value(self):
         return round(self.slider.value() * self.multiplier, 2)
 
@@ -31,7 +30,7 @@ class LabeledSlider(QWidget, Ui_LabeledSlider):
 
     @property
     def multiplier(self):
-        return self.multiplier
+        return self._multiplier
 
     @multiplier.setter
     def multiplier(self, value):
@@ -49,7 +48,7 @@ class LabeledSlider(QWidget, Ui_LabeledSlider):
 
     @Slot()
     def update_value(self, value=None):
-        text = str(self.display_value)
+        text = str(self.display_value())
         if self.unit:
             text += " " + self.unit
         self.lbl_value.setText(text)
@@ -84,6 +83,9 @@ class LabeledSlider(QWidget, Ui_LabeledSlider):
 
     def singleStep(self):
         return self.slider.singleStep()
+
+    def setPageStep(self, value):
+        self.slider.setPageStep(value)
 
 
 if __name__ == '__main__':
