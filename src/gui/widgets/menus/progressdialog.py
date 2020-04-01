@@ -42,6 +42,7 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
                 self.computing, type=Qt.BlockingQueuedConnection)
 
             self.worker.done.connect(self.process_results)
+            self.worker.error.connect(self.log)
 
             self.cancelling.connect(
                 self.worker.cancel_tasks, type=Qt.DirectConnection)
