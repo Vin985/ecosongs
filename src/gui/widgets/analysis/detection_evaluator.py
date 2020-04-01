@@ -19,7 +19,6 @@ class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):
         super().__init__()
         self.setupUi(self)
         self.link_events()
-        self.folders = {"audio": "", "labels": ""}
         self.init_form()
         self.files = []
         self.tags_df = None
@@ -149,9 +148,11 @@ class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):
     def launch_sensitivity_analysis(self):
         print("launching")
         self.sensitivity_dialog = SensitivityDialog(parent=self,
+                                                    predictions=self.predictions_df,
                                                     recordings=self.recordings_df,
                                                     tags=self.tags_df,
-                                                    predictions=self.predictions_df)
+                                                    audio_path=self.input_audio_folder.text(),
+                                                    labels_path=self.input_label_folder.text())
         self.sensitivity_dialog.setModal(True)
         self.sensitivity_dialog.show()
 
