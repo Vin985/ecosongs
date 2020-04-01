@@ -18,8 +18,8 @@ class SensitivityOptions(QWidget, Ui_SensitivityOptions):
         self.slider_activity_end.multiplier = .01
         self.slider_end_threshold_start.multiplier = .01
         self.slider_end_threshold_end.multiplier = .01
-        self.slider_min_duration_start.multiplier = 10
-        self.slider_min_duration_end.multiplier = 10
+        # self.slider_min_duration_start.multiplier = 10
+        # self.slider_min_duration_end.multiplier = 10
         self.slider_min_duration_start.unit = " ms"
         self.slider_min_duration_end.unit = " ms"
 
@@ -53,18 +53,21 @@ class SensitivityOptions(QWidget, Ui_SensitivityOptions):
             slider.setSliderPosition(minimum.value() + slider.singleStep())
 
     def get_options(self):
-        analysis_options = {"min_activity_start": self.slider_activity_start.display_value,
-                            "min_activity_end": self.slider_activity_end.display_value,
-                            "end_threshold_start": self.slider_end_threshold_start.display_value,
-                            "end_threshold_end": self.slider_end_threshold_end.display_value,
-                            "min_duration_start": self.slider_min_duration_start.display_value,
-                            "min_duration_end": self.slider_min_duration_end.display_value,
-                            "activity_step": self.spin_activity_step.value(),
+        analysis_options = {"min_activity_start": self.slider_activity_start.display_value(),
+                            "min_activity_end": self.slider_activity_end.display_value(),
+                            "min_activity_step": self.spin_activity_step.value(),
+                            "end_threshold_start": self.slider_end_threshold_start.display_value(),
+                            "end_threshold_end": self.slider_end_threshold_end.display_value(),
                             "end_threshold_step": self.spin_end_threshold_step.value(),
-                            "min_duration_step": self.spin_duration_step.value()}
+                            # Min duration is displayed in miliseconds but event detection is in seconds
+                            "min_duration_start": self.slider_min_duration_start.value() / 1000,
+                            "min_duration_end": self.slider_min_duration_end.value() / 1000,
+                            "min_duration_step": self.spin_duration_step.value() / 1000}
 
         opts = {"analysis_options": analysis_options,
                 "multiprocess": True,
-                "nprocess": 1,
-                "chunksize_percent": 5}
+                # "nprocess": 1,
+                "chunksize_percent": 5,
+                "save": self.checkbox_save.isChecked(),
+                "overwrite": self.checkbox_overwrite.isChecked()}
         return opts

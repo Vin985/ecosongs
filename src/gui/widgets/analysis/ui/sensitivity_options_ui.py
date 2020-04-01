@@ -27,16 +27,22 @@ class Ui_SensitivityOptions(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.slider_min_duration_start = LabeledSlider(SensitivityOptions)
         self.slider_min_duration_start.setObjectName(u"slider_min_duration_start")
-        self.slider_min_duration_start.setMaximum(100)
-        self.slider_min_duration_start.setSliderPosition(1)
+        self.slider_min_duration_start.setMinimum(10)
+        self.slider_min_duration_start.setMaximum(1000)
+        self.slider_min_duration_start.setSingleStep(10)
+        self.slider_min_duration_start.setPageStep(100)
+        self.slider_min_duration_start.setSliderPosition(10)
         self.slider_min_duration_start.setOrientation(Qt.Horizontal)
 
         self.gridLayout.addWidget(self.slider_min_duration_start, 4, 1, 1, 1)
 
         self.slider_min_duration_end = LabeledSlider(SensitivityOptions)
         self.slider_min_duration_end.setObjectName(u"slider_min_duration_end")
-        self.slider_min_duration_end.setMaximum(100)
-        self.slider_min_duration_end.setValue(50)
+        self.slider_min_duration_end.setMinimum(10)
+        self.slider_min_duration_end.setMaximum(1000)
+        self.slider_min_duration_end.setSingleStep(10)
+        self.slider_min_duration_end.setPageStep(100)
+        self.slider_min_duration_end.setValue(500)
         self.slider_min_duration_end.setOrientation(Qt.Horizontal)
 
         self.gridLayout.addWidget(self.slider_min_duration_end, 4, 3, 1, 1)
@@ -104,7 +110,7 @@ class Ui_SensitivityOptions(object):
 
         self.slider_end_threshold_end = LabeledSlider(SensitivityOptions)
         self.slider_end_threshold_end.setObjectName(u"slider_end_threshold_end")
-        self.slider_end_threshold_end.setValue(80)
+        self.slider_end_threshold_end.setValue(60)
         self.slider_end_threshold_end.setOrientation(Qt.Horizontal)
 
         self.gridLayout.addWidget(self.slider_end_threshold_end, 3, 3, 1, 1)
@@ -125,7 +131,7 @@ class Ui_SensitivityOptions(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.slider_activity_start.sizePolicy().hasHeightForWidth())
         self.slider_activity_start.setSizePolicy(sizePolicy1)
-        self.slider_activity_start.setValue(5)
+        self.slider_activity_start.setValue(60)
         self.slider_activity_start.setOrientation(Qt.Horizontal)
 
         self.gridLayout.addWidget(self.slider_activity_start, 2, 1, 1, 1)
@@ -155,6 +161,7 @@ class Ui_SensitivityOptions(object):
         self.spin_duration_step.setObjectName(u"spin_duration_step")
         self.spin_duration_step.setMaximum(1000)
         self.spin_duration_step.setSingleStep(10)
+        self.spin_duration_step.setValue(20)
 
         self.horizontalLayout_2.addWidget(self.spin_duration_step)
 

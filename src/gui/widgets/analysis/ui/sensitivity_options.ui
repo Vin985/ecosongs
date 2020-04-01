@@ -16,11 +16,20 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="4" column="1">
     <widget class="LabeledSlider" name="slider_min_duration_start">
+     <property name="minimum">
+      <number>10</number>
+     </property>
      <property name="maximum">
+      <number>1000</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+     <property name="pageStep">
       <number>100</number>
      </property>
      <property name="sliderPosition">
-      <number>1</number>
+      <number>10</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -29,11 +38,20 @@
    </item>
    <item row="4" column="3">
     <widget class="LabeledSlider" name="slider_min_duration_end">
+     <property name="minimum">
+      <number>10</number>
+     </property>
      <property name="maximum">
+      <number>1000</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+     <property name="pageStep">
       <number>100</number>
      </property>
      <property name="value">
-      <number>50</number>
+      <number>500</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -131,7 +149,7 @@
    <item row="3" column="3">
     <widget class="LabeledSlider" name="slider_end_threshold_end">
      <property name="value">
-      <number>80</number>
+      <number>60</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -167,7 +185,7 @@
       </sizepolicy>
      </property>
      <property name="value">
-      <number>5</number>
+      <number>60</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -210,6 +228,9 @@
        </property>
        <property name="singleStep">
         <number>10</number>
+       </property>
+       <property name="value">
+        <number>20</number>
        </property>
       </widget>
      </item>
