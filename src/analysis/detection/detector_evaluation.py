@@ -1,18 +1,11 @@
 import configparser
-import inspect
 import os
+import time
 
 import feather
 import pandas as pd
-from plotnine import (aes, element_text, facet_grid, geom_bar, geom_histogram,
-                      geom_point, geom_smooth, geom_text, ggplot, ggtitle,
-                      position_dodge, scale_fill_discrete, scale_x_continuous,
-                      scale_x_discrete, theme, theme_classic, xlab, ylab)
 
-
-from plot.events_plot import EventsPlot
 from analysis.detection import predictions_utils
-
 
 TAGS_COLUMNS = {"Filename": "file_name", "tags": "tags",
                 "LabelStartTime_Seconds": "tag_start", "LabelEndTime_Seconds": "tag_end", "overlap": "overlap", "background": "background"}
@@ -104,6 +97,9 @@ def load_annotations(root_path, tags_path, only_done=True, columns=TAGS_COLUMNS,
     if dfs:
         res = pd.concat(dfs, ignore_index=True)
         res["tag_duration"] = res["tag_end"] - res["tag_start"]
+        res["file_id"] = res.file_name.apply(lambda x: x[:-4])
+        res.reset_index(inplace=True)
+        res.rename(columns={"index": "tag_index"}, inplace=True)
     return (res_files, res)
 
 
@@ -175,33 +171,6 @@ def merge_annotations(annots):
     return res
 
 
-# def match_events(tag, events_df=None, default_event=DEFAULT_EVENT):
-#     # get tags that overlap with the detected event
-#     events_df = events_df.drop(["file_name", "recording_id"], axis=1)
-#     events = events_df.loc[(events_df.event_start < tag.tag_end) &
-#                            (events_df.event_end > tag.tag_start)]
-#     events.reset_index(inplace=True, drop=True)
-
-#     # tmp = [tag]
-#     n = events.shape[0] or 1
-#     if events.shape[0] == 0:
-#         # empty_event = pd.Series(
-#         #     {"event_end": 0, "event_id": -1, "event_start": 0,
-#         #      "event_index": -1, "event_duration": 0})
-#         # events = pd.DataFrame([empty_event])
-#         events = default_event
-#     # else:
-#     #     for i in range(1, events.shape[0]):
-#     #         tmp.append(tag)
-
-#     tmp_df = pd.DataFrame([tag] * n)
-#     tmp_df.reset_index(inplace=True)
-#     tmp_df.rename(columns={"index": "tag_index"}, inplace=True)
-#     res = pd.concat([tmp_df, events], join="outer", axis=1)
-
-#     return res
-
-
 def match_events(tag, events_df=None):
     # get tags that overlap with the detected event
     # events_df = events_df.drop(["file_name", "recording_id"], axis=1)
@@ -216,17 +185,22 @@ def match_events(tag, events_df=None):
 
     return ([tag.Index] * n, events_idx)
 
+# @profile
 
-# def match_tags(annots, events_df):
-#     # Get events detected for the file
-#     # See implementation notes: Detector evaluation #1
-#     file_id = annots.name[:-4]
-#     events = events_df.loc[events_df.file_name == file_id]
-#     # Match events with annotations
-#     res = [match_events(row, events) for row in annots.itertuples()]
-#     match = pd.concat(res)
 
-#     return match
+def match_events2(tag, events_df=None):
+    # get tags that overlap with the detected event
+    # events_df = events_df.drop(["file_name", "recording_id"], axis=1)
+    events = events_df.loc[(events_df.event_start < tag.tag_end) &
+                           (events_df.event_end > tag.tag_start)]
+    events_idx = events.event_index.to_list()
+
+    # tmp = [tag]
+    n = len(events_idx) or 1
+    if not events_idx:
+        events_idx = [-1]
+
+    return [{"tag_index": [tag.name] * n, "event_index": events_idx}]
 
 
 def match_tags(annots, events_df):
@@ -248,22 +222,38 @@ def match_tags(annots, events_df):
     return match
 
 
-# def get_matches(events, tags, file_list, saved_file=""):
-#     if os.path.isfile(saved_file):
-#         match_df = pd.read_feather(saved_file)
-#     else:
-#         res = [match_tags(f, tags, events) for f in file_list]
-#         match_df = pd.concat(res)
-#     return match_df
-
-
+# @profile
 def get_matches(events, tags, saved_file=""):
     if os.path.isfile(saved_file):
         match_df = pd.read_feather(saved_file)
     else:
+        tmp = tags.merge(
+            events, left_on="file_id", right_on="file_name", how="outer")
+        # Select tags associated with an event
+        matched = tmp.loc[(tmp.event_start < tmp.tag_end) &
+                          (tmp.event_end > tmp.tag_start)]
+        # Get list of tags not associated with an event
+        unmatched = tags.loc[~tags.tag_index.isin(matched.tag_index.unique())]
+        # add them to the final dataframe
+        match_df = matched.merge(unmatched, how="outer")
+        match_df.loc[match_df.event_index.isna(), "event_index"] = -1
+        match_df.event_index = match_df.event_index.astype('int64')
+        match_df.reset_index(inplace=True)
+    return match_df
+
+
+def get_matches2(events, tags, saved_file=""):
+    if os.path.isfile(saved_file):
+        match_df = pd.read_feather(saved_file)
+    else:
+        # tags = tags[["file_name", "tag_start", "tag_end"]]
+        # events = events[["event_index", "file_name",
+        #                  "event_start", "event_end"]]
+        events.info()
         match_df = tags.groupby(
             "file_name", as_index=False).apply(match_tags, events)
         match_df.reset_index(inplace=True)
+        print(match_df)
     return match_df
 
 
@@ -285,13 +275,15 @@ def get_stats(match_df, events_df):
     recall = true_pos_tags / (true_pos_tags + false_neg)
     f1_score = 2 * (precision * recall) / (precision + recall)
 
-    return {"n_events": events_df.shape[0], "n_tags": len(match_df.tag_index.unique()),
+    return {"n_events": events_df.shape[0],
+            "n_tags": len(match_df.tag_index.unique()),
             "true_positive_events": true_pos_events,
             "true_positive_tags": true_pos_tags,
             "false_negative": false_neg,
             "n_tags_matched": n_tags_matched,
             "precision": precision,
-            "recall": recall, "F1_score": f1_score}
+            "recall": recall,
+            "F1_score": f1_score}
 
 
 def get_tag_overlap(events, only_matched=False):
@@ -327,6 +319,39 @@ def get_tag_overlap(events, only_matched=False):
     res["prop_overlap"] = dur_overlap / tag_duration
     res["event_avg_duration"] = tmp["event_duration"].agg("mean")
     return pd.Series(res)
+
+
+def mp_initialize_evaluator(predictions, recordings, tags):
+    global PREDICTIONS, RECORDINGS, TAGS
+    PREDICTIONS = predictions
+    RECORDINGS = recordings
+    TAGS = tags
+
+
+def mp_get_stats(option_list):
+    res = [mp_evaluate_detector(*options) for options in option_list]
+    return (res, len(option_list))
+
+
+def mp_evaluate_detector(min_activity, end_threshold, min_duration):
+    if all([x in globals() for x in ['PREDICTIONS', 'RECORDINGS', 'TAGS']]):
+        opts = {"min_activity": min_activity,
+                "end_threshold": end_threshold,
+                "min_duration": min_duration}
+
+        events_df = get_events(PREDICTIONS, opts)
+
+        events_df = prepare_events(events_df, RECORDINGS)
+
+        #tic = time.time()
+        matches_df = get_matches(events_df, TAGS)
+        #print("Took %0.6fs to match events" % (time.time() - tic))
+        #tic = time.time()
+        stats = get_stats(matches_df, events_df)
+        #print("Took %0.6fs to get_stats" % (time.time() - tic))
+        print("Stats for options {0}: {1}".format(opts, stats))
+        return [opts, stats, events_df]
+    return None
 
 
 def get_tags_overlap(match_df):
