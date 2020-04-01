@@ -22,3 +22,37 @@ def format_s2hms(seconds):
 
 def fullclassname(cls):
     return cls.__module__ + "." + cls.__name__
+
+
+def frange_positive(start, stop=None, step=None, endpoint=True, decimals=2):
+    if stop is None:
+        stop = start + 0.0
+        start = 0.0
+    if step is None:
+        step = 1.0
+
+    count = 0
+    has_end = False
+    while True:
+        temp = float(start + count * step)
+        if temp >= stop:
+            if endpoint:
+                if has_end:
+                    break
+                else:
+                    temp = stop
+                    has_end = True
+        if decimals:
+            temp = round(temp, decimals)
+        yield temp
+        count += 1
+
+
+def range_list(start, stop, step, endpoint=True, decimals=2):
+    if isinstance(start, float) or isinstance(stop, float) or isinstance(step, float):
+        return list(frange_positive(start, stop, step, endpoint, decimals))
+    else:
+        res = list(range(start, stop, step))
+        if endpoint:
+            res.append(stop)
+        return res
