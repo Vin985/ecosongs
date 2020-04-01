@@ -42,11 +42,6 @@ class DetectorDialog(AnalyzerDialog):
             events = pd.concat(res)
             if self.options.checkbox_save.isChecked():
                 activity_table = qApp.tables.activity_predictions
-                analysis_options = qApp.tables.analysis_options
-                options_id = analysis_options.add(
-                    self.worker.options, type="activity_prediction", save=True)
-                events["analysis_options"] = options_id
-                print(events)
                 activity_table.add(events, save=True,
                                    replace=self.options.checkbox_overwrite.isChecked())
 
