@@ -55,9 +55,8 @@ class TableModel():
             if not self.TABLE_NAME:
                 raise AttributeError(
                     "No table name provided. Cannot load data")
-            self.df = self.dbmanager.get_table(self.TABLE_NAME)
+            self._df = self.dbmanager.get_table(self.TABLE_NAME)
             return(self._df.loc[:, self._df.columns.intersection(self.columns)])
-            # self._df["date"] = pd.to_datetime(self._df["date"])
         except Exception as e:
             print(e)
             self._df = pd.DataFrame()
@@ -77,6 +76,7 @@ class TableModel():
         return self.df.empty
 
     def save(self):
+        print(self._df)
         self.dbmanager.save(self.TABLE_NAME, self._df)
 
     def update(self, table, save=False, **kwargs):
@@ -111,7 +111,7 @@ class TableModel():
         return df[self.DUPLICATE_COLUMNS].to_dict(orient='list')
 
     def remove_duplicates(self, remove_in, remove_from):
-        print("removing duplicates")
+        # print("removing duplicates")
         if remove_from.empty:
             return remove_in
         if remove_in.empty:
