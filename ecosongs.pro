@@ -28,6 +28,11 @@ FORMS += \
     gui/widgets/dbmanager/ui/dialog.ui \
     gui/widgets/dbmanager/ui/fileimport2.ui \
     gui/widgets/dbmanager/ui/fileimport.ui \
+    src/gui/widgets/common/ui/multiple_combobox.ui \
+    src/gui/widgets/common/ui/selection_list.ui \
+    src/gui/widgets/common/ui/selection_list.ui \
+    src/gui/widgets/common/ui/selection_list.ui \
+    src/gui/widgets/common/ui/selection_list.ui \
     src/gui/widgets/dbmanager/ui/dbexplorer.ui \
     src/gui/widgets/dbmanager/ui/fileimport.ui \
     src/gui/widgets/dbmanager/ui/fileimport2.ui \
@@ -52,14 +57,21 @@ FORMS += \
     src/gui/widgets/audio/ui/detector_dialog.ui \
     src/gui/widgets/audio/ui/detector_dialog2.ui \
     src/gui/widgets/menus/ui/progress_dialog.ui \
-    src/gui/widgets/audio/ui/detectoroptions.ui \
-    src/gui/widgets/menus/ui/progressdialog.ui
+    src/gui/widgets/menus/ui/progressdialog.ui \
+    src/gui/widgets/analysis/ui/analysis.ui \
+    src/gui/widgets/analysis/ui/sensitivity_options.ui \
+    src/gui/widgets/audio/ui/detector_options.ui \
+    src/gui/widgets/analysis/ui/detection_evaluator.ui \
+    src/gui/widgets/labeled_slider.ui \
+    src/gui/widgets/common/ui/labeled_slider.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \
     gui/resources/qss/custom.qss \
     src/gui/widgets/audio/__pycache__/audiomanager.cpython-36.pyc \
     src/gui/widgets/audio/ui/__pycache__/audiomanager_ui.cpython-36.pyc \
+    src/gui/widgets/common/ui/selection_list_ui.py \
+    src/gui/widgets/common/ui/selection_list_ui.py \
     src/gui/widgets/dbmanager/__pycache__/DBExplorer.cpython-36.pyc \
     src/gui/widgets/dbmanager/__pycache__/dbexplorer.cpython-36.pyc \
     src/gui/widgets/dbmanager/__pycache__/dbexplorer_ui.cpython-36.pyc \
@@ -82,5 +94,6 @@ DISTFILES += \
     src/gui/widgets/testqml/TestForm.ui.qml \
     src/gui/widgets/testqml/Test.qml \
     src/gui/widgets/menus/ui/settings_ui.py \
-    src/gui/widgets/menus/ui/spectrosettings_ui.py
+    src/gui/widgets/menus/ui/spectrosettings_ui.py \
+    src/gui/widgets/common/ui/labeled_slider_ui.py
 
