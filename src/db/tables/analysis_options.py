@@ -6,40 +6,37 @@ from db.models import TableModel
 
 class AnalysisOptionsTable(TableModel):
     TABLE_NAME = "analysis_options"
-    COLUMNS = ["type", "options"]
-    DUPLICATE_COLUMNS = ["type", "options"]
+    COLUMNS = ["analysis_type", "options"]
+    DUPLICATE_COLUMNS = ["analysis_type", "options"]
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
-    def add(self, options, type, save=False, replace=True):
-        opts = ""
+    def add(self, options, analysis_type, save=False, replace=True):
+        opts = self.format_options(options)
         existing = None
         opt_id = 0
 
-        if type == "event_detection":
-            opts = str(options["initargs"][2])
-            print("options: " + str(opts))
-
         if opts and self.df.shape[0] > 0:
-            existing = self.df.loc[(self.df["type"] == type) & (
+            existing = self.df.loc[(self.df["analysis_type"] == analysis_type) & (
                 self.df["options"] == opts)]
-            print("existing: " + str(existing))
+            # print("existing: " + str(existing))
 
         if existing is not None and existing.shape[0] > 0:
             opt_id = int(existing.id.iloc[0])
         else:
             opt_id = self.next_id
             new = pd.DataFrame(
-                [{"id": self.next_id, "type": type, "options": str(opts)}])
+                [{"id": self.next_id, "analysis_type": analysis_type, "options": str(opts)}])
             self.next_id += 1
-
-            if save:
-                dest = self.df
-                self.update(table=dest.append(new, ignore_index=True, sort=True),
-                            save=save)
-        print(opt_id)
+            dest = self.df
+            self.update(table=dest.append(new, ignore_index=True, sort=True),
+                        save=save)
         return opt_id
+
+    def format_options(self, options):
+        opts = "; ".join([k + ":" + str(v) for k, v in options.items()])
+        return opts
 
         # new = self.check_ids(new)
         # if replace:
