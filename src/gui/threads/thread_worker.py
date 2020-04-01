@@ -1,11 +1,7 @@
-import logging
-import time
 
 import pandas as pd
 from PySide2.QtCore import QObject, Signal, Slot
 
-import analysis.detection.song_detector as song_detector
-import analysis.indexes as indexes
 from gui.threads.ParallelWorker import ParallelWorker
 
 
@@ -14,6 +10,7 @@ class ThreadWorker(QObject, ParallelWorker):
     progressed = Signal(int)
     computing = Signal()
     done = Signal()
+    error = Signal(str)
 
     def __init__(self):
         QObject.__init__(self)
