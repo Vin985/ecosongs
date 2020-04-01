@@ -46,7 +46,7 @@ class RecordingsTable(TableModel):
         return rec
 
     def get_recordings_by_column(self, column, values, df):
-        recs = self._df.loc[self._df[column].isin(values)]
+        recs = self.df.loc[self.df[column].isin(values)]
         if df:
             recs.reset_index(inplace=True, drop=True)
             return recs
