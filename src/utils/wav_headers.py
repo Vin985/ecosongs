@@ -94,11 +94,12 @@ def get_wav_headers(strWAVFile):
     # endif
     # Print output
     # fields['Filename'] = os.path.basename(strWAVFile)
-    fields['Duration'] = int(fields["ChunkSize"] / (fields['SampleRate'] * fields['NumChannels'] * fields["BitsPerSample"] / 8))
+    fields['Duration'] = float(fields["ChunkSize"] / (fields['SampleRate']
+                                                      * fields['NumChannels'] * fields["BitsPerSample"] / 8))
     # DumpHeaderOutput(fields)
     # Close file
     fileIn.close()
-    #print(fields)
+    # print(fields)
     return (fields)
 
 
