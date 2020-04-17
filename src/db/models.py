@@ -55,7 +55,7 @@ class TableModel():
             if not self.TABLE_NAME:
                 raise AttributeError(
                     "No table name provided. Cannot load data")
-            self._df = self.dbmanager.get_table(self.TABLE_NAME)
+            self.df = self.dbmanager.get_table(self.TABLE_NAME)
             return(self._df.loc[:, self._df.columns.intersection(self.columns)])
         except Exception as e:
             print(e)
@@ -90,7 +90,6 @@ class TableModel():
             self.save()
 
     def update_table(self, table, **kwargs):
-        # TODO : check duplicates
         self.df = table
 
     def query(self, query):
@@ -101,7 +100,7 @@ class TableModel():
 
     def check_ids(self, table):
         if "id" not in table.columns:
-            table["id"] = list(
+            table.loc[:, "id"] = list(
                 range(self.next_id, self.next_id + table.shape[0]))
         if not table.empty:
             self.next_id = max(table["id"]) + 1
@@ -121,10 +120,10 @@ class TableModel():
         #     duplicates_dict).all(axis=1)]
         res = self.remove_rows(
             remove_in, self.DUPLICATE_COLUMNS, duplicates_dict)
-        return res
+        return res.copy()
 
     def remove_rows(self, data, columns, dict_values):
-        return data[~data[columns].isin(dict_values).all(axis=1)]
+        return data.loc[~data[columns].isin(dict_values).all(axis=1)]
 
     def delete(self, rows, columns=None, save=False):
         print(self.df)
@@ -136,23 +135,18 @@ class TableModel():
         print(self.df)
 
     def add(self, new, save=False, replace=True):
-        # TODO: check duplicates
-        # TODO: add idx column?
-        # TODO: check duplicates
-        new = self.check_ids(new)
-        # new_idx = max(self.df["id"]) + 1
-        # if "id" not in new.columns:
-        #     new["id"] = list(range(new_idx, new_idx + new.shape[0]))
+        dest = self.df
         if replace:
             # if we replace, remove duplicates from old dataframe
             dest = self.remove_duplicates(self.df, new)
         else:
             # remove duplicates from new dataframe
-            dest = self.df
             new = self.remove_duplicates(new, self.df)
+        new = self.check_ids(new)
         if not new.empty:
             self.update(table=dest.append(new, ignore_index=True, sort=True),
                         save=save)
+        return new
 
     def get_rows_by_column(self, column, values):
         rows = self.df.loc[self.df[column].isin(values)]
