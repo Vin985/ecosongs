@@ -48,7 +48,8 @@ class SensitivityWorker(ThreadWorker):
         self.parameters = list(
             product(*[min_activities, end_thresholds, min_durations]))
 
-        print(self.parameters)
+        # [{"a":x, "b":y} for x,y in test]
+
         self.options["chunksize_percent"] = 5
         print(self.options)
         self.map(self.parameters, mp_get_stats,
@@ -65,7 +66,7 @@ class SensitivityWorker(ThreadWorker):
                 params["audio_path"] = audio_path
                 params["labels_path"] = labels_path
                 options_id = analysis_options_table.add(
-                    params, analysis_type="activity_prediction", save=False, replace=False)
+                    params, analysis_type="detector_sensitivity", save=False, replace=False)
 
                 events["analysis_options"] = options_id
                 events_table.add(events, save=False, replace=True)
