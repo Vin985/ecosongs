@@ -16,6 +16,7 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
 from PySide2.QtWidgets import *
 
 from gui.widgets.analysis.detection_evaluator import DetectionEvaluator
+from gui.widgets.plot.sensitivity_plot import SensitivityPlot
 
 
 class Ui_Analysis(object):
@@ -30,14 +31,17 @@ class Ui_Analysis(object):
         self.detector_evaluation = DetectionEvaluator()
         self.detector_evaluation.setObjectName(u"detector_evaluation")
         self.analysis_tabs.addTab(self.detector_evaluation, "")
-        self.tab_2 = QWidget()
-        self.tab_2.setObjectName(u"tab_2")
-        self.analysis_tabs.addTab(self.tab_2, "")
+        self.plot = SensitivityPlot()
+        self.plot.setObjectName(u"plot")
+        self.analysis_tabs.addTab(self.plot, "")
 
         self.horizontalLayout.addWidget(self.analysis_tabs)
 
 
         self.retranslateUi(Analysis)
+
+        self.analysis_tabs.setCurrentIndex(1)
+
 
         QMetaObject.connectSlotsByName(Analysis)
     # setupUi
@@ -45,6 +49,6 @@ class Ui_Analysis(object):
     def retranslateUi(self, Analysis):
         Analysis.setWindowTitle(QCoreApplication.translate("Analysis", u"Form", None))
         self.analysis_tabs.setTabText(self.analysis_tabs.indexOf(self.detector_evaluation), QCoreApplication.translate("Analysis", u"Evaluate detector", None))
-        self.analysis_tabs.setTabText(self.analysis_tabs.indexOf(self.tab_2), QCoreApplication.translate("Analysis", u"Tab 2", None))
+        self.analysis_tabs.setTabText(self.analysis_tabs.indexOf(self.plot), QCoreApplication.translate("Analysis", u"Sensitivity Plot", None))
     # retranslateUi
 
