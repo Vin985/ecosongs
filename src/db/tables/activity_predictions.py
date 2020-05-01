@@ -17,7 +17,7 @@ class ActivityPredictionsTable(TableModel):
         events = pd.DataFrame()
         if not preds.empty:
             events = predictions_utils.detect_songs_events(
-                preds[["time", "activity"]], recording_id, event_options)
+                preds, recording_id, event_options)
         return events
 
     def get_events(self, recording_ids, event_options):
