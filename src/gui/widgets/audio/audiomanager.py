@@ -26,6 +26,9 @@ def update_path(path):
 
 
 class AudioManager(QWidget, Ui_AudioManager):
+
+    EVENT_DETECTION_METHODS = ["standard", "subsampling"]
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -91,6 +94,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.slider_activity.valueChanged.connect(self.draw_events)
         self.slider_end_threshold.valueChanged.connect(self.draw_events)
         self.spin_min_duration.valueChanged.connect(self.draw_events)
+        self.combo_method.currentIndexChanged.connect(self.draw_events)
 
         self.sound_player.update_position.connect(
             self.spectrogram_viewer.update_sound_marker)
@@ -132,9 +136,11 @@ class AudioManager(QWidget, Ui_AudioManager):
         if draw:
             predictions_table = qApp.tables.activity_predictions
             if not predictions_table.empty:
-                event_options = {"min_activity": self.slider_activity.value() / 100,
-                                 "min_duration": self.spin_min_duration.value(),
-                                 "end_threshold": self.slider_end_threshold.value() / 100}
+                event_options = {"method": self.EVENT_DETECTION_METHODS[self.combo_method.currentIndex()],
+                                 "min_activity": self.slider_activity.value() / 100,
+                                 "min_duration": self.spin_min_duration.value() / 1000,
+                                 "end_threshold": self.slider_end_threshold.value() / 100,
+                                 "isolate_events": True}
                 events = predictions_table.get_events_by_id(
                     self.current_recording.id, event_options)
                 if not events.empty:
@@ -295,7 +301,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.current_recording = Recording(file_info)
         self.show_recording_info(["id", "name", "path", "year"])
         self.load_file(self.current_recording.path)
-        self.draw_events()
+        self.draw_events(draw=self.group_draw_events.isChecked())
         # self.update_spectrogram()
         # self.update_spectrogram2()
         # self.time_slider.setMaximum(self.current_recording.duration)

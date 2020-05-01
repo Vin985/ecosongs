@@ -174,7 +174,7 @@ class Ui_AudioManager(object):
         sizePolicy2.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
         self.label_9.setSizePolicy(sizePolicy2)
 
-        self.gridLayout.addWidget(self.label_9, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_9, 2, 0, 1, 1)
 
         self.slider_activity = QSlider(self.group_draw_events)
         self.slider_activity.setObjectName(u"slider_activity")
@@ -182,31 +182,33 @@ class Ui_AudioManager(object):
         self.slider_activity.setValue(95)
         self.slider_activity.setOrientation(Qt.Horizontal)
 
-        self.gridLayout.addWidget(self.slider_activity, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.slider_activity, 2, 1, 1, 1)
 
         self.label_8 = QLabel(self.group_draw_events)
         self.label_8.setObjectName(u"label_8")
 
-        self.gridLayout.addWidget(self.label_8, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_8, 3, 0, 1, 1)
 
         self.slider_end_threshold = QSlider(self.group_draw_events)
         self.slider_end_threshold.setObjectName(u"slider_end_threshold")
         self.slider_end_threshold.setValue(60)
         self.slider_end_threshold.setOrientation(Qt.Horizontal)
 
-        self.gridLayout.addWidget(self.slider_end_threshold, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.slider_end_threshold, 3, 1, 1, 1)
 
         self.label_7 = QLabel(self.group_draw_events)
         self.label_7.setObjectName(u"label_7")
 
-        self.gridLayout.addWidget(self.label_7, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_7, 4, 0, 1, 1)
 
         self.spin_min_duration = QDoubleSpinBox(self.group_draw_events)
         self.spin_min_duration.setObjectName(u"spin_min_duration")
-        self.spin_min_duration.setSingleStep(0.010000000000000)
-        self.spin_min_duration.setValue(0.100000000000000)
+        self.spin_min_duration.setDecimals(0)
+        self.spin_min_duration.setMaximum(10000.000000000000000)
+        self.spin_min_duration.setSingleStep(1.000000000000000)
+        self.spin_min_duration.setValue(30.000000000000000)
 
-        self.gridLayout.addWidget(self.spin_min_duration, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.spin_min_duration, 4, 1, 1, 1)
 
         self.label_6 = QLabel(self.group_draw_events)
         self.label_6.setObjectName(u"label_6")
@@ -226,6 +228,18 @@ class Ui_AudioManager(object):
 
 
         self.gridLayout.addLayout(self.horizontalLayout, 0, 1, 1, 1)
+
+        self.label_4 = QLabel(self.group_draw_events)
+        self.label_4.setObjectName(u"label_4")
+
+        self.gridLayout.addWidget(self.label_4, 1, 0, 1, 1)
+
+        self.combo_method = QComboBox(self.group_draw_events)
+        self.combo_method.addItem("")
+        self.combo_method.addItem("")
+        self.combo_method.setObjectName(u"combo_method")
+
+        self.gridLayout.addWidget(self.combo_method, 1, 1, 1, 1)
 
 
         self.horizontalLayout_3.addWidget(self.group_draw_events)
@@ -265,8 +279,12 @@ class Ui_AudioManager(object):
         self.group_draw_events.setTitle(QCoreApplication.translate("AudioManager", u"Draw events", None))
         self.label_9.setText(QCoreApplication.translate("AudioManager", u"Activity level", None))
         self.label_8.setText(QCoreApplication.translate("AudioManager", u"End threshold", None))
-        self.label_7.setText(QCoreApplication.translate("AudioManager", u"Minimum duration (s)", None))
+        self.label_7.setText(QCoreApplication.translate("AudioManager", u"Minimum duration (ms)", None))
         self.label_6.setText(QCoreApplication.translate("AudioManager", u"Detect songs in selected recordings", None))
         self.btn_export_pdf.setText(QCoreApplication.translate("AudioManager", u"Export events to pdf", None))
+        self.label_4.setText(QCoreApplication.translate("AudioManager", u"Method", None))
+        self.combo_method.setItemText(0, QCoreApplication.translate("AudioManager", u"Event detection", None))
+        self.combo_method.setItemText(1, QCoreApplication.translate("AudioManager", u"Subsampling", None))
+
     # retranslateUi
 
