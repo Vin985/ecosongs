@@ -1,5 +1,6 @@
 # %%
 
+import datetime
 import os
 import inspect
 import pandas as pd
@@ -27,6 +28,8 @@ db_opts = {"database": "ecosongs", "db_type": "feather",
 
 dbmanager = dbutils.get_db_manager(**db_opts)
 tables = TableManager(dbmanager)
+
+# %%
 
 
 def profile_function(audio_folder, label_folder):
@@ -62,10 +65,45 @@ predictions, tags, recordings, events, matches, stats = profile_function(
 
 # %%
 
+
+def get_metrics(df, expand_index=False):
+    if not "res" in df.columns:
+        df.loc[:, "res"] = df.tag + df.event
+
+    tp = len(df.res[df.res == 3])
+    tn = len(df.res[df.res == 0])
+    fp = len(df.res[df.res == 2])
+    fn = len(df.res[df.res == 1])
+
+    if expand_index:
+        df2 = df.loc[(df.tag_index != "") & (df.event > 0)]
+        tmp = df2.tag_index.unique()
+        matched_tags = set(",".join(tmp).split(","))
+        all_tags = df.tag_index[df.tag_index != ""].unique()
+        all_tags = set(",".join(all_tags).split(","))
+
+    else:
+        df2 = df.loc[(df.tag_index > -1) & (df.event > 0)]
+        matched_tags = df2.tag_index.unique()
+        all_tags = df.tag_index[df.tag_index > -1].unique()
+
+    fn2 = len(all_tags) - len(matched_tags)
+
+    precision = tp/(tp+fp)
+    recall = tp/(tp+fn)
+    recall2 = tp/(tp+fn2)
+    return {"precision": precision, "recall": recall,
+            "recall2": recall2, "tp": tp, "tn": tn,
+            "fp": fp, "fn": fn, "fn2": fn2}
+
+# %%
+
+
 RECORDING = 80233
 # RECORDING = 80534
 
 predictions.loc[:, "tag"] = 0
+predictions.loc[:, "tag_index"] = -1
 predictions.loc[:, "event"] = 0
 predictions.loc[:, "datetime"] = pd.to_datetime(predictions.time * 10**9)
 rec = recordings[recordings.id == RECORDING]
@@ -83,7 +121,10 @@ preds.set_index("datetime", inplace=True)
 for _, x in t.iterrows():
     if "Human" in x.tags:
         print("Human!!")
-    preds.loc[preds.time.between(x["tag_start"], x["tag_end"]), "tag"] = 1
+    #preds.loc[preds.time.between(x["tag_start"], x["tag_end"]), "tag"] = 1
+    #preds.loc[preds.time.between(x["tag_start"], x["tag_end"]), "tag_index"] = x.tag_index
+    preds.loc[preds.time.between(x["tag_start"], x["tag_end"]), [
+        "tag", "tag_index"]] = [1, x["tag_index"]]
 
 for _, x in ev.iterrows():
     preds.loc[preds.time.between(
@@ -92,6 +133,9 @@ for _, x in ev.iterrows():
 preds.activity.plot()
 preds.tag.plot()
 preds.event.plot()
+
+# %%
+get_metrics(preds)
 
 # preds.loc[preds.time.between(t.iloc[0].tag_start, t.iloc[0].tag_end)]
 # preds.loc[preds.time.between(
@@ -135,78 +179,54 @@ def rolling_max(x, threshold=0.95, mean_thresh=0.1):
 # r = preds.rolling(40, center=True).mean()
 # r.activity.plot()
 
+roll = preds.copy()
 
-preds.loc[:, "roll"] = preds["activity"].rolling(30, center=True).apply(
+roll.loc[:, "roll"] = roll["activity"].rolling(30, center=True).apply(
     rolling_max, raw=True, kwargs={"threshold": 0.98, "mean_thresh": 0})
 
-preds.tag.plot()
-preds.roll.plot()
+roll.tag.plot()
+roll.roll.plot()
 
-preds.loc[:, "res2"] = preds.tag + preds.roll
+roll.loc[:, "res"] = roll.tag + roll.roll
 
-tp = len(preds.res2[preds.res2 == 3])
-tn = len(preds.res2[preds.res2 == 0])
-fp = len(preds.res2[preds.res2 == 2])
-fn = len(preds.res2[preds.res2 == 1])
+get_metrics(roll)
 
-precision = tp/(tp+fp)
-recall = tp/(tp+fn)
-print(precision)
-print(recall)
-# %%
+# tp = len(preds.res2[preds.res2 == 3])
+# tn = len(preds.res2[preds.res2 == 0])
+# fp = len(preds.res2[preds.res2 == 2])
+# fn = len(preds.res2[preds.res2 == 1])
 
-
-# %%
-preds.tag.plot()
-preds.event.plot()
-
-preds.loc[:, "res"] = preds.tag + preds.event
-
-tp = len(preds.res[preds.res == 3])
-tn = len(preds.res[preds.res == 0])
-fp = len(preds.res[preds.res == 2])
-fn = len(preds.res[preds.res == 1])
-
-precision = tp/(tp+fp)
-recall = tp/(tp+fn)
-print(precision)
-print(recall)
+# precision = tp/(tp+fp)
+# recall = tp/(tp+fn)
+# print(precision)
+# print(recall)
 
 # %%
 
 start = preds.index.min()
 end = preds.index.max()
 summary_range = pd.date_range(start, end, freq="300ms")
-res = pd.DataFrame({"tag": [0] * len(summary_range),
-                    "event": [0]*len(summary_range)})
-res.set_index(summary_range, inplace=True)
+man_roll = pd.DataFrame({"tag": [0] * len(summary_range),
+                         "event": [0]*len(summary_range)})
+man_roll.set_index(summary_range, inplace=True)
 
 for stop in summary_range:
     if start == stop:
         continue
     if any(preds[start: stop].tag > 0):
-        res.loc[stop, "tag"] = 1
+        man_roll.loc[stop, "tag"] = 1
     if any(preds[start: stop].event > 0):
-        res.loc[stop, "event"] = 2
+        man_roll.loc[stop, "event"] = 2
     start = stop
 
-res.loc[:, "res"] = res.tag + res.event
+man_roll.loc[:, "res"] = man_roll.tag + man_roll.event
 
 preds.tag.plot()
 # res.tag.plot()
 # preds.event.plot()
-res.event.plot()
+man_roll.event.plot()
 
-
-tp = len(res.res[res.res == 3])
-tn = len(res.res[res.res == 0])
-fp = len(res.res[res.res == 2])
-fn = len(res.res[res.res == 1])
-
-precision = tp/(tp+fp)
-recall = tp/(tp+fn)
-print(precision)
-print(recall)
+get_metrics(man_roll)
 
 # %%
 
@@ -223,19 +243,65 @@ def has_tag(x):
     return 0
 
 
-resampled = preds.resample("500ms")
+def get_tag_index(x):
+    tmp = x[x > -1]
+    idx = ",".join(list(map(str, tmp.unique())))
+    return idx
+    # return ",".join()
+
+
+resampled = preds.resample("300ms")
 
 res = resampled.agg({"activity": resample_max,
-                     "tag": has_tag})
+                     "tag": has_tag, "tag_index": get_tag_index})
 
-res.activity.plot()
+res.rename(columns={"activity": "event"}, inplace=True)
+res.event.plot()
 res.tag.plot()
 
+
+get_metrics(res, expand_index=True)
 # res = preds["activity"].resample("500ms").apply(
 #     resample_max, threshold=0.98, mean_thresh=0.2)
 
 # res.plot()
 # preds.tag.plot()
 # preds.activity.plot()
+
+# %%
+
+res_ev = res.loc[res.event > 0]
+res_ev.reset_index(inplace=True)
+
+
+step = datetime.timedelta(milliseconds=300)
+start = None
+events = []
+event_id = 1
+print(len(res_ev))
+for i, x in res_ev.iterrows():
+    if not start:
+        prev_time = x.datetime
+        start = prev_time
+        continue
+    diff = x.datetime - prev_time
+    if diff > step:
+        end = prev_time + step
+        events.append({"event_id": event_id, "recording_id": RECORDING,
+                       "start": start, "end": end})
+        event_id += 1
+        start = x.datetime
+    prev_time = x.datetime
+
+events.append({"event_id": event_id, "recording_id": RECORDING,
+               "start": start, "end": prev_time+step})
+
+
+events = pd.DataFrame(events)
+print(events)
+
+
+# print(diff)
+# print(x)
 
 # %%
