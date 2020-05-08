@@ -3,8 +3,8 @@ import pandas as pd
 
 from PySide2.QtCore import Qt, Signal, Slot
 
-from gui.widgets.audio.analyzerdialog import AnalyzerDialog
-from gui.widgets.audio.ui.aci_dialog_ui import Ui_AciDialog
+from gui.widgets.dialogs.analyzerdialog import AnalyzerDialog
+from gui.widgets.dialogs.ui.aci_dialog_ui import Ui_AciDialog
 
 
 class AciDialog(AnalyzerDialog, Ui_AciDialog):

@@ -10,8 +10,8 @@ from analysis.indexes import ACI
 from audio.recording import Recording
 from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
-from gui.widgets.audio.acidialog import AciDialog
-from gui.widgets.audio.detectordialog import DetectorDialog
+from gui.widgets.dialogs.acidialog import AciDialog
+from gui.widgets.dialogs.detectordialog import DetectorDialog
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from pysoundplayer.gui.settings import SoundPlayerSettings
 

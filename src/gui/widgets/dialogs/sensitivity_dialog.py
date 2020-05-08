@@ -1,19 +1,13 @@
 import time
 
+import pandas as pd
 from PySide2.QtCore import Qt, QThread, Signal, Slot
+from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QDialog
 
-from gui.widgets.menus.progressdialog import ProgressDialog
-
-import time
-
-import pandas as pd
-from PySide2.QtCore import Qt, Signal, Slot
-from PySide2.QtGui import qApp
-
-from gui.widgets.menus.progressdialog import ProgressDialog
-from gui.widgets.analysis.sensitivity_options import SensitivityOptions
-from gui.widgets.analysis.sensitivity_worker import SensitivityWorker
+from gui.widgets.options.sensitivity_options import SensitivityOptions
+from gui.widgets.dialogs.workers.sensitivity_worker import SensitivityWorker
+from gui.widgets.dialogs.progressdialog import ProgressDialog
 
 
 class SensitivityDialog(ProgressDialog):

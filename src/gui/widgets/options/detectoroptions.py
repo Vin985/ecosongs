@@ -1,9 +1,9 @@
 
 import yaml
-from PySide2.QtCore import Qt, Signal, Slot
+from PySide2.QtCore import Signal
 from PySide2.QtWidgets import QWidget
 
-from gui.widgets.audio.ui.detectoroptions_ui import Ui_DetectorOptions
+from gui.widgets.options.ui.detectoroptions_ui import Ui_DetectorOptions
 
 
 class DetectorOptions(QWidget, Ui_DetectorOptions):

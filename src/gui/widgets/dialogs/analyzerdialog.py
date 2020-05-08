@@ -1,8 +1,8 @@
 
 from PySide2.QtCore import Slot
 
-from gui.widgets.audio.audio_analyzer_worker import AudioAnalyzerWorker
-from gui.widgets.menus.progressdialog import ProgressDialog
+from gui.widgets.dialogs.workers.audio_analyzer_worker import AudioAnalyzerWorker
+from gui.widgets.dialogs.progressdialog import ProgressDialog
 
 
 class AnalyzerDialog(ProgressDialog):

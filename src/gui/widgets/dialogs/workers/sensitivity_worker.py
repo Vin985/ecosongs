@@ -35,6 +35,9 @@ class SensitivityWorker(ThreadWorker):
         # opts["min_duration_start"] = 0.1
         # opts["min_duration_end"] = 0.12
 
+        if not opts["methods"]:
+            self.error.emit("At least one method should be selected")
+
         try:
             min_activities = range_list(
                 opts["min_activity_start"], opts["min_activity_end"], opts["min_activity_step"])
@@ -45,13 +48,16 @@ class SensitivityWorker(ThreadWorker):
         except Exception:
             self.error.emit(traceback.format_exc())
 
-        self.parameters = list(
-            product(*[min_activities, end_thresholds, min_durations]))
+        if 0 in opts["methods"]:
+            self.parameters += list(
+                product(*[0, min_activities, end_thresholds, min_durations]))
+        if 1 in opts["methods"]:
+            self.parameters += list(
+                product(*[1, min_activities, 0, min_durations]))
 
         # [{"a":x, "b":y} for x,y in test]
 
         self.options["chunksize_percent"] = 5
-        print(self.options)
         self.map(self.parameters, mp_get_stats,
                  initializer=mp_initialize_evaluator,
                  initargs=(self.predictions, self.recordings, self.tags))

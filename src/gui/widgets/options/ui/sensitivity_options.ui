@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="1">
+   <item row="6" column="1">
     <widget class="LabeledSlider" name="slider_min_duration_start">
      <property name="minimum">
       <number>10</number>
@@ -36,7 +36,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="3">
+   <item row="6" column="3">
     <widget class="LabeledSlider" name="slider_min_duration_end">
      <property name="minimum">
       <number>10</number>
@@ -58,7 +58,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="9" column="0">
     <widget class="QCheckBox" name="checkbox_save">
      <property name="text">
       <string>Save results</string>
@@ -68,7 +68,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
+   <item row="9" column="1">
     <widget class="QCheckBox" name="checkbox_overwrite">
      <property name="text">
       <string>Replace previous results</string>
@@ -78,7 +78,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="5" column="1">
     <widget class="LabeledSlider" name="slider_end_threshold_start">
      <property name="value">
       <number>5</number>
@@ -95,14 +95,14 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Minimum duration (s)</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="3">
+   <item row="4" column="3">
     <widget class="LabeledSlider" name="slider_activity_end">
      <property name="value">
       <number>95</number>
@@ -112,7 +112,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="label_2">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -125,28 +125,28 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>End threshold</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="2">
+   <item row="6" column="2">
     <widget class="QLabel" name="label_9">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="3" column="1">
     <widget class="QLabel" name="label_5">
      <property name="text">
       <string>Start</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
+   <item row="5" column="3">
     <widget class="LabeledSlider" name="slider_end_threshold_end">
      <property name="value">
       <number>60</number>
@@ -156,14 +156,14 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3">
+   <item row="3" column="3">
     <widget class="QLabel" name="label_7">
      <property name="text">
       <string>End</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="5">
+   <item row="7" column="0" colspan="5">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -176,7 +176,7 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="1">
+   <item row="4" column="1">
     <widget class="LabeledSlider" name="slider_activity_start">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -192,14 +192,14 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="4">
+   <item row="3" column="4">
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>Step</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="4">
+   <item row="5" column="4">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QDoubleSpinBox" name="spin_end_threshold_step">
@@ -219,7 +219,7 @@
      </item>
     </layout>
    </item>
-   <item row="4" column="4">
+   <item row="6" column="4">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QSpinBox" name="spin_duration_step">
@@ -243,7 +243,7 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="4">
+   <item row="4" column="4">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QDoubleSpinBox" name="spin_activity_step">
@@ -263,6 +263,39 @@
      </item>
     </layout>
    </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Method</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QCheckBox" name="checkbox_method_standard">
+     <property name="text">
+      <string>Standard</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">method_group</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QCheckBox" name="checkbox_method_subsampling">
+     <property name="text">
+      <string>Subsampling</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">method_group</string>
+     </attribute>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -274,4 +307,11 @@
  </customwidgets>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="method_group">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+ </buttongroups>
 </ui>

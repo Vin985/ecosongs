@@ -2,7 +2,7 @@ from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QApplication, QMainWindow
 
 from gui.ecosongs_ui import Ui_Ecosongs
-from gui.widgets.menus.settingsdialog import SettingsDialog
+from gui.widgets.dialogs.settingsdialog import SettingsDialog
 
 
 class EcosongsUI(QMainWindow, Ui_Ecosongs):

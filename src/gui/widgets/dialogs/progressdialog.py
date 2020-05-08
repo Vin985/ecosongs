@@ -3,7 +3,7 @@ import time
 from PySide2.QtCore import Qt, QThread, Signal, Slot
 from PySide2.QtWidgets import QDialog
 
-from gui.widgets.menus.ui.progressdialog_ui import Ui_ProgressDialog
+from gui.widgets.dialogs.ui.progressdialog_ui import Ui_ProgressDialog
 
 
 class ProgressDialog(QDialog, Ui_ProgressDialog):

@@ -4,8 +4,8 @@ import pandas as pd
 from PySide2.QtCore import Qt, Signal, Slot
 from PySide2.QtGui import qApp
 
-from gui.widgets.audio.analyzerdialog import AnalyzerDialog
-from gui.widgets.audio.detectoroptions import DetectorOptions
+from gui.widgets.dialogs.analyzerdialog import AnalyzerDialog
+from gui.widgets.options.detectoroptions import DetectorOptions
 
 
 class DetectorDialog(AnalyzerDialog):
