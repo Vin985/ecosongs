@@ -76,7 +76,6 @@ class TableModel():
         return self.df.empty
 
     def save(self):
-        print(self._df)
         self.dbmanager.save(self.TABLE_NAME, self._df)
 
     def update(self, table, save=False, **kwargs):
