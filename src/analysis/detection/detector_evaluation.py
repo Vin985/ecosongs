@@ -1,15 +1,10 @@
-import configparser
 import os
-import time
 
 import feather
 import pandas as pd
 
 from analysis.detection import predictions_utils
 
-TAGS_COLUMNS = {"Filename": "file_name", "tags": "tags",
-                "LabelStartTime_Seconds": "tag_start", "LabelEndTime_Seconds": "tag_end", "overlap": "overlap", "background": "background"}
-TAGS_COLUMNS_TYPE = {"overlap": "str"}
 PREDICTIONS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
                        'recording_id': "recording_id", 'start': "event_start",
                        'name': "file_name", "index": "event_index"}
@@ -22,85 +17,6 @@ DEFAULT_EVENT = pd.DataFrame.from_dict({"event_end": [0],
                                         "event_start": [0],
                                         "event_index": [-1],
                                         "event_duration": [0]})
-
-
-def get_done_files(path):
-    local_conf = os.path.join(path, "config.conf")
-    done_files = []
-    if os.path.isfile(local_conf):
-        config = configparser.ConfigParser()
-        config.read(local_conf)
-        done_files = config['files'].get("files_done", [])
-        if type(done_files) is str:
-            done_files = done_files.split(",")
-        # remove extension
-        res = [f[:-4] for f in done_files]
-    return res
-
-
-def check_tags_columns(df, columns):
-    if columns:
-        if type(columns) is dict:
-            df["tags"] = df["Label"] + \
-                "," + df["Related"]
-            df = df[columns.keys()]
-            df = df.rename(columns=columns)
-        else:
-            raise ValueError(
-                "columns must be a dict with old labels as keys and new labels as values")
-    return df
-
-
-def has_excluded_tags(df, filter_options):
-    keep_by_default = filter_options.get("keep_by_default", False)
-    has_tags = filter_options.get("has_tags", [])
-    exclude_tags = filter_options.get("exclude_tags", [])
-    res = not all(df.tags.apply(keep_tag, has_tags=has_tags,
-                                exclude_tags=exclude_tags, keep_by_default=keep_by_default))
-    return res
-
-
-def load_annotations(root_path, tags_path, only_done=True, columns=TAGS_COLUMNS, columns_type=TAGS_COLUMNS_TYPE, extensions=[".csv"]):
-    res_files = []
-    dfs = []
-    done_files = []
-    res = pd.DataFrame()
-    # Only get done files. Load list of done files
-    if only_done:
-        done_files = get_done_files(root_path)
-    for _, _, files in os.walk(tags_path):
-        for f in sorted(files):
-            # do not check hidden files or locked files
-            if not f[0] == ".":
-                # Get extension
-                ext = f[-4:]
-                if ext in extensions:
-                    # TODO: change this, only works if it is always ending by "-sceneRect.csv"
-                    file_id = f[:-14]
-                    if (not only_done) or (only_done and (file_id in done_files)):
-                        df = pd.read_csv(os.path.join(
-                            tags_path, f), dtype=columns_type)
-                        try:
-                            df = check_tags_columns(df, columns)
-                            # if filter_options:
-                            #     if has_excluded_tags(df, filter_options):
-                            #         continue
-                        except KeyError as ke:
-                            print("Key Error {0} found for file {1}. Skipping. Please make sure the file is correct and has all columns".format(
-                                ke, file_id))
-                            continue
-                        dfs.append(df)
-                        file_name = df.iloc[0].file_name
-                        res_files.append(file_name)
-        # only walk through the first level of the directory
-        break
-    if dfs:
-        res = pd.concat(dfs, ignore_index=True)
-        res["tag_duration"] = res["tag_end"] - res["tag_start"]
-        res["file_id"] = res.file_name.apply(lambda x: x[:-4])
-        res.reset_index(inplace=True)
-        res.rename(columns={"index": "tag_index"}, inplace=True)
-    return (res_files, res)
 
 
 def detect_events(df, options):
@@ -333,9 +249,10 @@ def mp_get_stats(option_list):
     return (res, len(option_list))
 
 
-def mp_evaluate_detector(min_activity, end_threshold, min_duration):
+def mp_evaluate_detector(method, min_activity, end_threshold, min_duration):
     if all([x in globals() for x in ['PREDICTIONS', 'RECORDINGS', 'TAGS']]):
-        opts = {"min_activity": min_activity,
+        opts = {"method": method,
+                "min_activity": min_activity,
                 "end_threshold": end_threshold,
                 "min_duration": min_duration}
 
@@ -358,35 +275,6 @@ def get_tags_overlap(match_df):
     res = match_df.groupby(
         ["tag_index"], as_index=False).apply(get_tag_overlap)
     return res
-
-
-def filter_tags(df, *args, **kwargs):
-    return df.loc[df.tags.apply(keep_tag, *args, **kwargs)]
-
-
-def keep_tag(raw_tags, has_tags=[], exclude_tags=[], keep_by_default=False):
-    tags = raw_tags.split(",")
-    exclude = any([tag in exclude_tags for tag in tags])
-    if exclude:
-        return False
-    include = any([tag in has_tags for tag in tags])
-    if include:
-        return True
-    return keep_by_default
-    # for tag in tags:
-    #     if tag in exclude_tags:
-    #         return False
-    #     if tag in has_tags:
-    #         return True
-    # return keep_by_default
-
-
-def get_species(raw_tags, species):
-    tags = raw_tags.split(",")
-    for tag in tags:
-        if tag in species:
-            return tag
-    return None
 
 
 # if __name__ == '__main__':
