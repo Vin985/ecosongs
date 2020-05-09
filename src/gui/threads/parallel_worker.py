@@ -9,7 +9,8 @@ class ParallelWorker():
 
     def __init__(self):
         self.__options = {"with_progress": True, "multiprocess": True, "nprocess": None,
-                          "mp_method": "async", "chunksize": 1, "chunksize_percent": None}
+                          "mp_method": "async", "chunksize": 1, "chunksize_percent": None,
+                          "save": False, "overwrite": False}
         self.nitems = 0
         self.progress = 0
         self.pool = None

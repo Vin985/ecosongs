@@ -2,7 +2,7 @@
 import pandas as pd
 from PySide2.QtCore import QObject, Signal, Slot
 
-from gui.threads.ParallelWorker import ParallelWorker
+from gui.threads.parallel_worker import ParallelWorker
 
 
 class ThreadWorker(QObject, ParallelWorker):
