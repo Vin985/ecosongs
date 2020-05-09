@@ -40,7 +40,7 @@ class Ui_Analysis(object):
 
         self.retranslateUi(Analysis)
 
-        self.analysis_tabs.setCurrentIndex(1)
+        self.analysis_tabs.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Analysis)
