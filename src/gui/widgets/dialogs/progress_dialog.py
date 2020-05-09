@@ -9,6 +9,8 @@ from gui.widgets.dialogs.ui.progressdialog_ui import Ui_ProgressDialog
 class ProgressDialog(QDialog, Ui_ProgressDialog):
 
     cancelling = Signal()
+    launch_task = Signal()
+    save_results = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -17,6 +19,13 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
         self.worker_thread = QThread()
         self._worker = None
         self.duration = 0
+        self.options_widget = None
+        self.btn_close.hide()
+        self.log_message = ""
+
+    def init_options_widget(self, widget):
+        self.options_widget = widget
+        self.content_layout.addWidget(self.options_widget)
 
     @property
     def worker(self):
@@ -34,18 +43,25 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
         self.btn_close.clicked.connect(self.close_dialog)
 
         if self.worker:
-            self.worker.progressed.connect(self.update_progress,
-                                           type=Qt.BlockingQueuedConnection)
-            self.worker.logging.connect(
-                self.log, type=Qt.BlockingQueuedConnection)
+            self.launch_task.connect(
+                self.worker.start_task, type=Qt.QueuedConnection)
             self.worker.computing.connect(
                 self.computing, type=Qt.BlockingQueuedConnection)
+            self.worker.progressed.connect(self.update_progress,
+                                           type=Qt.BlockingQueuedConnection)
 
-            self.worker.done.connect(self.process_results)
-            self.worker.error.connect(self.log)
-
+            self.worker.logging.connect(
+                self.log, type=Qt.BlockingQueuedConnection)
             self.cancelling.connect(
                 self.worker.cancel_tasks, type=Qt.DirectConnection)
+
+            self.worker.computing_done.connect(
+                self.computing_done, type=Qt.BlockingQueuedConnection)
+            self.worker.results_saved.connect(
+                self.results_saved, type=Qt.BlockingQueuedConnection)
+            self.worker.done.connect(
+                self.task_done, type=Qt.BlockingQueuedConnection)
+            self.worker.error.connect(self.log)
 
     def init_thread(self):
         self.worker.moveToThread(self.worker_thread)
@@ -55,6 +71,13 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
         self.worker_thread.start()
 
     @Slot()
+    def start(self):
+        print("clicking start")
+        self.init_task()
+        self.launch_task.emit()
+        self.started = time.time()
+
+    @Slot()
     def cancel(self):
         if self.started:
             self.cancelling.emit()
@@ -62,37 +85,51 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
         else:
             self.reject()
 
-    def reset_progress(self):
-        self.progress_bar.setEnabled(True)
-        self.progress_bar.setValue(0)
-
-    @Slot()
-    def computing(self):
-        self.reset_progress()
-        self.btn_start.setEnabled(False)
-
-    @Slot()
-    def update_progress(self, progress):
-        print(progress)
-        self.progress_bar.setValue(progress)
-
-    @Slot()
-    def log(self, text):
-        self.lbl_progress.setText(text)
-
-    @Slot()
-    def process_results(self):
-        self.btn_close.show()
-        self.btn_start.hide()
-        self.btn_cancel.hide()
-        self.update_progress(100)
-        # self.progress_bas.setEnabled(False)
-        self.duration = (time.time() - self.started)
-
     @Slot()
     def close_dialog(self):
         self.accept()
 
     @Slot()
-    def start(self):
+    def computing(self):
+        self.reset_progress()
+        self.btn_start.setEnabled(False)
+        self.log("Computing...")
+
+    def computing_done(self):
+        self.update_progress(100)
+        self.duration = (time.time() - self.started)
+        self.log_message = self.duration_message()
+        self.log()
+
+    def duration_message(self):
+        text = ("Performed task in %0.3f seconds" % (self.duration))
+        if self.worker.options["save"]:
+            text += ". Saving results, please wait..."
+        return text
+
+    @Slot()
+    def update_progress(self, progress):
+        self.progress_bar.setValue(progress)
+
+    @Slot()
+    def log(self, text=None):
+        text = text or self.log_message
+        self.lbl_progress.setText(text)
+
+    @Slot()
+    def task_done(self):
+        self.btn_close.show()
+        self.btn_start.hide()
+        self.btn_cancel.hide()
+        self.log_message += " Done!"
+        self.log()
+
+    def results_saved(self):
         pass
+
+    def init_task(self):
+        self.worker.options = self.options_widget.get_options()
+
+    def reset_progress(self):
+        self.progress_bar.setEnabled(True)
+        self.progress_bar.setValue(0)

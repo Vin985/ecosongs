@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QFileDialog, QWidget, qApp
 from analysis.detection import detector_evaluation
 from gui.widgets.analysis.ui.detection_evaluator_ui import \
     Ui_DetectionEvaluator
-from gui.widgets.analysis.sensitivity_dialog import SensitivityDialog
+from gui.widgets.dialogs.sensitivity_dialog import SensitivityDialog
 
 
 class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):

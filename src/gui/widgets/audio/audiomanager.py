@@ -11,7 +11,8 @@ from audio.recording import Recording
 from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.dialogs.acidialog import AciDialog
-from gui.widgets.dialogs.detectordialog import DetectorDialog
+from gui.widgets.dialogs.detector_dialog import DetectorDialog
+from gui.widgets.dialogs.tag_import_dialog import TagImportDialog
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from pysoundplayer.gui.settings import SoundPlayerSettings
 

@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QDialog
 
 from gui.widgets.options.sensitivity_options import SensitivityOptions
 from gui.widgets.dialogs.workers.sensitivity_worker import SensitivityWorker
-from gui.widgets.dialogs.progressdialog import ProgressDialog
+from gui.widgets.dialogs.progress_dialog import ProgressDialog
 
 
 class SensitivityDialog(ProgressDialog):
@@ -47,15 +47,14 @@ class SensitivityDialog(ProgressDialog):
         self.started = time.time()
 
     @Slot()
-    def process_results(self):
+    def duration_message(self):
         params = len(self.worker.parameters)
-        self.duration = (time.time() - self.started)
         log_text = ("Calculated stats for %d combinations in %0.3f seconds (%0.3fs/combination)" %
                     (params, self.duration, self.duration / params))
         if self.save:
             log_text += ". Saving results, please wait..."
             self.save_results.emit(self.audio_path, self.labels_path)
-        self.log(log_text)
+        return log_text
 
     def results_saved(self):
         super().process_results()
