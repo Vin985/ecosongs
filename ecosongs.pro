@@ -63,7 +63,12 @@ FORMS += \
     src/gui/widgets/audio/ui/detector_options.ui \
     src/gui/widgets/analysis/ui/detection_evaluator.ui \
     src/gui/widgets/labeled_slider.ui \
-    src/gui/widgets/common/ui/labeled_slider.ui
+    src/gui/widgets/common/ui/labeled_slider.ui \
+    src/gui/ecosongs_new.ui \
+    src/gui/widgets/plot/ui/sensitivity_plot.ui \
+    src/gui/widgets/options/ui/detector_options.ui \
+    src/gui/widgets/options/ui/sensitivity_options.ui \
+    src/gui/widgets/options/ui/tag_import_options.ui
 
 DISTFILES += \
     ../../../miniconda3/lib/python3.6/site-packages/PySide2/examples/corelib/tools/settingseditor/settingseditor.py \
@@ -95,5 +100,12 @@ DISTFILES += \
     src/gui/widgets/testqml/Test.qml \
     src/gui/widgets/menus/ui/settings_ui.py \
     src/gui/widgets/menus/ui/spectrosettings_ui.py \
-    src/gui/widgets/common/ui/labeled_slider_ui.py
+    src/gui/widgets/common/ui/labeled_slider_ui.py \
+    src/gui/widgets/options/ui/detector_options_ui.py \
+    src/gui/widgets/options/ui/detectoroptions_ui.py \
+    src/gui/widgets/options/ui/sensitivity_options_ui.py \
+    src/gui/widgets/options/__init__.py \
+    src/gui/widgets/options/detectoroptions.py \
+    src/gui/widgets/options/sensitivity_options.py \
+    src/gui/widgets/options/tag_import_options.py
 

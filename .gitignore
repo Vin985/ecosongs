@@ -1,7 +1,8 @@
 test*.*
+!src/test/test*.*
 __pycache__
 .ropeproject
-test/*
+/test/*
 *.h5
 /results
 *.log
