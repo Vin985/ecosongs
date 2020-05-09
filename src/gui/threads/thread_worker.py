@@ -1,4 +1,4 @@
-
+import traceback
 import pandas as pd
 from PySide2.QtCore import QObject, Signal, Slot
 
@@ -9,8 +9,10 @@ class ThreadWorker(QObject, ParallelWorker):
     logging = Signal(str)
     progressed = Signal(int)
     computing = Signal()
+    computing_done = Signal()
     done = Signal()
     error = Signal(str)
+    results_saved = Signal()
 
     def __init__(self):
         QObject.__init__(self)
@@ -18,6 +20,20 @@ class ThreadWorker(QObject, ParallelWorker):
 
     def log(self, text):
         self.logging.emit(text)
+
+    def start_task(self):
+        try:
+            self.results = []
+            self.computing.emit()
+            self.perform_task()
+            self.computing_done.emit()
+            if self.options["save"]:
+                self.save_results()
+                self.results_saved.emit()
+        except Exception:
+            print(traceback.format_exc())
+            self.error.emit(traceback.format_exc())
+        self.done.emit()
 
     @Slot()
     def cancel_tasks(self):
@@ -32,3 +48,9 @@ class ThreadWorker(QObject, ParallelWorker):
             self.progress += step
             print("progress: " + str(self.progress))
             self.progressed.emit(int(self.progress/self.nitems * 100))
+
+    def perform_task(self):
+        pass
+
+    def save_results(self):
+        pass
