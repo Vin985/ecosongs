@@ -3,7 +3,7 @@ import pandas as pd
 from PySide2.QtCore import QObject, Signal
 
 from db.tables.recordings import RecordingsTable
-from gui.threads.ParallelWorker import ParallelWorker
+from gui.threads.parallel_worker import ParallelWorker
 from gui.utils.settings import Settings
 from utils.filemanager import FileManager
 

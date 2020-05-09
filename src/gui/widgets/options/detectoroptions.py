@@ -29,7 +29,8 @@ class DetectorOptions(QWidget, Ui_DetectorOptions):
                       "weights_file": "analysis/detection/models/biotic/weights_99.pkl-1"}
         with open(model_opts["options_file"]) as opt_file:
             options = yaml.load(opt_file)
-        # TODO: add checkbox
+
+        options["analysis"] = "detection"
         options["remove_noise"] = self.checkbox_remove_noise.isChecked()
         options["resample"] = self.checkbox_resample.isChecked()
         detection_options = {"export_pdf": self.export_pdf}
@@ -39,5 +40,8 @@ class DetectorOptions(QWidget, Ui_DetectorOptions):
                              detection_options),
                 "multiprocess": True,
                 "nprocess": 1,
-                "chunksize_percent": 5}
+                "chunksize_percent": 5,
+                "analysis": "detection",
+                "save": self.checkbox_save.isChecked(),
+                "overwrite": self.checkbox_overwrite.isChecked()}
         return opts
