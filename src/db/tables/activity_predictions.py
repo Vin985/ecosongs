@@ -7,7 +7,7 @@ from db.models import TableModel
 class ActivityPredictionsTable(TableModel):
     TABLE_NAME = "activity_predictions"
     COLUMNS = ["recording_id", "time", "activity"]
-    DUPLICATE_COLUMNS = ["recording_id", "analysis_options"]
+    DUPLICATE_COLUMNS = ["recording_id"]
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
