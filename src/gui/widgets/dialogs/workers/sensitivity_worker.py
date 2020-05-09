@@ -13,8 +13,6 @@ from utils.commons import range_list
 
 class SensitivityWorker(ThreadWorker):
 
-    saved = Signal()
-
     def __init__(self, predictions, recordings, tags):
         super().__init__()
         self.recordings = recordings

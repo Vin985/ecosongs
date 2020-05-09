@@ -1,5 +1,7 @@
 
-from PySide2.QtCore import Slot
+import pandas as pd
+
+from PySide2.QtCore import qApp, Slot
 
 import analysis.detection.song_detector as song_detector
 import analysis.indexes as indexes
@@ -8,12 +10,20 @@ from gui.threads.thread_worker import ThreadWorker
 
 class AudioAnalyzerWorker(ThreadWorker):
 
+    ANALYSIS = {"ACI": "compute_index",
+                "detection": "detect_songs"}
+
     def __init__(self, recordings):
         super().__init__()
         self.recordings = recordings or []
 
-    @Slot()
-    def compute_index(self, index_type):
+    def perform_task(self):
+        if self.options["analysis"]:
+            func = getattr(self, self.ANALYSIS[self.options["analysis"]])
+            func()
+
+    def compute_index(self):
+        index_type = self.options["index_type"]
         self.perform_analysis(indexes.mp_compute_index_chunk,
                               initializer=indexes.mp_initialize_index,
                               initargs=(index_type, self.options["initargs"]))
@@ -26,8 +36,13 @@ class AudioAnalyzerWorker(ThreadWorker):
 
     def perform_analysis(self, function, *args, **kwargs):
         self.results = []
-        self.computing.emit()
         if self.recordings:
-            # TODO: put chunksize as option
             self.map(self.recordings, function, *args, **kwargs)
-        self.done.emit()
+
+    def save_results(self):
+        res = self.results
+        if res and self.options["save"]:
+            events = pd.concat(res)
+            activity_table = qApp.tables.activity_predictions
+            activity_table.add(events, save=True,
+                               replace=self.options["overwrite"])
