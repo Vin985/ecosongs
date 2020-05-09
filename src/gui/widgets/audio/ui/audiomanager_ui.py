@@ -34,6 +34,8 @@ class Ui_AudioManager(object):
         self.action_delete.setObjectName(u"action_delete")
         self.action_create_links = QAction(AudioManager)
         self.action_create_links.setObjectName(u"action_create_links")
+        self.action_check_labels = QAction(AudioManager)
+        self.action_check_labels.setObjectName(u"action_check_labels")
         self.horizontalLayout_2 = QHBoxLayout(AudioManager)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.splitter = QSplitter(AudioManager)
@@ -174,41 +176,27 @@ class Ui_AudioManager(object):
         sizePolicy2.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
         self.label_9.setSizePolicy(sizePolicy2)
 
-        self.gridLayout.addWidget(self.label_9, 2, 0, 1, 1)
-
-        self.slider_activity = QSlider(self.group_draw_events)
-        self.slider_activity.setObjectName(u"slider_activity")
-        self.slider_activity.setMaximum(100)
-        self.slider_activity.setValue(95)
-        self.slider_activity.setOrientation(Qt.Horizontal)
-
-        self.gridLayout.addWidget(self.slider_activity, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.label_9, 3, 0, 1, 1)
 
         self.label_8 = QLabel(self.group_draw_events)
         self.label_8.setObjectName(u"label_8")
 
-        self.gridLayout.addWidget(self.label_8, 3, 0, 1, 1)
-
-        self.slider_end_threshold = QSlider(self.group_draw_events)
-        self.slider_end_threshold.setObjectName(u"slider_end_threshold")
-        self.slider_end_threshold.setValue(60)
-        self.slider_end_threshold.setOrientation(Qt.Horizontal)
-
-        self.gridLayout.addWidget(self.slider_end_threshold, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.label_8, 4, 0, 1, 1)
 
         self.label_7 = QLabel(self.group_draw_events)
         self.label_7.setObjectName(u"label_7")
 
-        self.gridLayout.addWidget(self.label_7, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_7, 5, 0, 1, 1)
 
         self.spin_min_duration = QDoubleSpinBox(self.group_draw_events)
         self.spin_min_duration.setObjectName(u"spin_min_duration")
+        self.spin_min_duration.setKeyboardTracking(False)
         self.spin_min_duration.setDecimals(0)
         self.spin_min_duration.setMaximum(10000.000000000000000)
         self.spin_min_duration.setSingleStep(1.000000000000000)
         self.spin_min_duration.setValue(30.000000000000000)
 
-        self.gridLayout.addWidget(self.spin_min_duration, 4, 1, 1, 1)
+        self.gridLayout.addWidget(self.spin_min_duration, 5, 1, 1, 1)
 
         self.label_6 = QLabel(self.group_draw_events)
         self.label_6.setObjectName(u"label_6")
@@ -241,6 +229,24 @@ class Ui_AudioManager(object):
 
         self.gridLayout.addWidget(self.combo_method, 1, 1, 1, 1)
 
+        self.spin_end_threshold = QDoubleSpinBox(self.group_draw_events)
+        self.spin_end_threshold.setObjectName(u"spin_end_threshold")
+        self.spin_end_threshold.setKeyboardTracking(False)
+        self.spin_end_threshold.setMaximum(1.000000000000000)
+        self.spin_end_threshold.setSingleStep(0.010000000000000)
+        self.spin_end_threshold.setValue(0.600000000000000)
+
+        self.gridLayout.addWidget(self.spin_end_threshold, 4, 1, 1, 1)
+
+        self.spin_activity = QDoubleSpinBox(self.group_draw_events)
+        self.spin_activity.setObjectName(u"spin_activity")
+        self.spin_activity.setKeyboardTracking(False)
+        self.spin_activity.setMaximum(1.000000000000000)
+        self.spin_activity.setSingleStep(0.010000000000000)
+        self.spin_activity.setValue(0.950000000000000)
+
+        self.gridLayout.addWidget(self.spin_activity, 3, 1, 1, 1)
+
 
         self.horizontalLayout_3.addWidget(self.group_draw_events)
 
@@ -265,6 +271,10 @@ class Ui_AudioManager(object):
         self.action_create_links.setText(QCoreApplication.translate("AudioManager", u"Create virtual links", None))
 #if QT_CONFIG(tooltip)
         self.action_create_links.setToolTip(QCoreApplication.translate("AudioManager", u"<html><head/><body><p>Create virtual links to files to easily have human readable filenames</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.action_check_labels.setText(QCoreApplication.translate("AudioManager", u"Check labels", None))
+#if QT_CONFIG(tooltip)
+        self.action_check_labels.setToolTip(QCoreApplication.translate("AudioManager", u"Check and import labels for the selected files if any are found", None))
 #endif // QT_CONFIG(tooltip)
         self.label.setText(QCoreApplication.translate("AudioManager", u"Name", None))
         self.label_5.setText(QCoreApplication.translate("AudioManager", u"Year", None))
