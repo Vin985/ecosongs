@@ -6,7 +6,7 @@ class RecordingsTable(TableModel):
     TABLE_NAME = "recordings"
     COLUMNS = ["name", "year", "site",
                "plot", "date", "path",
-               "ext", "recorder", "duration", "sample_rate"]  # , "old_name"]
+               "ext", "recorder", "duration", "sample_rate", "has_tags"]  # , "old_name"]
     DUPLICATE_COLUMNS = ["name", "plot", "site", "year"]
 
     def __init__(self, df=None, dbmanager=None):

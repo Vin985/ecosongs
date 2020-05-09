@@ -5,6 +5,10 @@ from pysoundplayer import audio
 
 class Recording(BaseModel):
 
+    NO_TAG = 0
+    TAGS_INCOMPLETE = 1
+    TAGS_COMPLETE = 2
+
     # TODO: load from file_path only
     def __init__(self, attributes):
         # TODO: load from path
