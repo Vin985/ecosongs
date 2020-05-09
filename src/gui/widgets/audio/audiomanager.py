@@ -6,6 +6,7 @@ from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QMenu, QMessageBox, QWidget
 
 import utils.commons as utils
+import files.tag_manager as tag_manager
 from analysis.indexes import ACI
 from audio.recording import Recording
 from gui.utils.settings import Settings
@@ -85,6 +86,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.action_detect_songs.triggered.connect(self.detect_songs)
         self.action_delete.triggered.connect(self.show_delete_msg)
         self.action_create_links.triggered.connect(self.show_create_links_msg)
+        self.action_check_labels.triggered.connect(self.check_labels)
 
         # self.time_slider.valueChanged.connect(self.update_spectrogram)
 
@@ -92,14 +94,15 @@ class AudioManager(QWidget, Ui_AudioManager):
         # self.checkbox_draw_events.toggled.connect(self.draw_events)
 
         self.group_draw_events.toggled.connect(self.draw_events)
-        self.slider_activity.valueChanged.connect(self.draw_events)
-        self.slider_end_threshold.valueChanged.connect(self.draw_events)
+        self.spin_activity.valueChanged.connect(self.draw_events)
+        self.spin_end_threshold.valueChanged.connect(self.draw_events)
         self.spin_min_duration.valueChanged.connect(self.draw_events)
         self.combo_method.currentIndexChanged.connect(self.draw_events)
 
         self.sound_player.update_position.connect(
             self.spectrogram_viewer.update_sound_marker)
         self.spectrogram_viewer.seek.connect(self.sound_player.seek)
+        self.spectrogram_viewer.spectrogram_drawn.connect(self.draw_events)
         self.image_options.option_updated.connect(
             self.spectrogram_viewer.update_image)
         self.spectrogram_options.option_updated.connect(
@@ -111,6 +114,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         menu = QMenu(self)
         menu.addAction(self.action_delete)
         menu.addAction(self.action_create_links)
+        menu.addAction(self.action_check_labels)
         menu.addSeparator()
         menu.addAction(self.action_ACI)
         menu.addAction(self.action_detect_songs)
@@ -132,15 +136,16 @@ class AudioManager(QWidget, Ui_AudioManager):
             # item is recording
             self.show_recording_details(item.data())
 
-    def draw_events(self, draw=True):
+    @Slot()
+    def draw_events(self):
         self.spectrogram_viewer.clear_rects()
-        if draw:
+        if self.group_draw_events.isChecked():
             predictions_table = qApp.tables.activity_predictions
             if not predictions_table.empty:
                 event_options = {"method": self.EVENT_DETECTION_METHODS[self.combo_method.currentIndex()],
-                                 "min_activity": self.slider_activity.value() / 100,
+                                 "min_activity": self.spin_activity.value(),
+                                 "end_threshold": self.spin_end_threshold.value(),
                                  "min_duration": self.spin_min_duration.value() / 1000,
-                                 "end_threshold": self.slider_end_threshold.value() / 100,
                                  "isolate_events": True}
                 events = predictions_table.get_events_by_id(
                     self.current_recording.id, event_options)
@@ -149,14 +154,16 @@ class AudioManager(QWidget, Ui_AudioManager):
                         # # TODO: externalize color
                         self.spectrogram_viewer.draw_rect(
                             event.start, event.end, color="#99ebef00")
-        self.draw_silences()
+            self.draw_silences()
 
     def draw_silences(self, draw=True):
         silences = self.sound_player.audio.get_silences(top_db=80)
         if silences and draw:
             for start, end in silences:
                 self.spectrogram_viewer.draw_rect(
-                    start/self.sound_player.audio.sr, end/self.sound_player.audio.sr, color="#99ff0000")
+                    start/self.sound_player.audio.sr,
+                    end/self.sound_player.audio.sr,
+                    color="#99ff0000")
 
     @Slot()
     def compute_ACI(self):
@@ -207,10 +214,34 @@ class AudioManager(QWidget, Ui_AudioManager):
         else:
             print("not deleting")
 
+    # @Slot()
+    # def show_check_labels_msg(self):
+    #     msgbox = QMessageBox(parent=self)
+    #     # TODO: change text based on number/selection
+    #     msgbox.setText(
+    #         "Do you want to check and import labels for these files?")
+    #     msgbox.setInformativeText('Existing labels will be removed')
+    #     msgbox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    #     msgbox.setDefaultButton(QMessageBox.Cancel)
+    #     msgbox.setIcon(QMessageBox.Warning)
+    #     ret = msgbox.exec()
+    #     if ret == QMessageBox.Ok:
+    #         self.check_labels()
+    #     else:
+    #         print("not checking labels")
+
     def create_links(self):
         print("creating virtual links...")
         recs = self.get_selected_recordings()
         print(recs)
+
+    @Slot()
+    def check_labels(self):
+        print("Importing labels...")
+        recs = self.get_selected_recordings(type="table")
+        self.action_dialog = TagImportDialog(recs, parent=self)
+        self.action_dialog.setModal(True)
+        self.action_dialog.show()
 
     def delete_recordings(self):
         print("deleting...")
@@ -302,7 +333,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.current_recording = Recording(file_info)
         self.show_recording_info(["id", "name", "path", "year"])
         self.load_file(self.current_recording.path)
-        self.draw_events(draw=self.group_draw_events.isChecked())
+        # self.draw_events()
         # self.update_spectrogram()
         # self.update_spectrogram2()
         # self.time_slider.setMaximum(self.current_recording.duration)
