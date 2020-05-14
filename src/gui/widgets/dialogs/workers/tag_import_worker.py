@@ -2,6 +2,8 @@
 import files.tag_manager as tag_manager
 from gui.threads.thread_worker import ThreadWorker
 
+from PySide2.QtCore import qApp
+
 
 class TagImportWorker(ThreadWorker):
 
@@ -12,7 +14,10 @@ class TagImportWorker(ThreadWorker):
     def perform_task(self):
         print("Importing tags")
         self.options["save"] = True
-        tag_manager.load_tags(self.recordings, self.options)
+        self.results = tag_manager.load_tags(
+            self.recordings, self.options["task_options"])
 
     def save_results(self):
-        print(self.results, self.recordings)
+        tags_table = qApp.tables.tags
+        tags_table.add(self.results, save=True, replace=True)
+        qApp.tables.recordings.save()
