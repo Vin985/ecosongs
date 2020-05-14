@@ -6,7 +6,6 @@ from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QMenu, QMessageBox, QWidget
 
 import utils.commons as utils
-import files.tag_manager as tag_manager
 from analysis.indexes import ACI
 from audio.recording import Recording
 from gui.utils.settings import Settings
