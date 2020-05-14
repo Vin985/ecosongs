@@ -4,25 +4,34 @@ import pandas as pd
 
 class Detector():
 
-    PREDICTIONS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
-                           'recording_id': "recording_id", 'start': "event_start",
-                           'name': "file_name", "index": "event_index"}
-    EVENTS_COLUMNS = {'end': "event_end", 'event_id': "event_id",
-                      'recording_id': "recording_id", 'start': "event_start",
-                      'name': "file_name", "index": "event_index", "event_duration": "event_duration"}
+    EVENTS_COLUMNS = {'index': 'event_id',
+                      'event_index': "event_index",
+                      'recording_id': "recording_id",
+                      'start': "event_start",
+                      'end': "event_end",
+                      "event_duration": "event_duration"}
+    TAGS_COLUMNS_RENAME = {'id': "tag_id"}
 
-    def __init__(self, predictions, options=None):
-        self.predictions = predictions
-        self.options = options or {}
+    DEFAULT_MIN_ACTIVITY = 0.85
+    DEFAULT_MIN_DURATION = 0.1
+    DEFAULT_END_THRESHOLD = 0.6
 
-        self.predictions.loc[:, "tag"] = 0
-        self.predictions.loc[:, "tag_index"] = -1
-        self.predictions.loc[:, "event"] = 0
-        self.predictions.loc[:, "datetime"] = pd.to_datetime(
-            predictions.time * 10**9)
+    def __init__(self):
+        pass
+        # self.predictions = predictions
+        # self.options = options or {}
 
-    def get_events(self):
+        # self.predictions.loc[:, "tag"] = 0
+        # self.predictions.loc[:, "tag_index"] = -1
+        # self.predictions.loc[:, "event"] = 0
+        # self.predictions.loc[:, "datetime"] = pd.to_datetime(
+        #     predictions.time * 10**9)
+
+    def get_recording_events(self, predictions, recording_id, options=None):
         pass
 
-    def get_stats(self, recordings, tags):
+    def get_events(self, predictions, options):
+        pass
+
+    def get_stats(self, events, matches):
         pass
