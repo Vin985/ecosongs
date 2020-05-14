@@ -1,6 +1,7 @@
 import pandas as pd
 
-from analysis.detection import predictions_utils
+from analysis.detection.detectors.standard_detector import StandardDetector
+from analysis.detection.detectors.subsampling_detector import SubsamplingDetector
 from db.models import TableModel
 
 
@@ -11,14 +12,24 @@ class ActivityPredictionsTable(TableModel):
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+        self.detectors = {
+            "standard": StandardDetector(),
+            "subsampling": SubsamplingDetector()
+        }
 
-    def get_events_by_id(self, recording_id, event_options):
+    def get_events_by_id(self, recording_id, options):
+        detector = self.detectors[options["method"]]
         preds = self.df[self.df["recording_id"] == recording_id]
-        events = pd.DataFrame()
-        if not preds.empty:
-            events = predictions_utils.detect_songs_events(
-                preds, recording_id, event_options)
+        events = detector.get_recording_events(preds, recording_id, options)
         return events
+
+    # def get_events_by_id(self, recording_id, event_options):
+    #     preds = self.df[self.df["recording_id"] == recording_id]
+    #     events = pd.DataFrame()
+    #     if not preds.empty:
+    #         events = predictions_utils.detect_songs_events(
+    #             preds, recording_id, event_options)
+    #     return events
 
     def get_events(self, recording_ids, event_options):
         if not isinstance(recording_ids, list):
