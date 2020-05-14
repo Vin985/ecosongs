@@ -89,7 +89,7 @@ class FileManager:
         file_infos = [self.extract_info(path, file) for file in files]
         return file_infos
 
-    def extract_info(self, dirpath, file):
+    def extract_info(self, dirpath, file_name):
         # TODO split in smaller functions
         if not dirpath:
             # Path to parent drectory not provided, extract it from filename
