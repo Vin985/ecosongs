@@ -12,7 +12,7 @@ class FeatherManager(DBManager):
 
     def get_table(self, table):
         data = feather.read_dataframe(self.db_root + table + ".feather")
-        data.set_index("id", drop=False, inplace=True)
+        #data.set_index("id", drop=False, inplace=True)
         return data
 
     def save(self, table, data):
