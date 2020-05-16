@@ -11,6 +11,7 @@ try:
     from db import dbutils
     from db.tablemanager import TableManager
     from analysis.detection.detectors.standard_detector import StandardDetector
+    from analysis.detection.detectors.subsampling_detector import SubsamplingDetector
 except Exception:
     print("Woops, module EventsPlot not found")
 
@@ -43,9 +44,22 @@ path = "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Reference/split
 r = recordings_df.loc[recordings_df.path.str.startswith(path)]
 r = r.loc[r.has_tags == 2]
 
+
 # %%
 tags = tags_df.loc[tags_df.recording_id.isin(r.id)]
 preds = predictions_df.loc[predictions_df.recording_id.isin(tags.recording_id)]
+
+# %%
+
+# t = tags[["id", "recording_id", "tag_start", "tag_end"]]
+# p = preds.merge(t, on=["recording_id"], how="left")
+# p["has_tag"] = 0
+# p.loc[p.time.between(p.tag_start, p.tag_end), "has_tag"] = 1
+
+# %%
+
+p = preds[preds.recording_id == 80524]
+t = tags[tags.recording_id == 80524]
 
 
 # %%
@@ -58,6 +72,13 @@ det.evaluate(preds, tags, {"min_activity": 0.9,
 
 # %%
 
+det2 = SubsamplingDetector()
+
+det2.evaluate(preds, tags, {"min_activity": 0.9,
+                            "min_duration": 0.35,
+                            "end_threshold": 0.15})
+
+# %%
 stats = tables.detector_statistics.df
 max_precision = stats.loc[stats.precision == max(stats.precision)]
 opts = tables.analysis_options.df
@@ -69,8 +90,6 @@ det.evaluate(preds, tags, {"min_activity": 0.9,
                            "min_duration": 0.35,
                            "end_threshold": 0.15})
 
-# %%
-
 stats = tables.detector_statistics.df
 max_precision = stats.loc[stats.precision == max(stats.precision)]
 opts = tables.analysis_options.df
@@ -81,9 +100,6 @@ print(max_prec_opt.values[0])
 det.evaluate(preds, tags, {"min_activity": 0.95,
                            "min_duration": 0.49,
                            "end_threshold": 0.15})
-
-
-# %%
 
 # Max recall
 stats = tables.detector_statistics.df
