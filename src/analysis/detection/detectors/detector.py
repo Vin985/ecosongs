@@ -27,11 +27,11 @@ class Detector():
         # self.predictions.loc[:, "datetime"] = pd.to_datetime(
         #     predictions.time * 10**9)
 
+    def _get_recording_events(self, predictions, options):
+        return self.get_recording_events(predictions, predictions.name, options)
+
     def get_recording_events(self, predictions, recording_id, options=None):
         pass
 
     def get_events(self, predictions, options):
-        pass
-
-    def get_stats(self, events, matches):
         pass

@@ -23,7 +23,7 @@ class StandardDetector(Detector):
 
     def get_events(self, predictions, options):
         events = predictions.groupby("recording_id", as_index=False).apply(
-            self.get_recording_events_apply, options)
+            self._get_recording_events, options)
         events.reset_index(inplace=True)
         events.drop(["level_0", "level_1"], axis=1, inplace=True)
         events["event_duration"] = events["end"] - \
@@ -32,9 +32,6 @@ class StandardDetector(Detector):
         events = events[self.EVENTS_COLUMNS.keys()]
         events.rename(columns=self.EVENTS_COLUMNS, inplace=True)
         return events
-
-    def get_recording_events_apply(self, predictions, options):
-        return self.get_recording_events(predictions, predictions.name, options)
 
     def get_recording_events(self, predictions, recording_id, options=None):
         predictions = predictions[["time", "activity"]]
