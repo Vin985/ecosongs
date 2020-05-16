@@ -123,7 +123,8 @@ def detect_events_subsampling(predictions, recording_id=-1, detection_options=No
     resampled = preds.resample(str(step)+"ms")
     resample_func = functools.partial(resample_max, threshold=min_activity)
     res = resampled.agg({"activity": resample_func,
-                         "tag": has_tag})
+                         "tag": self.has_tag
+                         "tag_index": self.get_tag_index})
     res.rename(columns={"activity": "event"}, inplace=True)
     res["recording_id"] = recording_id
 
