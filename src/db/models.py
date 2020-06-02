@@ -34,6 +34,7 @@ class TableModel():
     TABLE_NAME = ""
     COMMON_COLUMNS = ["id"]
     DUPLICATE_COLUMNS = []
+    COLUMNS_TYPE = {}
 
     def __init__(self, columns, df=None, dbmanager=None, table=None):
         # TODO: Change to externalize dbmanager
@@ -75,13 +76,26 @@ class TableModel():
     def empty(self):
         return self.df.empty
 
-    def save(self):
-        self.dbmanager.save(self.TABLE_NAME, self._df)
+    def check_types(self):
+        if self.COLUMNS_TYPE:
+            for k, v in self.COLUMNS_TYPE.items():
+                print(k)
+                print(v)
+                self._df[k] = self._df[k].astype(v)
+        print(self._df.dtypes)
+        print(self._df.memory_usage())
+
+    def save(self, update=False):
+        self.check_types()
+        if update:
+            self.dbmanager.update(self.TABLE_NAME, self._df)
+        else:
+            self.dbmanager.save(self.TABLE_NAME, self._df)
 
     def update(self, table, save=False, **kwargs):
         self.update_table(table, **kwargs)
         if save:
-            self.dbmanager.update(self.TABLE_NAME, self._df)
+            self.save(update=True)
 
     def create(self, table, save=False):
         self._df = table
