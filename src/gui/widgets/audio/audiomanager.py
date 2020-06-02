@@ -253,10 +253,8 @@ class AudioManager(QWidget, Ui_AudioManager):
         values_dict = {"recording_id": recs}
         qApp.tables.song_events.delete(
             values_dict, columns=["recording_id"], save=True)
-        print(qApp.tables.activity_predictions)
         qApp.tables.activity_predictions.delete(
             values_dict, columns=["recording_id"], save=True)
-        print(qApp.tables.activity_predictions)
         # TODO : delete other dependencies
 
     def get_selected_recordings(self, type=None):
@@ -328,7 +326,6 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: improve performance to avoid reloading everything.
         # TODO: add generators to qApp?
         settings = Settings()
-        print(file_info)
         self.current_recording = Recording(file_info)
         self.show_recording_info(["id", "name", "path", "year"])
         self.load_file(self.current_recording.path)
