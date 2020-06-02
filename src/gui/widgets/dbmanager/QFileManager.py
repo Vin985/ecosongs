@@ -5,7 +5,7 @@ from PySide2.QtCore import QObject, Signal
 from db.tables.recordings import RecordingsTable
 from gui.threads.parallel_worker import ParallelWorker
 from gui.utils.settings import Settings
-from utils.filemanager import FileManager
+from utils.file_manager import FileManager
 
 
 class QFileManager(QObject, ParallelWorker, FileManager):

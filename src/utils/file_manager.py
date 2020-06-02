@@ -32,7 +32,8 @@ class FileManager:
     # TODO: put in config
     FILE_EXT = ("wac", "wav")
     # TODO: put in config
-    PATTERNS = {"Audiomoth": "([A-F0-9]{8})",
+    PATTERNS = {"Audiomoth2018": "(^[A-F0-9]{8}$)",
+                "Audiomoth2019": "(^\d{8}_\d{6}$)",
                 "SongMeter": "(.+)_(\d{8}_\d{6})",
                 "Ecosongs": "(.+)_(.+)_(\d{4}-\d{2}-\d{2}_\d{2}:\d{2}:\d{2})"}
 
@@ -179,9 +180,14 @@ class FileManager:
             return None
         return getattr(self, "extract_date_" + recorder.lower())(match)
 
-    def extract_date_audiomoth(self, match):
+    def extract_date_audiomoth2018(self, match):
         date = datetime.fromtimestamp(int(int(match.group(1), 16)))
-        logging.debug("extracting date AM: " + str(date))
+        logging.debug("extracting date AM2018: " + str(date))
+        return date
+
+    def extract_date_audiomoth2019(self, match):
+        date = datetime.strptime(match.group(1), "%Y%m%d_%H%M%S")
+        logging.debug("extracting date AM2019: " + str(date))
         return date
 
     def extract_date_songmeter(self, match):
