@@ -32,7 +32,7 @@ class RecordingsTable(TableModel):
         to_load = [idx for idx in indexes if idx not in self.recordings]
         if to_load:
             to_load = self._df.loc[indexes]
-            to_update = {row.id: Recording(row._asdict())
+            to_update = {row.Index: Recording(row._asdict())
                          for row in to_load.itertuples(index=True)}
             self.recordings.update(to_update)
         return [self.recordings[idx] for idx in indexes]
