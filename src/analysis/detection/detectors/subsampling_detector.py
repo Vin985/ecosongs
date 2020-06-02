@@ -64,18 +64,6 @@ class SubsamplingDetector(Detector):
         events = pd.DataFrame(events)
         return events
 
-    # def get_events(self, predictions, options=None):
-    #     events = predictions.groupby("recording_id", as_index=False).apply(
-    #         self._get_recording_events, options)
-    #     events.reset_index(inplace=True)
-    #     events.drop(["level_0", "level_1"], axis=1, inplace=True)
-    #     events["event_duration"] = events["end"] - \
-    #         events["start"]
-    #     events.reset_index(inplace=True)
-    #     events = events[self.EVENTS_COLUMNS.keys()]
-    #     events.rename(columns=self.EVENTS_COLUMNS, inplace=True)
-    #     return events
-
     def get_recording_events(self, predictions, recording_id, options=None):
         preds = predictions[["time", "activity"]].copy()
         min_activity = options.get("min_activity", self.DEFAULT_MIN_ACTIVITY)
@@ -155,6 +143,20 @@ class SubsamplingDetector(Detector):
         return {"precision": precision, "recall": recall,
                 "recall2": recall2, "tp": tp, "tn": tn,
                 "fp": fp, "fn": fn, "fn2": fn2}
+
+    def get_recording_events_apply(self, predictions, options):
+        recording_id = predictions.recording_id.values[0]
+        return self.get_recording_events(predictions, recording_id, options)
+
+    def get_events(self, predictions, options=None):
+        options = options or {}
+        events = predictions.groupby("recording_id", as_index=False).apply(
+            self.get_recording_events_apply, options)
+        # events = predictions.groupby("recording_id", as_index=False).parallel_apply(
+        #     self.get_recording_events_apply, options)
+        events.reset_index(inplace=True)
+        events.drop(["level_0"], axis=1, inplace=True)
+        return events
 
     def evaluate(self, predictions, tags, options):
         preds = predictions.copy()

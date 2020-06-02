@@ -108,39 +108,39 @@ def isolate_events_subsampling(predictions, step):
     return events
 
 
-def detect_events_subsampling(predictions, recording_id=-1, detection_options=None):
-    preds = predictions.copy()
-    if not "tag" in preds.columns:
-        preds.loc[:, "tag"] = -1
-    preds.loc[:, "event"] = -1
-    preds.loc[:, "datetime"] = pd.to_datetime(preds.time * 10**9)
-    preds.set_index("datetime", inplace=True)
+# def detect_events_subsampling(predictions, recording_id=-1, detection_options=None):
+#     preds = predictions.copy()
+#     if not "tag" in preds.columns:
+#         preds.loc[:, "tag"] = -1
+#     preds.loc[:, "event"] = -1
+#     preds.loc[:, "datetime"] = pd.to_datetime(preds.time * 10**9)
+#     preds.set_index("datetime", inplace=True)
 
-    min_activity = detection_options.get("min_activity", 0.85)
-    step = detection_options.get("min_duration", 0.1) * 1000
-    isolate_events = detection_options.get("isolate_events", False)
+#     min_activity = detection_options.get("min_activity", 0.85)
+#     step = detection_options.get("min_duration", 0.1) * 1000
+#     isolate_events = detection_options.get("isolate_events", False)
 
-    resampled = preds.resample(str(step)+"ms")
-    resample_func = functools.partial(resample_max, threshold=min_activity)
-    res = resampled.agg({"activity": resample_func,
-                         "tag": self.has_tag
-                         "tag_index": self.get_tag_index})
-    res.rename(columns={"activity": "event"}, inplace=True)
-    res["recording_id"] = recording_id
+#     resampled = preds.resample(str(step)+"ms")
+#     resample_func = functools.partial(resample_max, threshold=min_activity)
+#     res = resampled.agg({"activity": resample_func,
+#                          "tag"has_tag,
+#                          "tag_index": self.get_tag_index})
+#     res.rename(columns={"activity": "event"}, inplace=True)
+#     res["recording_id"] = recording_id
 
-    if isolate_events:
-        return isolate_events_subsampling(res, step)
+#     if isolate_events:
+#         return isolate_events_subsampling(res, step)
 
-    return res
-
-
-METHODS_FUNCTIONS = {"standard": detect_events_standard,
-                     "subsampling": detect_events_subsampling}
+#     return res
 
 
-def detect_songs_events(predictions, recording_id=-1, detection_options=None):
-    predictions = predictions[["time", "activity"]]
-    detection_options = detection_options or {}
-    method = detection_options.get("method", METHODS[0])
-    method_func = METHODS_FUNCTIONS[method]
-    return method_func(predictions, recording_id, detection_options)
+# METHODS_FUNCTIONS = {"standard": detect_events_standard,
+#                      "subsampling": detect_events_subsampling}
+
+
+# def detect_songs_events(predictions, recording_id=-1, detection_options=None):
+#     predictions = predictions[["time", "activity"]]
+#     detection_options = detection_options or {}
+#     method = detection_options.get("method", METHODS[0])
+#     method_func = METHODS_FUNCTIONS[method]
+#     return method_func(predictions, recording_id, detection_options)

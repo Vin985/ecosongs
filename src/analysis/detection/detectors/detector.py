@@ -1,5 +1,5 @@
 
-import pandas as pd
+# from pandarallel import pandarallel
 
 
 class Detector():
@@ -18,6 +18,7 @@ class Detector():
 
     def __init__(self):
         pass
+        # pandarallel.initialize()
         # self.predictions = predictions
         # self.options = options or {}
 
