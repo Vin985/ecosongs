@@ -43,5 +43,6 @@ class DetectorOptions(QWidget, Ui_DetectorOptions):
                 "chunksize_percent": 5,
                 "analysis": "detection",
                 "save": self.checkbox_save.isChecked(),
-                "overwrite": self.checkbox_overwrite.isChecked()}
+                "overwrite": self.checkbox_overwrite.isChecked(),
+                "save_intermediate_results": True}
         return opts
