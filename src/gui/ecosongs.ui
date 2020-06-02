@@ -78,7 +78,7 @@ QListView::text:selected {
 }</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="DBExplorer" name="db_page">
        <property name="autoFillBackground">
@@ -257,7 +257,7 @@ QListView::text:selected {
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
