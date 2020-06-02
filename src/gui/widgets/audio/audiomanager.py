@@ -1,3 +1,4 @@
+import os
 import traceback
 
 import pandas as pd
@@ -8,12 +9,11 @@ from PySide2.QtWidgets import QMenu, QMessageBox, QWidget
 import utils.commons as utils
 from analysis.indexes import ACI
 from audio.recording import Recording
-from gui.utils.settings import Settings
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
+from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from gui.widgets.dialogs.acidialog import AciDialog
 from gui.widgets.dialogs.detector_dialog import DetectorDialog
 from gui.widgets.dialogs.tag_import_dialog import TagImportDialog
-from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from pysoundplayer.gui.settings import SoundPlayerSettings
 
 
@@ -325,7 +325,6 @@ class AudioManager(QWidget, Ui_AudioManager):
         # TODO: setting to enable/disable display on each selection change
         # TODO: improve performance to avoid reloading everything.
         # TODO: add generators to qApp?
-        settings = Settings()
         self.current_recording = Recording(file_info)
         self.show_recording_info(["id", "name", "path", "year"])
         self.load_file(self.current_recording.path)
@@ -336,9 +335,12 @@ class AudioManager(QWidget, Ui_AudioManager):
         # self.update_duration_lbl()
 
     def load_file(self, path):
-        audio = self.sound_player.load_file(file_path=path)
-        self.spectrogram_viewer.audio = audio
-        return audio
+        if os.path.exists(path):
+            audio = self.sound_player.load_file(file_path=path)
+            self.spectrogram_viewer.audio = audio
+        else:
+            self.spectrogram_viewer.display_text(
+                "File not found. Please make sure the path has not changed")
 
     def folder_query(self, folder_info):
         return ' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])
