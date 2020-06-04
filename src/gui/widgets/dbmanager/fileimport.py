@@ -196,9 +196,9 @@ class FileImport(QWizard, Ui_FileImport):
         else:
             # We want to select files
             # TODO : add formats in config
-            (files, pattern) = QFileDialog.getOpenFileNames(
+            (files, _) = QFileDialog.getOpenFileNames(
                 self, "Choose files", default,
-                "Audio files (*.wav, *.WAV, *.wac);;WAV files (*.wav, *.WAV);;WAC files (*.wac)")
+                "Audio files (*.wav *.WAV *.wac);;WAV files (*.wav *.WAV);;WAC files (*.wac)")
             text = "; ".join(files)
             self.file_manager.file_paths = files
 
