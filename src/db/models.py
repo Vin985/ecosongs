@@ -165,3 +165,9 @@ class TableModel():
         rows = self.df.loc[self.df[column].isin(values)]
         rows.reset_index(inplace=True, drop=True)
         return rows
+
+    def export_table(self, options):
+        pass
+
+    def import_table(self):
+        pass
