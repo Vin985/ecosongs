@@ -2,7 +2,7 @@ import os
 from time import time
 
 from PySide2 import QtCore
-from PySide2.QtWidgets import QFileDialog, QWidget, qApp
+from PySide2.QtWidgets import QFileDialog, QWidget  # , qApp
 
 from analysis.detection import detector_evaluation
 from gui.widgets.analysis.ui.detection_evaluator_ui import \
