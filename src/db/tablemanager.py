@@ -50,5 +50,5 @@ class TableManager:
         module_path = os.path.join(*self.TABLE_MODULE.split("."))
         path = os.path.join(os.getcwd(), module_path)
         tables = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(
-            os.path.join(path, f)) and f.endswith(".py")]
+            os.path.join(path, f)) and f.endswith(".py") and not f.startswith("__")]
         return tables
