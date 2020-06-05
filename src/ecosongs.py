@@ -3,7 +3,6 @@ import sys
 
 from PySide2.QtWidgets import QApplication
 
-from analysis.image import ImageGenerator
 from db import dbutils
 from db.tablemanager import TableManager
 from gui.ecosongsUI import EcosongsUI
@@ -39,7 +38,6 @@ class Ecosongs(QApplication):
                 {"database": "ecosongs", "db_type": "feather", "path": "/mnt/win/UMoncton/Doctorat/dev/ecosongs/src/db"})
 
         self.dbmanager = dbutils.get_db_manager(**db_opts)
-        self.imgen = ImageGenerator(settings.image_settings())
         self.tables = TableManager(self.dbmanager)
 
 
