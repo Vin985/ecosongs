@@ -1,7 +1,7 @@
 
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from PySide2.QtCore import Signal
-from PySide2.QtGui import qApp
+# from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QMenu, QTreeView, QWidget
 
 # DEPRECATED: useless, replace with cassical tree view
