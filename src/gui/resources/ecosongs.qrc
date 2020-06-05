@@ -6,5 +6,7 @@
         <file alias="analysis">icons/tango/scalable/accessories-calculator.svg</file>
         <file alias="audio">icons/tango/scalable/audio-x-generic.svg</file>
         <file alias="folder">icons/tango/scalable/folder.svg</file>
+        <file alias="file-new">icons/tango/scalable/document-new.svg</file>
+        <file alias="folder-new">icons/tango/scalable/folder-new.svg</file>
     </qresource>
 </RCC>
