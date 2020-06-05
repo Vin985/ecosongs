@@ -1,19 +1,18 @@
 import os
 
 from PySide2.QtCore import QSortFilterProxyModel, Qt, QThread, Signal, Slot
-from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
 from gui.utils.dataframeTableModel import DataFrameTableModel
-from gui.widgets.dbmanager.QFileManager import QFileManager
-from gui.widgets.dbmanager.ui.fileimport_ui import Ui_FileImport
+from gui.widgets.dialogs.workers.file_manager_worker import FileManagerWorker
+from gui.widgets.dialogs.ui.file_import_wizard_ui import Ui_FileImportWizard
 
 # TODO: put files in config
 
 DEST_DIR = "wav"
 
 
-class FileImport(QWizard, Ui_FileImport):
+class FileImportWizard(QWizard, Ui_FileImportWizard):
     get_infos = Signal()
     import_files = Signal()
     list_files_convert = Signal()
@@ -23,7 +22,7 @@ class FileImport(QWizard, Ui_FileImport):
         # Initialize UI
         self.setupUi(self)
         self.init_ui()
-        self.file_manager = QFileManager()
+        self.file_manager = FileManagerWorker()
 
         self.init_thread()
         self.registerFields()
@@ -85,8 +84,8 @@ class FileImport(QWizard, Ui_FileImport):
     def display_move_options(self):
         self.move_options.setVisible(self.checkbox_move.isChecked())
 
-    def initializePage(self, id):
-        getattr(self, "initialize_page" + str(id), lambda: None)()
+    def initializePage(self, page_id):
+        getattr(self, "initialize_page" + str(page_id), lambda: None)()
 
     # TODO : Validate manual entries
 
