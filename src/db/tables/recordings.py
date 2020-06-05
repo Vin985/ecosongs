@@ -1,3 +1,5 @@
+import numpy as np
+
 from audio.recording import Recording
 from db.models import TableModel
 
@@ -8,6 +10,15 @@ class RecordingsTable(TableModel):
                "plot", "date", "path",
                "ext", "recorder", "duration", "sample_rate", "has_tags"]  # , "old_name"]
     DUPLICATE_COLUMNS = ["name", "plot", "site", "year"]
+    COLUMNS_TYPE = {"ext": "category",
+                    "plot": "category",
+                    "recorder": "category",
+                    "site": "category",
+                    "year": "category",
+                    "has_tags": "category",
+                    "sample_rate": "category",
+                    "id": np.int32,
+                    "duration": np.float32}
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS,
