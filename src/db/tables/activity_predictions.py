@@ -12,7 +12,7 @@ class ActivityPredictionsTable(TableModel):
     DUPLICATE_COLUMNS = ["recording_id"]
     COLUMNS_TYPE = {"activity": np.float32,
                     "time": np.float32,
-                    "recording_id": np.int32}
+                    "recording_id": "category"}
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
