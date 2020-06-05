@@ -3,16 +3,16 @@
 ################################################################################
 ## Form generated from reading UI file 'ecosongs.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.14.1
+## Created by: Qt User Interface Compiler version 5.15.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QMetaObject, QObject, QPoint,
-    QRect, QSize, QUrl, Qt)
+from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
+    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QLinearGradient, QPalette, QPainter, QPixmap,
-    QRadialGradient)
+    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
+    QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
 from gui.widgets.dbmanager.dbexplorer import DBExplorer
@@ -23,7 +23,7 @@ from  . import ecosongs_rc
 
 class Ui_Ecosongs(object):
     def setupUi(self, Ecosongs):
-        if Ecosongs.objectName():
+        if not Ecosongs.objectName():
             Ecosongs.setObjectName(u"Ecosongs")
         Ecosongs.resize(1057, 657)
         sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
@@ -39,18 +39,8 @@ class Ui_Ecosongs(object):
         self.aOpen.setObjectName(u"aOpen")
         self.aExit = QAction(Ecosongs)
         self.aExit.setObjectName(u"aExit")
-        self.aSave = QAction(Ecosongs)
-        self.aSave.setObjectName(u"aSave")
-        icon = QIcon()
-        icon.addFile(u":/tango/document-save", QSize(), QIcon.Normal, QIcon.Off)
-        self.aSave.setIcon(icon)
         self.wac2wav = QAction(Ecosongs)
         self.wac2wav.setObjectName(u"wac2wav")
-        self.aSetwd = QAction(Ecosongs)
-        self.aSetwd.setObjectName(u"aSetwd")
-        icon1 = QIcon()
-        icon1.addFile(u":/tango/document-open", QSize(), QIcon.Normal, QIcon.Off)
-        self.aSetwd.setIcon(icon1)
         self.aOpen_db = QAction(Ecosongs)
         self.aOpen_db.setObjectName(u"aOpen_db")
         self.aSave_db = QAction(Ecosongs)
@@ -68,6 +58,11 @@ class Ui_Ecosongs(object):
         self.aSpecScale = QAction(Ecosongs)
         self.aSpecScale.setObjectName(u"aSpecScale")
         self.aSpecScale.setCheckable(True)
+        self.action_import_files = QAction(Ecosongs)
+        self.action_import_files.setObjectName(u"action_import_files")
+        icon = QIcon()
+        icon.addFile(u":/tango/file-new", QSize(), QIcon.Normal, QIcon.Off)
+        self.action_import_files.setIcon(icon)
         self.centralwidget = QWidget(Ecosongs)
         self.centralwidget.setObjectName(u"centralwidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -134,29 +129,29 @@ class Ui_Ecosongs(object):
         self.horizontalLayout.addWidget(self.pages)
 
         self.sidebar = QListWidget(self.centralwidget)
-        icon2 = QIcon()
-        icon2.addFile(u":/tango/db-manager", QSize(), QIcon.Normal, QIcon.Off)
+        icon1 = QIcon()
+        icon1.addFile(u":/tango/db-manager", QSize(), QIcon.Normal, QIcon.Off)
         font = QFont()
         font.setBold(True)
         font.setWeight(75)
         __qlistwidgetitem = QListWidgetItem(self.sidebar)
         __qlistwidgetitem.setTextAlignment(Qt.AlignCenter);
         __qlistwidgetitem.setFont(font);
-        __qlistwidgetitem.setIcon(icon2);
+        __qlistwidgetitem.setIcon(icon1);
         __qlistwidgetitem.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled);
-        icon3 = QIcon()
-        icon3.addFile(u":/tango/audio", QSize(), QIcon.Normal, QIcon.Off)
+        icon2 = QIcon()
+        icon2.addFile(u":/tango/audio", QSize(), QIcon.Normal, QIcon.Off)
         __qlistwidgetitem1 = QListWidgetItem(self.sidebar)
         __qlistwidgetitem1.setTextAlignment(Qt.AlignCenter);
         __qlistwidgetitem1.setFont(font);
-        __qlistwidgetitem1.setIcon(icon3);
+        __qlistwidgetitem1.setIcon(icon2);
         __qlistwidgetitem1.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled);
-        icon4 = QIcon()
-        icon4.addFile(u":/tango/analysis", QSize(), QIcon.Normal, QIcon.Off)
+        icon3 = QIcon()
+        icon3.addFile(u":/tango/analysis", QSize(), QIcon.Normal, QIcon.Off)
         __qlistwidgetitem2 = QListWidgetItem(self.sidebar)
         __qlistwidgetitem2.setTextAlignment(Qt.AlignCenter);
         __qlistwidgetitem2.setFont(font);
-        __qlistwidgetitem2.setIcon(icon4);
+        __qlistwidgetitem2.setIcon(icon3);
         self.sidebar.setObjectName(u"sidebar")
         self.sidebar.setEnabled(True)
         sizePolicy.setHeightForWidth(self.sidebar.sizePolicy().hasHeightForWidth())
@@ -240,9 +235,7 @@ class Ui_Ecosongs(object):
         self.menubar.addAction(self.menu_recording.menuAction())
         self.menubar.addAction(self.menu_tools.menuAction())
         self.menubar.addAction(self.menu_help.menuAction())
-        self.menu_file.addAction(self.aSetwd)
         self.menu_file.addAction(self.aOpen)
-        self.menu_file.addAction(self.aSave)
         self.menu_file.addSeparator()
         self.menu_file.addAction(self.aOpen_db)
         self.menu_file.addAction(self.aSave_db)
@@ -259,13 +252,12 @@ class Ui_Ecosongs(object):
         self.menu_recording.addAction(self.action_2wav)
         self.menu_recording.addAction(self.action_details)
         self.menu_calculate.addAction(self.action_ACI)
-        self.toolBar.addAction(self.aSetwd)
-        self.toolBar.addAction(self.aSave)
+        self.toolBar.addAction(self.action_import_files)
         self.toolBar.addAction(self.aSpecScale)
 
         self.retranslateUi(Ecosongs)
 
-        self.pages.setCurrentIndex(1)
+        self.pages.setCurrentIndex(0)
         self.sidebar.setCurrentRow(1)
 
 
@@ -278,12 +270,7 @@ class Ui_Ecosongs(object):
         self.aHelp.setText(QCoreApplication.translate("Ecosongs", u"Help", None))
         self.aOpen.setText(QCoreApplication.translate("Ecosongs", u"Open File(s)", None))
         self.aExit.setText(QCoreApplication.translate("Ecosongs", u"Exit", None))
-        self.aSave.setText(QCoreApplication.translate("Ecosongs", u"Save", None))
-#if QT_CONFIG(shortcut)
-        self.aSave.setShortcut(QCoreApplication.translate("Ecosongs", u"Ctrl+S", None))
-#endif // QT_CONFIG(shortcut)
         self.wac2wav.setText(QCoreApplication.translate("Ecosongs", u"Convert WAC files", None))
-        self.aSetwd.setText(QCoreApplication.translate("Ecosongs", u"Choose working folder", None))
         self.aOpen_db.setText(QCoreApplication.translate("Ecosongs", u"Load database", None))
         self.aSave_db.setText(QCoreApplication.translate("Ecosongs", u"Save database", None))
         self.aExport_db.setText(QCoreApplication.translate("Ecosongs", u"Export database", None))
@@ -292,6 +279,10 @@ class Ui_Ecosongs(object):
         self.action_2wav.setText(QCoreApplication.translate("Ecosongs", u"Convert to wav", None))
         self.aSettings.setText(QCoreApplication.translate("Ecosongs", u"Settings", None))
         self.aSpecScale.setText(QCoreApplication.translate("Ecosongs", u"Select spectrogram scale", None))
+        self.action_import_files.setText(QCoreApplication.translate("Ecosongs", u"Import audio files", None))
+#if QT_CONFIG(tooltip)
+        self.action_import_files.setToolTip(QCoreApplication.translate("Ecosongs", u"Import audio files", None))
+#endif // QT_CONFIG(tooltip)
 
         __sortingEnabled = self.sidebar.isSortingEnabled()
         self.sidebar.setSortingEnabled(False)

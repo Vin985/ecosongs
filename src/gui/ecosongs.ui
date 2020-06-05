@@ -78,7 +78,7 @@ QListView::text:selected {
 }</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="DBExplorer" name="db_page">
        <property name="autoFillBackground">
@@ -257,16 +257,14 @@ QListView::text:selected {
      <x>0</x>
      <y>0</y>
      <width>1057</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="aSetwd"/>
     <addaction name="aOpen"/>
-    <addaction name="aSave"/>
     <addaction name="separator"/>
     <addaction name="aOpen_db"/>
     <addaction name="aSave_db"/>
@@ -326,8 +324,7 @@ QListView::text:selected {
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="aSetwd"/>
-   <addaction name="aSave"/>
+   <addaction name="action_import_files"/>
    <addaction name="aSpecScale"/>
   </widget>
   <action name="aAbout">
@@ -350,30 +347,9 @@ QListView::text:selected {
     <string>Exit</string>
    </property>
   </action>
-  <action name="aSave">
-   <property name="icon">
-    <iconset resource="resources/ecosongs.qrc">
-     <normaloff>:/tango/document-save</normaloff>:/tango/document-save</iconset>
-   </property>
-   <property name="text">
-    <string>Save</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
-  </action>
   <action name="wac2wav">
    <property name="text">
     <string>Convert WAC files</string>
-   </property>
-  </action>
-  <action name="aSetwd">
-   <property name="icon">
-    <iconset resource="resources/ecosongs.qrc">
-     <normaloff>:/tango/document-open</normaloff>:/tango/document-open</iconset>
-   </property>
-   <property name="text">
-    <string>Choose working folder</string>
    </property>
   </action>
   <action name="aOpen_db">
@@ -417,6 +393,18 @@ QListView::text:selected {
    </property>
    <property name="text">
     <string>Select spectrogram scale</string>
+   </property>
+  </action>
+  <action name="action_import_files">
+   <property name="icon">
+    <iconset resource="resources/ecosongs.qrc">
+     <normaloff>:/tango/file-new</normaloff>:/tango/file-new</iconset>
+   </property>
+   <property name="text">
+    <string>Import audio files</string>
+   </property>
+   <property name="toolTip">
+    <string>Import audio files</string>
    </property>
   </action>
  </widget>

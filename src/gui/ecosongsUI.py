@@ -1,13 +1,13 @@
 from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QApplication, QMainWindow
-
+from gui.widgets.dialogs.file_import_wizard import FileImportWizard
 from gui.ecosongs_ui import Ui_Ecosongs
-from gui.widgets.dialogs.settingsdialog import SettingsDialog
 
 
 class EcosongsUI(QMainWindow, Ui_Ecosongs):
     def __init__(self):
         super().__init__()
+        self.settingsDialog = None
         self.setupUi(self)
         self.loadConfig()
         self.linkEvents()
@@ -29,6 +29,7 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
     def linkActions(self):
         self.aExit.triggered.connect(self.exit)
         self.aSettings.triggered.connect(self.show_settings)
+        self.action_import_files.triggered.connect(self.show_import_dialog)
 
     def initProgressBar(self, maxValue):
         self.progressBar.setEnabled(True)
@@ -38,6 +39,7 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
     @Slot()
     def show_settings(self):
         print("show settings menu")
+        from gui.widgets.dialogs.settingsdialog import SettingsDialog
         self.settingsDialog = SettingsDialog()
         self.settingsDialog.show()
 
@@ -62,3 +64,8 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
     def refresh_page(self):
         # TODO: refresh current page if needed
         pass
+
+    def show_import_dialog(self):
+        self.file_import = FileImportWizard()
+        self.file_import.finished.connect(self.refresh_page)
+        self.file_import.show()
