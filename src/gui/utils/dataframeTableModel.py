@@ -2,7 +2,6 @@ from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 
 class DataFrameTableModel(QAbstractTableModel):
-    display_columns = ["name", "date", "filepath", "recorder"]
 
     def __init__(self, df=None, parent=None):
         super(DataFrameTableModel, self).__init__(parent)
