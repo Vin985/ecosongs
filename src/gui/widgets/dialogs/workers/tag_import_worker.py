@@ -2,7 +2,7 @@
 import files.tag_manager as tag_manager
 from gui.threads.thread_worker import ThreadWorker
 
-from PySide2.QtCore import qApp
+# from PySide2.QtCore import qApp
 
 
 class TagImportWorker(ThreadWorker):

@@ -2,7 +2,7 @@ import time
 
 import pandas as pd
 from PySide2.QtCore import Qt, QThread, Signal, Slot
-from PySide2.QtGui import qApp
+# from PySide2.QtGui import qApp
 from PySide2.QtWidgets import QDialog
 
 from gui.widgets.options.sensitivity_options import SensitivityOptions

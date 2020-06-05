@@ -3,7 +3,7 @@ import traceback
 from itertools import product
 
 import pandas as pd
-from PySide2.QtCore import Slot, qApp, Signal
+from PySide2.QtCore import Slot,  Signal
 
 from analysis.detection.detector_evaluation import (mp_get_stats,
                                                     mp_initialize_evaluator)

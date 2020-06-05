@@ -3,7 +3,7 @@ import pandas as pd
 import time
 import os
 
-from PySide2.QtCore import qApp, Slot
+from PySide2.QtCore import Slot
 
 import analysis.detection.song_detector as song_detector
 import analysis.indexes as indexes

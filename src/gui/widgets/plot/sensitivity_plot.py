@@ -1,4 +1,4 @@
-from PySide2.QtCore import Slot, qApp
+from PySide2.QtCore import Slot  # , qApp
 from PySide2.QtWidgets import QApplication, QWidget
 
 import pyqtgraph as pg

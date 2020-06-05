@@ -1,9 +1,4 @@
-import time
-
-import pandas as pd
-from PySide2.QtCore import Qt, QThread, Signal, Slot
-from PySide2.QtGui import qApp
-from PySide2.QtWidgets import QDialog
+from PySide2.QtCore import Signal
 
 from gui.widgets.options.tag_import_options import TagImportOptions
 from gui.widgets.dialogs.workers.tag_import_worker import TagImportWorker
