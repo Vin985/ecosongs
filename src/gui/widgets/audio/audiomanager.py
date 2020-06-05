@@ -1,24 +1,17 @@
 import os
+import resource
 import traceback
 
 import pandas as pd
 from PySide2.QtCore import Slot
-from PySide2.QtGui import qApp
-from PySide2.QtWidgets import QMenu, QMessageBox, QWidget
+from PySide2.QtWidgets import QMenu, QMessageBox
 
 import utils.commons as utils
-from analysis.indexes import ACI
 from audio.recording import Recording
 from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
-from gui.widgets.dialogs.acidialog import AciDialog
-from gui.widgets.dialogs.detector_dialog import DetectorDialog
-from gui.widgets.dialogs.tag_import_dialog import TagImportDialog
+from gui.widgets.common.page_widget import PageWidget
 from pysoundplayer.gui.settings import SoundPlayerSettings
-
-
-def get_ACI(rec):
-    return ACI(recording=rec)
 
 
 def update_path(path):
@@ -26,38 +19,29 @@ def update_path(path):
     return new
 
 
-class AudioManager(QWidget, Ui_AudioManager):
+class AudioManager(PageWidget, Ui_AudioManager):
 
     EVENT_DETECTION_METHODS = ["standard", "subsampling"]
 
     def __init__(self):
         super().__init__()
+        print('Audiomanager1: Memory usage: %s (kb)' %
+              resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         self.setupUi(self)
         self.current_recording = None
         self.song_classifier = None
         self.action_dialog = None
-
         self.settings = SoundPlayerSettings()
         self.share_settings()
-
-        self.init_tree()
         self.link_events()
-
-        # aci_table = TableModel(ACI.COLUMNS, df=pd.DataFrame(),
-        #                        dbmanager=qApp.dbmanager, table="ACI")
-        # aci_table = ACITable(dbmanager=qApp.dbmanager)
-        # print(aci_table.df)
-        # aci_table.save()
-
-        # recs = qApp.get_recordings()
-        # recs = recs[recs.site != "2018"]
-        # qApp.recordings.create(recs, save=True)
-        # recs["path"] = recs["path"].map(update_path)
-        # print(recs["path"])
-        # qApp.recordings.create(recs, save=True)
-        # aci_table.save()
-
+        self.init_tree()
         self.tree_view.setRootIsDecorated(True)
+
+    # def enter_page(self):
+        # self.init_tree()
+        # print('Audiomanager4: Memory usage: %s (kb)' %
+        #       resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        # self.tree_view.setRootIsDecorated(True)
 
     def share_settings(self):
         self.spectrogram_viewer.settings = self.settings
@@ -71,6 +55,7 @@ class AudioManager(QWidget, Ui_AudioManager):
         model = RecordingsTreeModel(self, recordings, categories=categories)
         self.tree_view.setModel(model)
         self.tree_view.expand(model.item(0, 0).index())
+        self.tree_view.selectionModel().selectionChanged.connect(self.tree_selection_changed)
         self.add_actions()
         self.show_folder_details()
 
@@ -79,8 +64,6 @@ class AudioManager(QWidget, Ui_AudioManager):
         self.tree_view.addAction(self.action_detect_songs)
 
     def link_events(self):
-        self.tree_view.selectionModel().selectionChanged.connect(self.tree_selection_changed)
-
         self.action_ACI.triggered.connect(self.compute_ACI)
         self.action_detect_songs.triggered.connect(self.detect_songs)
         self.action_delete.triggered.connect(self.show_delete_msg)
@@ -168,6 +151,7 @@ class AudioManager(QWidget, Ui_AudioManager):
     def compute_ACI(self):
         # Get list of all selected recordings
         recs = self.get_selected_recordings()
+        from gui.widgets.dialogs.acidialog import AciDialog
         self.action_dialog = AciDialog(recs, parent=self)
         self.action_dialog.show()
 
@@ -178,6 +162,7 @@ class AudioManager(QWidget, Ui_AudioManager):
     @Slot()
     def detect_songs(self, export_pdf=False):
         recs = self.get_selected_recordings()
+        from gui.widgets.dialogs.detector_dialog import DetectorDialog
         self.action_dialog = DetectorDialog(recs, export_pdf, parent=self)
         self.action_dialog.setModal(True)
         self.action_dialog.show()
@@ -238,6 +223,7 @@ class AudioManager(QWidget, Ui_AudioManager):
     def check_labels(self):
         print("Importing labels...")
         recs = self.get_selected_recordings(type="table")
+        from gui.widgets.dialogs.tag_import_dialog import TagImportDialog
         self.action_dialog = TagImportDialog(recs, parent=self)
         self.action_dialog.setModal(True)
         self.action_dialog.show()
@@ -324,15 +310,9 @@ class AudioManager(QWidget, Ui_AudioManager):
     def show_recording_details(self, file_info):
         # TODO: setting to enable/disable display on each selection change
         # TODO: improve performance to avoid reloading everything.
-        # TODO: add generators to qApp?
         self.current_recording = Recording(file_info)
         self.show_recording_info(["id", "name", "path", "year"])
         self.load_file(self.current_recording.path)
-        # self.draw_events()
-        # self.update_spectrogram()
-        # self.update_spectrogram2()
-        # self.time_slider.setMaximum(self.current_recording.duration)
-        # self.update_duration_lbl()
 
     def load_file(self, path):
         if os.path.exists(path):
@@ -344,5 +324,3 @@ class AudioManager(QWidget, Ui_AudioManager):
 
     def folder_query(self, folder_info):
         return ' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])
-
-    # Scene utils
