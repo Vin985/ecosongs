@@ -11,25 +11,49 @@ class FolderItem(QStandardItem):
 
 
 class RecordingsTreeModel(QStandardItemModel):
-    def __init__(self, parent, recordings, categories=["site", "plot", "year"]):
+    FOLDER_ICON_PATH = ":/tango/folder"
+    AUDIO_ICON_PATH = ":/tango/audio"
+
+    TYPE_FOLDER = "folder"
+    TYPE_AUDIO = "audio"
+
+    DEFAULT_CATEGORIES = ["site", "plot", "year"]
+
+    def __init__(self, parent, recordings, categories=None):
         super().__init__(1, 0, parent)
-        self.categories = categories
+        self.df = recordings
+        categories = categories or self.DEFAULT_CATEGORIES
         self.clear()
+        self.icons = self.create_icons()
         root = FolderItem("Audio")
         self.appendRow(root)
+        recordings = recordings.sort_values(categories + ["date"])
         self.create_model(categories, recordings, parent=root)
         # self.insertColumn(1)
 
-    def create_model(self, categories, recordings, path={}, parent=None):
+    def create_icons(self):
+        folder_icon = QIcon()
+        folder_icon.addPixmap(
+            QPixmap(self.FOLDER_ICON_PATH), QIcon.Normal, QIcon.Off)
+
+        audio_icon = QIcon()
+        audio_icon.addPixmap(QPixmap(self.AUDIO_ICON_PATH),
+                             QIcon.Normal, QIcon.Off)
+        icons = {"folder": folder_icon,
+                 "audio": audio_icon
+                 }
+        return icons
+
+    def create_model(self, categories, recordings, path=None, parent=None):
+        path = path or {}
         if not recordings.empty:
-            recordings = recordings.sort_values(categories + ["date"])
             category = categories[0]
-            groups = recordings.groupby(category, sort=False)
+            groups = recordings.groupby(category, sort=False, observed=True)
             for (entry, recs) in groups:
                 # Create path to the folder in a dict
                 path[category] = entry
                 # item is a folder. add path to it
-                item = self.create_item(entry, path, folder=True)
+                item = self.create_item(entry, self.TYPE_FOLDER, path)
                 if len(categories) > 1:
                     self.create_model(categories[1:], recs, path.copy(), item)
                 else:
@@ -41,21 +65,17 @@ class RecordingsTreeModel(QStandardItemModel):
                 else:
                     self.appendRow(item)
 
-    def create_item(self, name, path=None, folder=False):
-        if folder:
+    def create_item(self, name, item_type, path=None):
+        if item_type == self.TYPE_FOLDER:
             item = FolderItem(name)
-            icon_path = ":/tango/folder"
         else:
             item = RecordingItem(name)
-            icon_path = ":/tango/audio"
         item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         # If item is a folder, set path as Data
         if path:
             item.setData(path)
         # set item icon
-        icon = QIcon()
-        icon.addPixmap(QPixmap(icon_path), QIcon.Normal, QIcon.Off)
-        item.setIcon(icon)
+        item.setIcon(self.icons[item_type])
         return item
 
     def add_recordings(self, recordings, parent):
@@ -63,7 +83,7 @@ class RecordingsTreeModel(QStandardItemModel):
             self.add_recording(row, parent)
 
     def add_recording(self, recording, parent):
-        item = self.create_item(recording.name)
+        item = self.create_item(recording.name, self.TYPE_AUDIO)
         # set whole line as data
         item.setData(recording._asdict())
         # if we want to add another column in tree
