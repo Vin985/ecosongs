@@ -12,6 +12,8 @@ class ExportTableWorker(ThreadWorker):
 
     def perform_task(self):
         print("Exporting table: ", self.table)
+        table = qApp.tables.get_table(self.table)
+        table.export_table(self.options["task_options"])
         # self.options["save"] = True
         # self.results = tag_manager.load_tags(
         #     self.recordings, self.options["task_options"])

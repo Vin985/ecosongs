@@ -9,5 +9,5 @@ class ExportTableDialog(ProgressDialog):
     def __init__(self, table, parent=None):
         super().__init__(parent)
         self.worker = ExportTableWorker(table)
-        self.init_options_widget(ExportTableOptions(self))
+        self.init_options_widget(ExportTableOptions(self, table))
         self.link_events()
