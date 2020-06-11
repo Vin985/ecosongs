@@ -42,9 +42,10 @@ class TableManager:
         return self.__getattribute__(name)
 
     def get_table(self, name, *args, **kwargs):
-        cls = self.get_class(name)
-        instance = cls(*args, dbmanager=self._dbmanager, **kwargs)
-        return instance
+        return getattr(self, name)
+        # cls = self.get_class(name)
+        # instance = cls(*args, dbmanager=self._dbmanager, **kwargs)
+        # return instance
 
     def list_tables(self):
         module_path = os.path.join(*self.TABLE_MODULE.split("."))
