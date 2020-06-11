@@ -208,6 +208,7 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
         if self.file_manager.file_infos.empty:
             self.table_files.setEnabled(False)
         else:
+            self.table_files.setEnabled(True)
             model = self.file_manager.file_infos
             # TODO: date format in config/options
             model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
