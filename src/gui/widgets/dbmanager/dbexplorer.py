@@ -46,7 +46,7 @@ class DBExplorer(PageWidget, Ui_DBExplorer):
             self.action_dialog.show()
 
     def display_table(self, index):
-        model = []
+        model = None
         text = ""
         if index:
             if not self.btn_export.isEnabled():
