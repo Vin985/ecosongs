@@ -1,3 +1,4 @@
+import pandas as pd
 from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 
@@ -7,7 +8,7 @@ class DataFrameTableModel(QAbstractTableModel):
         super(DataFrameTableModel, self).__init__(parent)
 
         if df is None:
-            self.df = []
+            self.df = pd.DataFrame()
         else:
             self.df = df
 
