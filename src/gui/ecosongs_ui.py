@@ -81,40 +81,6 @@ class Ui_Ecosongs(object):
         sizePolicy2.setHeightForWidth(self.pages.sizePolicy().hasHeightForWidth())
         self.pages.setSizePolicy(sizePolicy2)
         self.pages.setAutoFillBackground(False)
-        self.pages.setStyleSheet(u"QListView{\n"
-"  	show-decoration-selected: 1; \n"
-"	outline:none;\n"
-"}\n"
-"QListView::item {\n"
-"	border: 1 outset rgb(136, 138, 133);\n"
-"	border-radius: 2;\n"
-"	background-color: rgb(238, 238, 236);\n"
-"	padding: 5 5 5 5;\n"
-"	margin:0 2 2 2;\n"
-"	width:75;\n"
-"/*background-color:blue;*/\n"
-"}\n"
-"\n"
-"\n"
-"QListView::item:selected:!active {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                stop: 0 #ABAFE5, stop: 1 #8588B2);\n"
-"}\n"
-"\n"
-"QListView::item:selected:active {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
-"	selection-background-color: green;\n"
-"}\n"
-"\n"
-"QListView::item:hover {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);\n"
-"}\n"
-"\n"
-"QListView::text:selected {\n"
-"    border:none;\n"
-"}")
         self.db_page = DBExplorer()
         self.db_page.setObjectName(u"db_page")
         self.db_page.setAutoFillBackground(True)
@@ -159,11 +125,11 @@ class Ui_Ecosongs(object):
         self.sidebar.setMaximumSize(QSize(93, 16777215))
         self.sidebar.setFont(font)
         self.sidebar.setAutoFillBackground(False)
-        self.sidebar.setStyleSheet(u"QListView{\n"
+        self.sidebar.setStyleSheet(u"#sidebar{\n"
 "  	show-decoration-selected: 1; \n"
 "	outline:none;\n"
 "}\n"
-"QListView::item {\n"
+"#sidebar::item {\n"
 "	border: 1 outset rgb(136, 138, 133);\n"
 "	border-radius: 2;\n"
 "	background-color: rgb(238, 238, 236);\n"
@@ -174,23 +140,23 @@ class Ui_Ecosongs(object):
 "}\n"
 "\n"
 "\n"
-"QListView::item:selected:!active {\n"
+"#sidebar::item:selected:!active {\n"
 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "                                stop: 0 #ABAFE5, stop: 1 #8588B2);\n"
 "}\n"
 "\n"
-"QListView::item:selected:active {\n"
+"#sidebar::item:selected:active {\n"
 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
 "	selection-background-color: green;\n"
 "}\n"
 "\n"
-"QListView::item:hover {\n"
+"#sidebar::item:hover {\n"
 "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);\n"
 "}\n"
 "\n"
-"QListView::text:selected {\n"
+"#sidebar::text:selected {\n"
 "    border:none;\n"
 "}")
         self.sidebar.setFrameShape(QFrame.NoFrame)
@@ -257,7 +223,7 @@ class Ui_Ecosongs(object):
 
         self.retranslateUi(Ecosongs)
 
-        self.pages.setCurrentIndex(0)
+        self.pages.setCurrentIndex(1)
         self.sidebar.setCurrentRow(1)
 
 

@@ -41,42 +41,6 @@
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
-      <property name="styleSheet">
-       <string notr="true">QListView{
-  	show-decoration-selected: 1; 
-	outline:none;
-}
-QListView::item {
-	border: 1 outset rgb(136, 138, 133);
-	border-radius: 2;
-	background-color: rgb(238, 238, 236);
-	padding: 5 5 5 5;
-	margin:0 2 2 2;
-	width:75;
-/*background-color:blue;*/
-}
-
-
-QListView::item:selected:!active {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #ABAFE5, stop: 1 #8588B2);
-}
-
-QListView::item:selected:active {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #6a6ea9, stop: 1 #888dd9);
-	selection-background-color: green;
-}
-
-QListView::item:hover {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #FAFBFE, stop: 1 #DCDEF1);
-}
-
-QListView::text:selected {
-    border:none;
-}</string>
-      </property>
       <property name="currentIndex">
        <number>1</number>
       </property>
@@ -116,11 +80,11 @@ QListView::text:selected {
        <bool>false</bool>
       </property>
       <property name="styleSheet">
-       <string notr="true">QListView{
+       <string notr="true">#sidebar{
   	show-decoration-selected: 1; 
 	outline:none;
 }
-QListView::item {
+#sidebar::item {
 	border: 1 outset rgb(136, 138, 133);
 	border-radius: 2;
 	background-color: rgb(238, 238, 236);
@@ -131,23 +95,23 @@ QListView::item {
 }
 
 
-QListView::item:selected:!active {
+#sidebar::item:selected:!active {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 #ABAFE5, stop: 1 #8588B2);
 }
 
-QListView::item:selected:active {
+#sidebar::item:selected:active {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 #6a6ea9, stop: 1 #888dd9);
 	selection-background-color: green;
 }
 
-QListView::item:hover {
+#sidebar::item:hover {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 #FAFBFE, stop: 1 #DCDEF1);
 }
 
-QListView::text:selected {
+#sidebar::text:selected {
     border:none;
 }</string>
       </property>
