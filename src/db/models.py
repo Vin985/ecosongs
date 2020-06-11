@@ -166,8 +166,9 @@ class TableModel():
         rows.reset_index(inplace=True, drop=True)
         return rows
 
-    def export_table(self, options):
-        pass
+    def export_table(self, options, table=None):
+        to_export = table or self.df
+        self.dbmanager.export_table(to_export, options["dest"])
 
     def import_table(self):
         pass
