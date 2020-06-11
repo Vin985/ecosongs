@@ -13,6 +13,7 @@ class ActivityPredictionsTable(TableModel):
     COLUMNS_TYPE = {"activity": np.float32,
                     "time": np.float32,
                     "recording_id": "category"}
+    REFERS_TO = {"recordings": "recording_id"}
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)

@@ -19,6 +19,7 @@ class RecordingsTable(TableModel):
                     "sample_rate": "category",
                     "id": np.int32,
                     "duration": np.float32}
+    REFERRED_BY = ["activity_predictions"]
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS,
@@ -69,3 +70,6 @@ class RecordingsTable(TableModel):
 
     def get_recordings_by_path(self, paths, df=True):
         return self.get_recordings_by_column("path", paths, df)
+
+    # def export_table(self, options, table=None):
+    #     super().export_table(options, table)

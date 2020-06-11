@@ -35,6 +35,8 @@ class TableModel():
     COMMON_COLUMNS = ["id"]
     DUPLICATE_COLUMNS = []
     COLUMNS_TYPE = {}
+    REFERS_TO = {}
+    REFERRED_BY = []
 
     def __init__(self, columns, df=None, dbmanager=None, table=None):
         # TODO: Change to externalize dbmanager
@@ -79,11 +81,7 @@ class TableModel():
     def check_types(self):
         if self.COLUMNS_TYPE:
             for k, v in self.COLUMNS_TYPE.items():
-                print(k)
-                print(v)
                 self._df[k] = self._df[k].astype(v)
-        print(self._df.dtypes)
-        print(self._df.memory_usage())
 
     def save(self, update=False):
         self.check_types()
@@ -139,13 +137,13 @@ class TableModel():
         return data.loc[~data[columns].isin(dict_values).all(axis=1)]
 
     def delete(self, rows, columns=None, save=False):
-        print(self.df)
         if not columns:
             new = self.df.drop(rows)
         else:
             new = self.remove_rows(self.df, columns, rows)
-        self.update(table=new, save=save)
-        print(self.df)
+        if new.shape[0] != self.df.shape[0]:
+            self.update(table=new, save=save)
+            print(self.df)
 
     def add(self, new, save=False, replace=True):
         dest = self.df
