@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class DBManager(ABC):
+    SAVE_EXTENSION = ""
+
     def __init__(self):
         pass
 
@@ -14,6 +16,14 @@ class DBManager(ABC):
             "Function not implemented for this DB manager")
 
     def delete(self, table, data):
+        raise NotImplementedError(
+            "Function not implemented for this DB manager")
+
+    def export_table(self, data, dest_path):
+        raise NotImplementedError(
+            "Function not implemented for this DB manager")
+
+    def import_table(self, src_path):
         raise NotImplementedError(
             "Function not implemented for this DB manager")
 
