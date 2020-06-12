@@ -22,7 +22,9 @@ class Ui_FileChooser(object):
             FileChooser.setObjectName(u"FileChooser")
         FileChooser.resize(492, 59)
         self.horizontalLayout = QHBoxLayout(FileChooser)
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.input_path = QLineEdit(FileChooser)
         self.input_path.setObjectName(u"input_path")
 
