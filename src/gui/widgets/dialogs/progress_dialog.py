@@ -61,7 +61,7 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
                 self.results_saved, type=Qt.BlockingQueuedConnection)
             self.worker.done.connect(
                 self.task_done, type=Qt.BlockingQueuedConnection)
-            self.worker.error.connect(self.log)
+            self.worker.error.connect(self.log_error)
 
     def init_thread(self):
         self.worker.moveToThread(self.worker_thread)
@@ -114,7 +114,12 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
     @Slot()
     def log(self, text=None):
         text = text or self.log_message
-        self.lbl_progress.setText(text)
+        self.lbl_message.setText(text)
+
+    @Slot()
+    def log_error(self, text=None):
+        text = text or self.log_message
+        self.lbl_error.setText(text)
 
     @Slot()
     def task_done(self):
