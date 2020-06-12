@@ -165,7 +165,7 @@ class TableModel():
         return rows
 
     def export_table(self, options, table=None):
-        to_export = table or self.df
+        to_export = table if table is not None else self.df
         self.dbmanager.export_table(to_export, options["dest"])
 
     def import_table(self):

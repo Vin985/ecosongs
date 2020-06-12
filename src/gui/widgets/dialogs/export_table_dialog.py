@@ -6,8 +6,9 @@ from gui.widgets.dialogs.progress_dialog import ProgressDialog
 
 class ExportTableDialog(ProgressDialog):
 
-    def __init__(self, table, parent=None):
+    def __init__(self, table_name, table_data=None, parent=None):
         super().__init__(parent)
-        self.worker = ExportTableWorker(table)
-        self.init_options_widget(ExportTableOptions(self, table))
+        self.worker = ExportTableWorker(table_name, table_data)
+        self.init_options_widget(
+            ExportTableOptions(self, table_name))
         self.link_events()

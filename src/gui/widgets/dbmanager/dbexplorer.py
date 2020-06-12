@@ -39,9 +39,11 @@ class DBExplorer(PageWidget, Ui_DBExplorer):
         # TODO use dbmanager instead
         index = self.combo_table.currentIndex()
         if index:
-            table = self.combo_table.itemData(index)
+            table_name = self.combo_table.itemData(index)
+            table_data = qApp.tables.get_table(table_name).df
             from gui.widgets.dialogs.export_table_dialog import ExportTableDialog
-            self.action_dialog = ExportTableDialog(table, parent=self)
+            self.action_dialog = ExportTableDialog(
+                table_name, table_data, parent=self)
             self.action_dialog.setModal(True)
             self.action_dialog.show()
 
