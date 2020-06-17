@@ -1,13 +1,20 @@
 
+# import sys
+# from PySide2.QtWidgets import QApplication
+
 import os
 
-from PySide2.QtWidgets import QWidget, QFileDialog
+from PySide2.QtCore import Signal
+from PySide2.QtWidgets import QFileDialog, QWidget
 
 from gui.widgets.common.ui.file_chooser_ui import Ui_FileChooser
-# from ui.file_chooser_ui import Ui_FileChooser
+
+#from ui.file_chooser_ui import Ui_FileChooser
 
 
 class FileChooser(QWidget, Ui_FileChooser):
+
+    text_changed = Signal(str)
 
     def __init__(self, options=None, parent=None):
         super().__init__(parent=parent)
@@ -17,6 +24,7 @@ class FileChooser(QWidget, Ui_FileChooser):
 
     def link_events(self):
         self.btn_browse.clicked.connect(self.browse)
+        self.input_path.textChanged.connect(self.text_changed.emit)
 
     def init_display(self):
         self.input_path.setText(self.options.get("default", ""))
@@ -44,6 +52,13 @@ class FileChooser(QWidget, Ui_FileChooser):
             self, "Choose files", default, file_filter)
         text = "; ".join(files)
         return text
+
+    def choose_file(self):
+        default = self.input_path.text() or os.getcwd()
+        file_filter = self.options.get("file_filter", "")
+        (file_name, _) = QFileDialog.getOpenFileName(
+            self, "Choose file", default, file_filter)
+        return file_name
 
     def choose_save_file(self):
         default = self.input_path.text() or os.getcwd()
