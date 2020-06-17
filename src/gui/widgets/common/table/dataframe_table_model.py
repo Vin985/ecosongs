@@ -1,39 +1,32 @@
+import pandas as pd
 from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 
-class RecordingsTableModel(QAbstractTableModel):
-    display_columns = ["name", "date", "filepath", "type"]
+class DataFrameTableModel(QAbstractTableModel):
 
-    def __init__(self, recordings=None, parent=None):
-        super(RecordingsTableModel, self).__init__(parent)
+    def __init__(self, df=None, parent=None):
+        super(DataFrameTableModel, self).__init__(parent)
 
-        if recordings is None:
-            self.recordings = []
+        if df is None:
+            self.df = pd.DataFrame()
         else:
-            self.recordings = recordings
+            self.df = df
 
     def rowCount(self, index=QModelIndex()):
         """ Returns the number of rows the model holds. """
-        return len(self.recordings)
+        return self.df.shape[0]
 
     def columnCount(self, index=QModelIndex()):
         """ Returns the number of columns the model holds. """
-        return (len(self.display_columns))
+        return self.df.shape[1]
 
     def data(self, index, role=Qt.DisplayRole):
         """ Depending on the index and role given, return data. If not
             returning data, return None (PySide equivalent of QT's
             "invalid QVariant").
         """
-        if not index.isValid():
-            return None
-
-        if not 0 <= index.row() < len(self.recordings):
-            return None
-
-        if role == Qt.DisplayRole:
-            recording = self.recordings[index.row()]
-            return(getattr(recording, self.display_columns[index.column()]))
+        if index.isValid() and 0 <= index.row() < self.df.shape[0] and role == Qt.DisplayRole:
+            return(str(self.df.iloc[index.row(), index.column()]))
 
         return None
 
@@ -42,18 +35,21 @@ class RecordingsTableModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return None
 
-        if not len(self.recordings):
+        if not self.df.shape[0]:
             return None
 
-        return(self.display_columns[section])
+        if orientation == Qt.Orientation.Horizontal:
+            return self.df.columns.values[section]
+        else:
+            return self.df.index[section]
 
-        if orientation == Qt.Horizontal:
-            if section == 0:
-                return "Name"
-            elif section == 1:
-                return "Type"
-
-        return None
+    def sort(self, column, order):
+        print("sorting")
+        self.layoutAboutToBeChanged.emit()
+        col = self.df.columns[column]
+        ascending = bool(order == Qt.AscendingOrder)
+        self.df.sort_values(by=col, ascending=ascending, inplace=True)
+        self.layoutChanged.emit()
 
     # def insertRows(self, position, rows=1, index=QModelIndex()):
     #     """ Insert a row into the model. """
