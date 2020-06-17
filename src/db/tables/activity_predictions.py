@@ -8,19 +8,26 @@ from db.models import TableModel
 
 class ActivityPredictionsTable(TableModel):
     TABLE_NAME = "activity_predictions"
+    COMMON_COLUMNS = []
     COLUMNS = ["recording_id", "time", "activity"]
     DUPLICATE_COLUMNS = ["recording_id"]
-    COLUMNS_TYPE = {"activity": np.float32,
-                    "time": np.float32,
-                    "recording_id": "category"}
-    REFERS_TO = {"recordings": {"on": "recording_id:id",
-                                "for_import": ["name", "year", "plot", "site"]}}
+    COLUMNS_TYPE = {
+        "activity": np.float32,
+        "time": np.float32,
+        "recording_id": "category",
+    }
+    REFERS_TO = {
+        "recordings": {
+            "on": "recording_id:id",
+            "for_import": ["name", "year", "plot", "site"],
+        }
+    }
 
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
         self.detectors = {
             "standard": StandardDetector(),
-            "subsampling": SubsamplingDetector()
+            "subsampling": SubsamplingDetector(),
         }
 
     def check_ids(self, table):
@@ -45,8 +52,10 @@ class ActivityPredictionsTable(TableModel):
             print("Recording_ids should be a list")
             return
 
-        tmp = [self.get_events_by_id(recording_id, event_options)
-               for recording_id in recording_ids]
+        tmp = [
+            self.get_events_by_id(recording_id, event_options)
+            for recording_id in recording_ids
+        ]
         res = pd.concat(tmp)
         return res
 
