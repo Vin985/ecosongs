@@ -3,8 +3,6 @@ import logging
 
 from PySide2.QtCore import QSettings
 
-import utils.commons as utils
-
 
 class Settings(QSettings):
     # def __init__(self):
