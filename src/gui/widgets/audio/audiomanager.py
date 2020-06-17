@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QMenu, QMessageBox
 
 import utils.commons as utils
 from audio.recording import Recording
-from gui.utils.tree.recordingsTreeModel import RecordingsTreeModel
+from gui.widgets.common.tree.recordings_tree_model import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from gui.widgets.common.page_widget import PageWidget
 from pysoundplayer.gui.settings import SoundPlayerSettings
@@ -222,7 +222,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
     @Slot()
     def check_labels(self):
         print("Importing labels...")
-        recs = self.get_selected_recordings(type="table")
+        recs = self.get_selected_recordings(selection_type="table")
         from gui.widgets.dialogs.tag_import_dialog import TagImportDialog
         self.action_dialog = TagImportDialog(recs, parent=self)
         self.action_dialog.setModal(True)
@@ -230,7 +230,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
 
     def delete_recordings(self):
         print("deleting...")
-        recs = self.get_selected_recordings(type="index")
+        recs = self.get_selected_recordings(selection_type="index")
         idxs = self.tree_view.selectedIndexes()
         idx = idxs[0]
         self.tree_view.clearSelection()
@@ -243,7 +243,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
             values_dict, columns=["recording_id"], save=True)
         # TODO : delete other dependencies
 
-    def get_selected_recordings(self, type=None):
+    def get_selected_recordings(self, selection_type=None):
         res = None
         sel_recs = []
         sel_folders = []
@@ -265,9 +265,9 @@ class AudioManager(PageWidget, Ui_AudioManager):
         # Get one list of unique selected files
         res = pd.concat(tmp).drop_duplicates()
         # Load files if not already in memory
-        if type == "index":
+        if selection_type == "index":
             return res.index.values
-        elif type == "table":
+        elif selection_type == "table":
             return res
         else:
             return qApp.load_recordings(res.index.values)
@@ -304,7 +304,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
                 label = getattr(self, "lbl_" + info)
                 value = getattr(self.current_recording, info)
                 label.setText(str(value))
-            except AttributeError as err:
+            except AttributeError:
                 print(traceback.format_exc())
 
     def show_recording_details(self, file_info):
