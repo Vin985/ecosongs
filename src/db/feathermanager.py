@@ -13,10 +13,12 @@ class FeatherManager(DBManager):
         super().__init__()
         self.db_root = path + "/feather/"
 
-    def get_table(self, table):
-        data = feather.read_dataframe(
-            self.db_root + table + self.FILE_EXTENSION)
-        #data.set_index("id", drop=False, inplace=True)
+    def get_table(self, table=None, path=None):
+        if path is None and table is None:
+            raise AttributeError("Please provide either table name or path to table")
+        if path is None:
+            path = self.db_root + table + self.FILE_EXTENSION
+        data = feather.read_dataframe(path)
         return data
 
     def save(self, table, data):
@@ -39,3 +41,4 @@ class FeatherManager(DBManager):
             dest_path.parent.mkdir(parents=True)
         data.reset_index(inplace=True, drop=True)
         data.to_feather(dest_path)
+    

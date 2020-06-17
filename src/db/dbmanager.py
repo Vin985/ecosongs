@@ -28,5 +28,5 @@ class DBManager(ABC):
             "Function not implemented for this DB manager")
 
     @abstractmethod
-    def get_table(self, table):
+    def get_table(self, table=None, path=None):
         pass
