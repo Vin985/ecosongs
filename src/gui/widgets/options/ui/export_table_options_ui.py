@@ -23,7 +23,8 @@ class Ui_ExportTableOptions(object):
     def setupUi(self, ExportTableOptions):
         if not ExportTableOptions.objectName():
             ExportTableOptions.setObjectName(u"ExportTableOptions")
-        ExportTableOptions.resize(582, 514)
+        ExportTableOptions.resize(550, 500)
+        ExportTableOptions.setMinimumSize(QSize(550, 500))
         self.gridLayout = QGridLayout(ExportTableOptions)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setVerticalSpacing(8)
