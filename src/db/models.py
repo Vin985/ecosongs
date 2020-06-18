@@ -11,13 +11,17 @@ class BaseModel:
                 if len(from_collection) == len(self.COLUMNS):
                     from_collection = dict(zip(self.COLUMNS, from_collection))
                 else:
-                    message = ("The provided list has an unexpected length. "
-                               "{0} elements found when {1} were expected. "
-                               "The {2!s} class expects "
-                               "the following elements {3!s}".format(len(from_collection),
-                                                                     len(self.COLUMNS),
-                                                                     self.__class__,
-                                                                     self.COLUMNS))
+                    message = (
+                        "The provided list has an unexpected length. "
+                        "{0} elements found when {1} were expected. "
+                        "The {2!s} class expects "
+                        "the following elements {3!s}".format(
+                            len(from_collection),
+                            len(self.COLUMNS),
+                            self.__class__,
+                            self.COLUMNS,
+                        )
+                    )
                     raise ValueError(message)
             self.attrs_from_collection(from_collection)
 
@@ -30,7 +34,7 @@ class BaseModel:
         return {key: getattr(self, key) for key in self.COLUMNS}
 
 
-class TableModel():
+class TableModel:
     TABLE_NAME = ""
     COMMON_COLUMNS = ["id"]
     DUPLICATE_COLUMNS = []
@@ -70,11 +74,9 @@ class TableModel():
     def get_table(self, **kwargs):
         df = pd.DataFrame()
         if not self.dbmanager:
-            raise AttributeError(
-                "No database manager provided. Cannot load data")
+            raise AttributeError("No database manager provided. Cannot load data")
         if not self.TABLE_NAME:
-            raise AttributeError(
-                "No table name provided. Cannot load data")
+            raise AttributeError("No table name provided. Cannot load data")
         df = self.dbmanager.get_table(**kwargs)
         return df
 
@@ -85,8 +87,8 @@ class TableModel():
         else:
             self.dbmanager.save(self.TABLE_NAME, self._df)
 
-    def update(self, table, save=False, **kwargs):
-        self.update_table(table, **kwargs)
+    def update(self, table, save=False):
+        self.update_table(table)
         if save:
             self.save(update=True)
 
@@ -107,7 +109,8 @@ class TableModel():
     def check_ids(self, table):
         if "id" not in table.columns:
             table.loc[:, "id"] = list(
-                range(self.next_id, self.next_id + table.shape[0]))
+                range(self.next_id, self.next_id + table.shape[0])
+            )
         if not table.empty:
             self.next_id = max(table["id"]) + 1
         return table
@@ -124,14 +127,16 @@ class TableModel():
         df = self.check_ids(df)
         if not all(item in df.columns for item in self.columns):
             raise ValueError(
-                "Not all required columns are present in the loaded table. Please make sure the" +
-                " loaded table is the correct one. Required columns are {0}. Only found {1}."
-                .format(self.columns, df.columns))
+                "Not all required columns are present in the loaded table. Please make sure the"
+                + " loaded table is the correct one. Required columns are {0}. Only found {1}.".format(
+                    self.columns, df.columns
+                )
+            )
         self.check_types(df)
         return df
 
     def get_duplicates_dict(self, df):
-        return df[self.DUPLICATE_COLUMNS].to_dict(orient='list')
+        return df[self.DUPLICATE_COLUMNS].drop_duplicates().to_dict(orient="list")
 
     def remove_duplicates(self, remove_in, remove_from):
         # print("removing duplicates")
@@ -142,8 +147,7 @@ class TableModel():
         duplicates_dict = self.get_duplicates_dict(remove_from)
         # res = remove_in[~remove_in[self.DUPLICATE_COLUMNS].isin(
         #     duplicates_dict).all(axis=1)]
-        res = self.remove_rows(
-            remove_in, self.DUPLICATE_COLUMNS, duplicates_dict)
+        res = self.remove_rows(remove_in, self.DUPLICATE_COLUMNS, duplicates_dict)
         return res.copy()
 
     def remove_rows(self, data, columns, dict_values):
@@ -168,8 +172,7 @@ class TableModel():
             new = self.remove_duplicates(new, self.df)
         new = self.check_ids(new)
         if not new.empty:
-            self.update(table=dest.append(new, ignore_index=True, sort=True),
-                        save=save)
+            self.update(table=dest.append(new, ignore_index=True, sort=True), save=save)
         return new
 
     def get_rows_by_column(self, column, values):

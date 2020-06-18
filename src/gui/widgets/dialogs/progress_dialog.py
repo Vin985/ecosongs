@@ -46,24 +46,24 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
         self.btn_close.clicked.connect(self.close_dialog)
 
         if self.worker:
-            self.launch_task.connect(
-                self.worker.start_task, type=Qt.QueuedConnection)
+            self.launch_task.connect(self.worker.start_task, type=Qt.QueuedConnection)
             self.worker.computing.connect(
-                self.computing, type=Qt.BlockingQueuedConnection)
-            self.worker.progressed.connect(self.update_progress,
-                                           type=Qt.BlockingQueuedConnection)
+                self.computing, type=Qt.BlockingQueuedConnection
+            )
+            self.worker.progressed.connect(
+                self.update_progress, type=Qt.BlockingQueuedConnection
+            )
 
-            self.worker.logging.connect(
-                self.log, type=Qt.BlockingQueuedConnection)
-            self.cancelling.connect(
-                self.worker.cancel_tasks, type=Qt.DirectConnection)
+            self.worker.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
+            self.cancelling.connect(self.worker.cancel_tasks, type=Qt.DirectConnection)
 
             self.worker.computing_done.connect(
-                self.computing_done, type=Qt.BlockingQueuedConnection)
+                self.computing_done, type=Qt.BlockingQueuedConnection
+            )
             self.worker.results_saved.connect(
-                self.results_saved, type=Qt.BlockingQueuedConnection)
-            self.worker.done.connect(
-                self.task_done, type=Qt.BlockingQueuedConnection)
+                self.results_saved, type=Qt.BlockingQueuedConnection
+            )
+            self.worker.done.connect(self.task_done, type=Qt.BlockingQueuedConnection)
             self.worker.error.connect(self.log_error)
 
     def init_thread(self):
@@ -100,12 +100,12 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
 
     def computing_done(self):
         self.update_progress(100)
-        self.duration = (time.time() - self.started)
+        self.duration = time.time() - self.started
         self.log_message = self.duration_message()
         self.log()
 
     def duration_message(self):
-        text = ("Performed task in %0.3f seconds" % (self.duration))
+        text = "Performed task in %0.3f seconds" % (self.duration)
         if self.worker.options["save"]:
             text += ". Saving results, please wait..."
         return text
