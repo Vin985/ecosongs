@@ -15,6 +15,8 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
+from gui.widgets.common.table.dataframe_table_view import DataFrameTableView
+
 
 class Ui_DBExplorer(object):
     def setupUi(self, DBExplorer):
@@ -56,6 +58,11 @@ class Ui_DBExplorer(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
+        self.btn_import = QPushButton(self.dbOptions)
+        self.btn_import.setObjectName(u"btn_import")
+
+        self.horizontalLayout.addWidget(self.btn_import)
+
         self.btn_export = QPushButton(self.dbOptions)
         self.btn_export.setObjectName(u"btn_export")
 
@@ -67,7 +74,7 @@ class Ui_DBExplorer(object):
 
         self.gridLayout.addWidget(self.dbOptions, 0, 0, 1, 1)
 
-        self.dbTable = QTableView(DBExplorer)
+        self.dbTable = DataFrameTableView(DBExplorer)
         self.dbTable.setObjectName(u"dbTable")
         self.dbTable.setEnabled(True)
         self.dbTable.setContextMenuPolicy(Qt.DefaultContextMenu)
@@ -104,6 +111,7 @@ class Ui_DBExplorer(object):
         self.lbl_table.setText(QCoreApplication.translate("DBExplorer", u"Select table to display", None))
         self.combo_table.setItemText(0, QCoreApplication.translate("DBExplorer", u"-- Select a table to display --", None))
 
+        self.btn_import.setText(QCoreApplication.translate("DBExplorer", u"Import table", None))
         self.btn_export.setText(QCoreApplication.translate("DBExplorer", u"Export table", None))
         self.rowsFound.setText(QCoreApplication.translate("DBExplorer", u"TextLabel", None))
     # retranslateUi
