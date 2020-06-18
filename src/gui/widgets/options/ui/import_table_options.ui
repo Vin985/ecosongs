@@ -41,17 +41,10 @@
    <property name="verticalSpacing">
     <number>8</number>
    </property>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
+   <item row="5" column="0" colspan="2">
+    <widget class="QLabel" name="lbl_status">
      <property name="text">
-      <string>Importing table: </string>
+      <string>This table was loaded:</string>
      </property>
     </widget>
    </item>
@@ -69,7 +62,7 @@
         <bool>true</bool>
        </property>
        <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
+        <string notr="true">radiogroup_update</string>
        </attribute>
       </widget>
      </item>
@@ -82,31 +75,11 @@
         <string>Replace existing table</string>
        </property>
        <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
+        <string notr="true">radiogroup_update</string>
        </attribute>
       </widget>
      </item>
     </layout>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="FileChooser" name="file_chooser" native="true"/>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="DataFrameTableView" name="table_loaded">
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <attribute name="horizontalHeaderStretchLastSection">
-      <bool>true</bool>
-     </attribute>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QLabel" name="lbl_status">
-     <property name="text">
-      <string>This table was loaded:</string>
-     </property>
-    </widget>
    </item>
    <item row="1" column="0" colspan="2">
     <widget class="QLabel" name="label_3">
@@ -119,6 +92,33 @@
     </widget>
    </item>
    <item row="6" column="0" colspan="2">
+    <widget class="DataFrameTableView" name="table_loaded">
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Importing table: </string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="FileChooser" name="file_chooser" native="true"/>
+   </item>
+   <item row="7" column="0" colspan="2">
     <widget class="QWidget" name="merged_table" native="true">
      <property name="minimumSize">
       <size>
@@ -162,6 +162,13 @@
      </layout>
     </widget>
    </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="checkbox_overwrite">
+     <property name="text">
+      <string>Replace existing entries</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -180,6 +187,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
+  <buttongroup name="radiogroup_update"/>
  </buttongroups>
 </ui>
