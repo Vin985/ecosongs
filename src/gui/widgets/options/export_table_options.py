@@ -39,7 +39,6 @@ class ExportTableOptions(QWidget, Ui_ExportTableOptions):
     def select_expand_required(self):
         expand_table_name = self.combo_expand_table.currentText()
         required = self.table_model.REFERS_TO[expand_table_name]["for_import"]
-        print(required)
         for req in required:
             items = self.list_expand_columns.findItems(req, Qt.MatchExactly)
             if items:
@@ -90,7 +89,8 @@ class ExportTableOptions(QWidget, Ui_ExportTableOptions):
     def init_expand_columns_list(self, index):
         expand_table_name = self.combo_expand_table.currentText()
         expand_table = qApp.tables.get_table(expand_table_name)
-        self.list_expand_columns.addItems(expand_table.columns, True)
+        self.list_expand_columns.addItems(expand_table.columns)
+        self.select_expand_required()
         self.update_expand_columns()
 
     def update_expand_columns(self):
