@@ -22,6 +22,9 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
         self.options_widget = None
         self.btn_close.hide()
         self.log_message = ""
+        self.lbl_message.setHidden(True)
+        self.lbl_error.setHidden(True)
+        self.adjustSize()
 
     def init_options_widget(self, widget):
         self.options_widget = widget
@@ -113,11 +116,13 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
 
     @Slot()
     def log(self, text=None):
+        self.lbl_message.setHidden(False)
         text = text or self.log_message
         self.lbl_message.setText(text)
 
     @Slot()
     def log_error(self, text=None):
+        self.lbl_error.setHidden(False)
         text = text or self.log_message
         self.lbl_error.setText(text)
 

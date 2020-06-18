@@ -30,8 +30,9 @@ class Ui_ProgressDialog(object):
         self.verticalLayout = QVBoxLayout(ProgressDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.content_layout = QHBoxLayout()
+        self.content_layout.setSpacing(0)
         self.content_layout.setObjectName(u"content_layout")
-        self.content_layout.setSizeConstraint(QLayout.SetNoConstraint)
+        self.content_layout.setSizeConstraint(QLayout.SetDefaultConstraint)
 
         self.verticalLayout.addLayout(self.content_layout)
 
@@ -59,28 +60,33 @@ class Ui_ProgressDialog(object):
         self.horizontalLayout.addWidget(self.btn_close)
 
 
-        self.gridLayout_2.addLayout(self.horizontalLayout, 4, 0, 1, 1)
-
-        self.lbl_message = QLabel(ProgressDialog)
-        self.lbl_message.setObjectName(u"lbl_message")
-
-        self.gridLayout_2.addWidget(self.lbl_message, 2, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.horizontalLayout, 3, 0, 1, 1)
 
         self.progress_bar = QProgressBar(ProgressDialog)
         self.progress_bar.setObjectName(u"progress_bar")
         self.progress_bar.setValue(0)
 
-        self.gridLayout_2.addWidget(self.progress_bar, 3, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.progress_bar, 2, 0, 1, 1)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.lbl_message = QLabel(ProgressDialog)
+        self.lbl_message.setObjectName(u"lbl_message")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.lbl_message.sizePolicy().hasHeightForWidth())
+        self.lbl_message.setSizePolicy(sizePolicy1)
+        self.lbl_message.setWordWrap(True)
 
-        self.gridLayout_2.addItem(self.verticalSpacer, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.lbl_message, 1, 0, 1, 1)
 
         self.lbl_error = QLabel(ProgressDialog)
         self.lbl_error.setObjectName(u"lbl_error")
+        sizePolicy1.setHeightForWidth(self.lbl_error.sizePolicy().hasHeightForWidth())
+        self.lbl_error.setSizePolicy(sizePolicy1)
         self.lbl_error.setStyleSheet(u"#lbl_error {color: red}")
+        self.lbl_error.setWordWrap(True)
 
-        self.gridLayout_2.addWidget(self.lbl_error, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.lbl_error, 0, 0, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout_2)
