@@ -15,6 +15,8 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
+from gui.widgets.common.table.dataframe_table_view import DataFrameTableView
+
 
 class Ui_FileImportWizard(object):
     def setupUi(self, FileImportWizard):
@@ -346,7 +348,7 @@ class Ui_FileImportWizard(object):
 
         self.gridLayout_3.addItem(self.verticalSpacer, 0, 0, 1, 1)
 
-        self.table_files = QTableView(self.gridLayoutWidget)
+        self.table_files = DataFrameTableView(self.gridLayoutWidget)
         self.table_files.setObjectName(u"table_files")
         self.table_files.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.table_files.setSelectionMode(QAbstractItemView.ContiguousSelection)

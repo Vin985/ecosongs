@@ -1,9 +1,8 @@
 import os
 
-from PySide2.QtCore import QSortFilterProxyModel, Qt, QThread, Signal, Slot
+from PySide2.QtCore import Qt, QThread, Signal, Slot
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWizard
 
-from gui.utils.dataframeTableModel import DataFrameTableModel
 from gui.widgets.dialogs.workers.file_manager_worker import FileManagerWorker
 from gui.widgets.dialogs.ui.file_import_wizard_ui import Ui_FileImportWizard
 
@@ -212,10 +211,7 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
             model = self.file_manager.file_infos
             # TODO: date format in config/options
             model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
-            model = DataFrameTableModel(model)
-            proxyModel = QSortFilterProxyModel()
-            proxyModel.setSourceModel(model)
-            self.table_files.setModel(proxyModel)
+            self.table_files.setModel(model)
             self.table_files.resizeColumnsToContents()
         # self.log_console.clear()
         # self.log_console.append("\n".join(self.file_manager.file_paths))
@@ -284,7 +280,7 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
         msgBox = QMessageBox()
         msgBox.setText(text)
         msgBox.setIcon(QMessageBox.Critical)
-        return (msgBox.exec_())
+        return msgBox.exec_()
 
     def showConfirmBox(self, text, info):
         msgBox = QMessageBox()
@@ -293,7 +289,7 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
         msgBox.setIcon(QMessageBox.Question)
         msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         msgBox.setDefaultButton(QMessageBox.Ok)
-        return (msgBox.exec_())
+        return msgBox.exec_()
 
     def initProgressBar(self, maxValue):
         self.progress_bar.setEnabled(True)

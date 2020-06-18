@@ -662,7 +662,7 @@
       </spacer>
      </item>
      <item row="3" column="0">
-      <widget class="QTableView" name="table_files">
+      <widget class="DataFrameTableView" name="table_files">
        <property name="sizeAdjustPolicy">
         <enum>QAbstractScrollArea::AdjustToContents</enum>
        </property>
@@ -1159,13 +1159,20 @@
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DataFrameTableView</class>
+   <extends>QTableView</extends>
+   <header>gui.widgets.common.table.dataframe_table_view.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radio_site_info"/>
-  <buttongroup name="radio_recorders"/>
-  <buttongroup name="radio_is_folder"/>
   <buttongroup name="radio_destination"/>
+  <buttongroup name="radio_is_folder"/>
+  <buttongroup name="radio_recorders"/>
+  <buttongroup name="radio_site_info"/>
   <buttongroup name="radio_compression"/>
  </buttongroups>
 </ui>
