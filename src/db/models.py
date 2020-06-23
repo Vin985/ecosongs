@@ -125,14 +125,15 @@ class TableModel:
 
     def check_columns(self, df):
         df = self.check_ids(df)
-        if not df.empty and not all(item in df.columns for item in self.columns):
-            raise ValueError(
-                "Not all required columns are present in the loaded table. Please make sure the"
-                + " loaded table is the correct one. Required columns are {0}. Only found {1}.".format(
-                    self.columns, df.columns
+        if not df.empty:
+            if not all(item in df.columns for item in self.columns):
+                raise ValueError(
+                    "Not all required columns are present in the loaded table. Please make sure the"
+                    + " loaded table is the correct one. Required columns are {0}. Only found {1}.".format(
+                        self.columns, df.columns
+                    )
                 )
-            )
-        self.check_types(df)
+            self.check_types(df)
         return df
 
     def get_duplicates_dict(self, df):
