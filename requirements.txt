@@ -5,7 +5,7 @@ librosa
 webcolors
 pillow
 opencv-python
-tensorflow=1.15
+tensorflow>=1.15.2
 bidict
 tables
 pyarrow
