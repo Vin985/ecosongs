@@ -46,29 +46,31 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
     # Define callbacks when events happen
     def linkEvents(self):
         # Signals emitted
-        self.get_infos.connect(
-            self.file_manager.get_infos)
-        self.import_files.connect(
-            self.file_manager.import_files)
-        self.list_files_convert.connect(
-            self.file_manager.get_files_to_convert)
+        self.get_infos.connect(self.file_manager.get_infos)
+        self.import_files.connect(self.file_manager.import_files)
+        self.list_files_convert.connect(self.file_manager.get_files_to_convert)
 
         # Signals received
         # File manager
         self.file_manager.converting.connect(
-            self.converting_files, type=Qt.BlockingQueuedConnection)
+            self.converting_files, type=Qt.BlockingQueuedConnection
+        )
         self.file_manager.removing.connect(
-            self.removing_files, type=Qt.BlockingQueuedConnection)
+            self.removing_files, type=Qt.BlockingQueuedConnection
+        )
         self.file_manager.renaming.connect(
-            self.renaming_files, type=Qt.BlockingQueuedConnection)
+            self.renaming_files, type=Qt.BlockingQueuedConnection
+        )
         self.file_manager.saving.connect(
-            self.saving_files, type=Qt.BlockingQueuedConnection)
-        self.file_manager.logging.connect(
-            self.log, type=Qt.BlockingQueuedConnection)
+            self.saving_files, type=Qt.BlockingQueuedConnection
+        )
+        self.file_manager.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
         self.file_manager.filesLoaded.connect(
-            self.show_files, type=Qt.BlockingQueuedConnection)
+            self.show_files, type=Qt.BlockingQueuedConnection
+        )
         self.file_manager.progressed.connect(
-            self.update_progress, type=Qt.BlockingQueuedConnection)
+            self.update_progress, type=Qt.BlockingQueuedConnection
+        )
         self.file_manager.tosave.connect(self.save_files)
         # Buttons
         self.btn_browse_src.clicked.connect(self.browse_src)
@@ -93,21 +95,24 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
         # get information about site from comboboxes
         if self.radio_site_auto.isChecked():
             for i in range(1, 4):
-                tmp = getattr(self, "combo_idx_" + str(i)
-                              ).currentText().lower()
+                tmp = getattr(self, "combo_idx_" + str(i)).currentText().lower()
                 site_info[tmp] = i
         else:
             site_info["site"] = self.input_site
             site_info["year"] = self.input_year
             site_info["plot"] = self.input_plot
 
-        self.file_manager.options = {"folder": self.radio_folder.isChecked(),
-                                     "recursive": self.checkbox_subfolders.isChecked(),
-                                     "recorder": self.radio_recorders.button(self.radio_recorders.checkedId()).text(),
-                                     "folder_hierarchy": self.radio_site_auto.isChecked(),
-                                     "site_info": site_info,
-                                     "save_file_info": self.checkbox_save_info.isChecked(),
-                                     "load_file_info": self.checkbox_load_info.isChecked()}
+        self.file_manager.options = {
+            "folder": self.radio_folder.isChecked(),
+            "recursive": self.checkbox_subfolders.isChecked(),
+            "recorder": self.radio_recorders.button(
+                self.radio_recorders.checkedId()
+            ).text(),
+            "folder_hierarchy": self.radio_site_auto.isChecked(),
+            "site_info": site_info,
+            "save_file_info": self.checkbox_save_info.isChecked(),
+            "load_file_info": self.checkbox_load_info.isChecked(),
+        }
         self.get_infos.emit()
         # self.file_manager.get_files()
 
@@ -122,12 +127,13 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
     def initialize_page4(self):
         # Convert files to wac
         self.file_manager.set_args(dest="")
-        opts = {"rename": self.checkbox_rename.isChecked(),
-                "move": self.checkbox_move.isChecked(),
-                "create_links": self.checkbox_link.isChecked(),
-                "remove_wac": False,
-                "overwrite": self.checkbox_overwrite.isChecked()
-                }
+        opts = {
+            "rename": self.checkbox_rename.isChecked(),
+            "move": self.checkbox_move.isChecked(),
+            "create_links": self.checkbox_link.isChecked(),
+            "remove_wac": False,
+            "overwrite": self.checkbox_overwrite.isChecked(),
+        }
         self.file_manager.options.update(opts)
         self.file_manager.dest_dir = self.input_dest_path.text()
         self.import_files.emit()
@@ -155,8 +161,7 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
         self.site_manual.setVisible(not self.radio_site_auto.isChecked())
 
     def subfolders_options(self):
-        self.radio_site_manual.setEnabled(
-            not self.checkbox_subfolders.isChecked())
+        self.radio_site_manual.setEnabled(not self.checkbox_subfolders.isChecked())
         if self.radio_folder.isChecked():
             self.radio_site_auto.setChecked(True)
             self.site_auto.setVisible(True)
@@ -187,16 +192,18 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
             # We want to select a folder
             if text_input.text():
                 default = text_input.text()
-            text = QFileDialog.getExistingDirectory(self, "Choose directory",
-                                                    default)
+            text = QFileDialog.getExistingDirectory(self, "Choose directory", default)
             # TODO remove this line
             self.file_manager.root_dir = text
         else:
             # We want to select files
             # TODO : add formats in config
             (files, _) = QFileDialog.getOpenFileNames(
-                self, "Choose files", default,
-                "Audio files (*.wav *.WAV *.wac);;WAV files (*.wav *.WAV);;WAC files (*.wac)")
+                self,
+                "Choose files",
+                default,
+                "Audio files (*.wav *.WAV *.wac);;WAV files (*.wav *.WAV);;WAC files (*.wac)",
+            )
             text = "; ".join(files)
             self.file_manager.file_paths = files
 
@@ -215,8 +222,9 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
             self.table_files.resizeColumnsToContents()
         # self.log_console.clear()
         # self.log_console.append("\n".join(self.file_manager.file_paths))
-        self.lbl_status.setText("%d file(s) found" %
-                                self.file_manager.file_infos.shape[0])
+        self.lbl_status.setText(
+            "%d file(s) found" % self.file_manager.file_infos.shape[0]
+        )
 
     @Slot()
     def converting_files(self):
@@ -245,8 +253,12 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
     def save_files(self):
         print("saving for real")
         print(self.file_manager.to_save)
-        qApp.tables.recordings.add(self.file_manager.to_save, save=True,
-                                   replace=self.checkbox_reimport.isChecked())
+        # TODO: do it in the worker
+        qApp.tables.recordings.add(
+            self.file_manager.to_save,
+            save=True,
+            replace=self.checkbox_reimport.isChecked(),
+        )
         self.checkbox_done.setChecked(True)
 
     @Slot()
