@@ -27,21 +27,18 @@ class RecordingsTreeModel(QStandardItemModel):
         self.icons = self.create_icons()
         root = FolderItem("Audio")
         self.appendRow(root)
-        recordings = recordings.sort_values(categories + ["date"])
+        if not recordings.empty:
+            recordings = recordings.sort_values(categories + ["date"])
         self.create_model(categories, recordings, parent=root)
         # self.insertColumn(1)
 
     def create_icons(self):
         folder_icon = QIcon()
-        folder_icon.addPixmap(
-            QPixmap(self.FOLDER_ICON_PATH), QIcon.Normal, QIcon.Off)
+        folder_icon.addPixmap(QPixmap(self.FOLDER_ICON_PATH), QIcon.Normal, QIcon.Off)
 
         audio_icon = QIcon()
-        audio_icon.addPixmap(QPixmap(self.AUDIO_ICON_PATH),
-                             QIcon.Normal, QIcon.Off)
-        icons = {"folder": folder_icon,
-                 "audio": audio_icon
-                 }
+        audio_icon.addPixmap(QPixmap(self.AUDIO_ICON_PATH), QIcon.Normal, QIcon.Off)
+        icons = {"folder": folder_icon, "audio": audio_icon}
         return icons
 
     def create_model(self, categories, recordings, path=None, parent=None):
