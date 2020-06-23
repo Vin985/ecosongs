@@ -5,12 +5,18 @@ import time
 import traceback
 
 
-class ParallelWorker():
-
+class ParallelWorker:
     def __init__(self):
-        self.__options = {"with_progress": True, "multiprocess": True, "nprocess": None,
-                          "mp_method": "async", "chunksize": 1, "chunksize_percent": None,
-                          "save": False, "overwrite": False}
+        self.__options = {
+            "with_progress": True,
+            "multiprocess": True,
+            "nprocess": None,
+            "mp_method": "async",
+            "chunksize": 1,
+            "chunksize_percent": None,
+            "save": False,
+            "overwrite": False,
+        }
         self.nitems = 0
         self.progress = 0
         self.pool = None
@@ -64,55 +70,51 @@ class ParallelWorker():
                 res = self.mp_imap(collection, func, *args, **kwargs)
             else:
                 raise ValueError(
-                    "Unsupported mp_value. Correct values are 'futures' or 'mp'")
+                    "Unsupported mp_value. Correct values are 'futures' or 'mp'"
+                )
             return res
         except Exception as exc:
             print(traceback.format_exc())
             raise exc
 
     # TODO accept function args to async
-    def mp_apply_async(self, collection, func, initializer=None, initargs=None, callback=None):
+    def mp_apply_async(
+        self, collection, func, initializer=None, initargs=None, callback=None
+    ):
         print("async")
-        # If no number of processes provided
-        if not self.options["nprocess"]:
-            # If there is less items than cpus, do not instantiate all processes
-            if len(collection) < mp.cpu_count():
-                processes = len(collection)
-            else:
-                # Use all available cpus
-                processes = mp.cpu_count()
-        else:
-            processes = self.options["nprocess"]
-
         # If chunksize is a percentage, compute chunksize
-        if self.options["chunksize_percent"]:
-            chunksize = max(int(len(collection) *
-                                self.options["chunksize_percent"] / 100), 1)
+        if self.options.get("chunksize_percent", False):
+            chunksize = max(int(len(collection) * self.options["chunksize"] / 100), 1)
         else:
             chunksize = self.options["chunksize"]
 
-        print(chunksize)
+        print("Chunksize:", chunksize)
         # Create chunks
         if len(collection) > 1:
-            chunks = [collection[x:x + chunksize]
-                      for x in range(0, len(collection), chunksize)]
+            chunks = [
+                collection[x : x + chunksize]
+                for x in range(0, len(collection), chunksize)
+            ]
         else:
             chunks = [collection]
 
+        # If no number of processes provided
+        processes = self.options.get("nprocess", mp.cpu_count())
+        # Do not start more processes than we have chunks
+        processes = min(len(chunks), processes)
+        print("Processes:", processes)
         # perform logic
         async_results = []
-        print(processes)
         try:
-            self.pool = mp.Pool(processes=processes,
-                                initializer=initializer, initargs=initargs)
+            self.pool = mp.Pool(
+                processes=processes, initializer=initializer, initargs=initargs
+            )
             for chunk in chunks:
                 print("chunk: " + str(chunk))
-                async_results.append(
-                    self.pool.apply_async(func, args=(chunk, )))
+                async_results.append(self.pool.apply_async(func, args=(chunk,)))
             self.results = []
             for result in async_results:
-                self.results += self.process_chunk_result(
-                    result.get(), callback)
+                self.results += self.process_chunk_result(result.get(), callback)
             return self.results
         except Exception as exc:
             print(traceback.format_exc())
@@ -121,8 +123,16 @@ class ParallelWorker():
             self.pool.close()
             self.pool.join()
 
-    def mp_imap(self, collection, func, processes=None, initializer=None,
-                initargs=None, chunksize=1, callback=None):
+    def mp_imap(
+        self,
+        collection,
+        func,
+        processes=None,
+        initializer=None,
+        initargs=None,
+        chunksize=1,
+        callback=None,
+    ):
         # If no number of processes provided
         if not processes:
             # If there is less items than cpus, do not instantiate all processes
@@ -131,8 +141,7 @@ class ParallelWorker():
             else:
                 # Use all available cpus
                 processes = mp.cpu_count()
-        pool = mp.Pool(processes=processes,
-                       initializer=initializer, initargs=initargs)
+        pool = mp.Pool(processes=processes, initializer=initializer, initargs=initargs)
         tmp = pool.imap_unordered(func, collection, chunksize=chunksize)
         res = [self.process_chunk_result(result, callback) for result in tmp]
         pool.close()
@@ -147,14 +156,15 @@ class ParallelWorker():
             for item in collection:
                 # TODO : make sure this is properly interrupted
                 try:
-                    futures.append(executor.submit(
-                        func, item, *args, **kwargs))
+                    futures.append(executor.submit(func, item, *args, **kwargs))
                 # TODO: better exception handling
                 except Exception as exc:
                     print("Oh no! An exception occured! " + str(exc))
                     print(traceback.format_exc())
-            res = [self.get_result(future)
-                   for future in concurrent.futures.as_completed(futures)]
+            res = [
+                self.get_result(future)
+                for future in concurrent.futures.as_completed(futures)
+            ]
             res = list(filter(None, res))
         end = time.time()
         print("time elapsed: {}".format(end - start))
