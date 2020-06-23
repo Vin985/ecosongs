@@ -5,7 +5,7 @@ librosa
 webcolors
 pillow
 opencv-python
-tensorflow
+tensorflow=1.13
 bidict
 tables
 pyarrow
@@ -15,3 +15,5 @@ cython
 pyaml
 plotnine
 xlrd
+pyaudio
+pysoundfile
