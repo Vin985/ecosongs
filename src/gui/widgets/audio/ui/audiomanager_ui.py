@@ -3,16 +3,16 @@
 ################################################################################
 ## Form generated from reading UI file 'audiomanager.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.14.1
+## Created by: Qt User Interface Compiler version 5.15.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QMetaObject, QObject, QPoint,
-    QRect, QSize, QUrl, Qt)
+from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
+    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QLinearGradient, QPalette, QPainter, QPixmap,
-    QRadialGradient)
+    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
+    QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
 from pysoundplayer.gui.QSoundPlayer import QSoundPlayer
@@ -23,7 +23,7 @@ from pysoundplayer.gui.QSpectrogramOptions import QSpectrogramOptions
 
 class Ui_AudioManager(object):
     def setupUi(self, AudioManager):
-        if AudioManager.objectName():
+        if not AudioManager.objectName():
             AudioManager.setObjectName(u"AudioManager")
         AudioManager.resize(984, 682)
         self.action_ACI = QAction(AudioManager)
@@ -34,8 +34,8 @@ class Ui_AudioManager(object):
         self.action_delete.setObjectName(u"action_delete")
         self.action_create_links = QAction(AudioManager)
         self.action_create_links.setObjectName(u"action_create_links")
-        self.action_check_labels = QAction(AudioManager)
-        self.action_check_labels.setObjectName(u"action_check_labels")
+        self.action_import_tags = QAction(AudioManager)
+        self.action_import_tags.setObjectName(u"action_import_tags")
         self.horizontalLayout_2 = QHBoxLayout(AudioManager)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.splitter = QSplitter(AudioManager)
@@ -272,9 +272,9 @@ class Ui_AudioManager(object):
 #if QT_CONFIG(tooltip)
         self.action_create_links.setToolTip(QCoreApplication.translate("AudioManager", u"<html><head/><body><p>Create virtual links to files to easily have human readable filenames</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.action_check_labels.setText(QCoreApplication.translate("AudioManager", u"Check labels", None))
+        self.action_import_tags.setText(QCoreApplication.translate("AudioManager", u"Import tags", None))
 #if QT_CONFIG(tooltip)
-        self.action_check_labels.setToolTip(QCoreApplication.translate("AudioManager", u"Check and import labels for the selected files if any are found", None))
+        self.action_import_tags.setToolTip(QCoreApplication.translate("AudioManager", u"Check and import tags for the selected files if any are found", None))
 #endif // QT_CONFIG(tooltip)
         self.label.setText(QCoreApplication.translate("AudioManager", u"Name", None))
         self.label_5.setText(QCoreApplication.translate("AudioManager", u"Year", None))

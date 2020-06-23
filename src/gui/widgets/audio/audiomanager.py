@@ -25,8 +25,10 @@ class AudioManager(PageWidget, Ui_AudioManager):
 
     def __init__(self):
         super().__init__()
-        print('Audiomanager1: Memory usage: %s (kb)' %
-              resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        print(
+            "Audiomanager1: Memory usage: %s (kb)"
+            % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        )
         self.setupUi(self)
         self.current_recording = None
         self.song_classifier = None
@@ -38,10 +40,10 @@ class AudioManager(PageWidget, Ui_AudioManager):
         self.tree_view.setRootIsDecorated(True)
 
     # def enter_page(self):
-        # self.init_tree()
-        # print('Audiomanager4: Memory usage: %s (kb)' %
-        #       resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-        # self.tree_view.setRootIsDecorated(True)
+    # self.init_tree()
+    # print('Audiomanager4: Memory usage: %s (kb)' %
+    #       resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+    # self.tree_view.setRootIsDecorated(True)
 
     def share_settings(self):
         self.spectrogram_viewer.settings = self.settings
@@ -55,7 +57,9 @@ class AudioManager(PageWidget, Ui_AudioManager):
         model = RecordingsTreeModel(self, recordings, categories=categories)
         self.tree_view.setModel(model)
         self.tree_view.expand(model.item(0, 0).index())
-        self.tree_view.selectionModel().selectionChanged.connect(self.tree_selection_changed)
+        self.tree_view.selectionModel().selectionChanged.connect(
+            self.tree_selection_changed
+        )
         self.add_actions()
         self.show_folder_details()
 
@@ -68,7 +72,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
         self.action_detect_songs.triggered.connect(self.detect_songs)
         self.action_delete.triggered.connect(self.show_delete_msg)
         self.action_create_links.triggered.connect(self.show_create_links_msg)
-        self.action_check_labels.triggered.connect(self.check_labels)
+        self.action_import_tags.triggered.connect(self.import_tags)
 
         # self.time_slider.valueChanged.connect(self.update_spectrogram)
 
@@ -82,13 +86,14 @@ class AudioManager(PageWidget, Ui_AudioManager):
         self.combo_method.currentIndexChanged.connect(self.draw_events)
 
         self.sound_player.update_position.connect(
-            self.spectrogram_viewer.update_sound_marker)
+            self.spectrogram_viewer.update_sound_marker
+        )
         self.spectrogram_viewer.seek.connect(self.sound_player.seek)
         self.spectrogram_viewer.spectrogram_drawn.connect(self.draw_events)
-        self.image_options.option_updated.connect(
-            self.spectrogram_viewer.update_image)
+        self.image_options.option_updated.connect(self.spectrogram_viewer.update_image)
         self.spectrogram_options.option_updated.connect(
-            self.spectrogram_viewer.update_spectrogram)
+            self.spectrogram_viewer.update_spectrogram
+        )
 
         # self.audio_analyzer.logging.connect(self.log, type=Qt.BlockingQueuedConnection)
 
@@ -96,7 +101,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
         menu = QMenu(self)
         menu.addAction(self.action_delete)
         menu.addAction(self.action_create_links)
-        menu.addAction(self.action_check_labels)
+        menu.addAction(self.action_import_tags)
         menu.addSeparator()
         menu.addAction(self.action_ACI)
         menu.addAction(self.action_detect_songs)
@@ -124,18 +129,24 @@ class AudioManager(PageWidget, Ui_AudioManager):
         if self.group_draw_events.isChecked():
             predictions_table = qApp.tables.activity_predictions
             if not predictions_table.empty:
-                event_options = {"method": self.EVENT_DETECTION_METHODS[self.combo_method.currentIndex()],
-                                 "min_activity": self.spin_activity.value(),
-                                 "end_threshold": self.spin_end_threshold.value(),
-                                 "min_duration": self.spin_min_duration.value() / 1000,
-                                 "isolate_events": True}
+                event_options = {
+                    "method": self.EVENT_DETECTION_METHODS[
+                        self.combo_method.currentIndex()
+                    ],
+                    "min_activity": self.spin_activity.value(),
+                    "end_threshold": self.spin_end_threshold.value(),
+                    "min_duration": self.spin_min_duration.value() / 1000,
+                    "isolate_events": True,
+                }
                 events = predictions_table.get_events_by_id(
-                    self.current_recording.id, event_options)
+                    self.current_recording.id, event_options
+                )
                 if not events.empty:
                     for event in events.itertuples():
                         # # TODO: externalize color
                         self.spectrogram_viewer.draw_rect(
-                            event.start, event.end, color="#99ebef00")
+                            event.start, event.end, color="#99ebef00"
+                        )
             self.draw_silences()
 
     def draw_silences(self, draw=True):
@@ -143,15 +154,17 @@ class AudioManager(PageWidget, Ui_AudioManager):
         if silences and draw:
             for start, end in silences:
                 self.spectrogram_viewer.draw_rect(
-                    start/self.sound_player.audio.sr,
-                    end/self.sound_player.audio.sr,
-                    color="#99ff0000")
+                    start / self.sound_player.audio.sr,
+                    end / self.sound_player.audio.sr,
+                    color="#99ff0000",
+                )
 
     @Slot()
     def compute_ACI(self):
         # Get list of all selected recordings
         recs = self.get_selected_recordings()
         from gui.widgets.dialogs.acidialog import AciDialog
+
         self.action_dialog = AciDialog(recs, parent=self)
         self.action_dialog.show()
 
@@ -163,6 +176,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
     def detect_songs(self, export_pdf=False):
         recs = self.get_selected_recordings()
         from gui.widgets.dialogs.detector_dialog import DetectorDialog
+
         self.action_dialog = DetectorDialog(recs, export_pdf, parent=self)
         self.action_dialog.setModal(True)
         self.action_dialog.show()
@@ -172,8 +186,12 @@ class AudioManager(PageWidget, Ui_AudioManager):
         msgbox = QMessageBox(parent=self)
         # TODO: change text based on number/selection
         msgbox.setText("Do you want to delete these recordings?")
-        msgbox.setInformativeText(('All data related to these recordings'
-                                   ' (indexes, song detection) will also be deleted'))
+        msgbox.setInformativeText(
+            (
+                "All data related to these recordings"
+                " (indexes, song detection) will also be deleted"
+            )
+        )
         msgbox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         msgbox.setDefaultButton(QMessageBox.Cancel)
         msgbox.setIcon(QMessageBox.Warning)
@@ -188,7 +206,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
         msgbox = QMessageBox(parent=self)
         # TODO: change text based on number/selection
         msgbox.setText("Do you want to create virtual links for these files?")
-        msgbox.setInformativeText('Existing links will be overwritten')
+        msgbox.setInformativeText("Existing links will be overwritten")
         msgbox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         msgbox.setDefaultButton(QMessageBox.Cancel)
         msgbox.setIcon(QMessageBox.Warning)
@@ -198,33 +216,18 @@ class AudioManager(PageWidget, Ui_AudioManager):
         else:
             print("not deleting")
 
-    # @Slot()
-    # def show_check_labels_msg(self):
-    #     msgbox = QMessageBox(parent=self)
-    #     # TODO: change text based on number/selection
-    #     msgbox.setText(
-    #         "Do you want to check and import labels for these files?")
-    #     msgbox.setInformativeText('Existing labels will be removed')
-    #     msgbox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-    #     msgbox.setDefaultButton(QMessageBox.Cancel)
-    #     msgbox.setIcon(QMessageBox.Warning)
-    #     ret = msgbox.exec()
-    #     if ret == QMessageBox.Ok:
-    #         self.check_labels()
-    #     else:
-    #         print("not checking labels")
-
     def create_links(self):
         print("creating virtual links...")
         recs = self.get_selected_recordings()
         print(recs)
 
     @Slot()
-    def check_labels(self):
+    def import_tags(self):
         print("Importing labels...")
         recs = self.get_selected_recordings(selection_type="table")
-        from gui.widgets.dialogs.tag_import_dialog import TagImportDialog
-        self.action_dialog = TagImportDialog(recs, parent=self)
+        from gui.widgets.dialogs.import_tags_dialog import ImportTagsDialog
+
+        self.action_dialog = ImportTagsDialog(recs, parent=self)
         self.action_dialog.setModal(True)
         self.action_dialog.show()
 
@@ -237,10 +240,10 @@ class AudioManager(PageWidget, Ui_AudioManager):
         self.tree_view.model().removeRow(idx.row(), idx.parent())
         qApp.tables.recordings.delete(recs, save=True)
         values_dict = {"recording_id": recs}
-        qApp.tables.song_events.delete(
-            values_dict, columns=["recording_id"], save=True)
+        qApp.tables.song_events.delete(values_dict, columns=["recording_id"], save=True)
         qApp.tables.activity_predictions.delete(
-            values_dict, columns=["recording_id"], save=True)
+            values_dict, columns=["recording_id"], save=True
+        )
         # TODO : delete other dependencies
 
     def get_selected_recordings(self, selection_type=None):
@@ -258,8 +261,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
                 sel_recs.append(data["Index"])
         # If folders are selected, selected all recordings inside
         recordings = qApp.get_recordings()
-        tmp = [recordings.query(self.folder_query(folder))
-               for folder in sel_folders]
+        tmp = [recordings.query(self.folder_query(folder)) for folder in sel_folders]
         # Get individually selected recordings
         tmp.append(recordings.loc[sel_recs])
         # Get one list of unique selected files
@@ -294,7 +296,8 @@ class AudioManager(PageWidget, Ui_AudioManager):
             duration = "0 seconds "
 
         details = "{} recordings representing {}of audio found!".format(
-            res.shape[0], duration)
+            res.shape[0], duration
+        )
         self.spectrogram_viewer.display_text(details)
         # self.lbl_spectro.setText(details)
 
@@ -320,7 +323,9 @@ class AudioManager(PageWidget, Ui_AudioManager):
             self.spectrogram_viewer.audio = audio
         else:
             self.spectrogram_viewer.display_text(
-                "File not found. Please make sure the path has not changed")
+                "File not found. Please make sure the path has not changed"
+            )
 
     def folder_query(self, folder_info):
-        return ' & '.join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])
+        return " & ".join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])
+

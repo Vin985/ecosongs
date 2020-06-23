@@ -356,12 +356,12 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create virtual links to files to easily have human readable filenames&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
-  <action name="action_check_labels">
+  <action name="action_import_tags">
    <property name="text">
-    <string>Check labels</string>
+    <string>Import tags</string>
    </property>
    <property name="toolTip">
-    <string>Check and import labels for the selected files if any are found</string>
+    <string>Check and import tags for the selected files if any are found</string>
    </property>
   </action>
  </widget>
