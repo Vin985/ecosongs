@@ -4,12 +4,14 @@ from pathlib import Path
 
 import pandas as pd
 
-DEFAULT_TAGS_COLUMNS = {"Label": "tag",
-                        "Related": "related",
-                        "LabelStartTime_Seconds": "tag_start",
-                        "LabelEndTime_Seconds": "tag_end",
-                        "overlap": "overlap",
-                        "background": "background"}
+DEFAULT_TAGS_COLUMNS = {
+    "Label": "tag",
+    "Related": "related",
+    "LabelStartTime_Seconds": "tag_start",
+    "LabelEndTime_Seconds": "tag_end",
+    "overlap": "overlap",
+    "background": "background",
+}
 DEFAULT_TAGS_COLUMNS_TYPE = {"overlap": "str"}
 
 DEFAULT_EXTENSIONS = [".csv"]
@@ -56,12 +58,13 @@ def get_done_files(path, full_path=False):
     if os.path.isfile(local_conf):
         config = configparser.ConfigParser()
         config.read(local_conf)
-        done_files = config['files'].get("files_done", [])
+        done_files = config["files"].get("files_done", [])
         if isinstance(done_files, str):
             done_files = done_files.split(",")
         if full_path:
-            done_files = [os.path.join(path, file_name)
-                          for file_name in done_files if file_name]
+            done_files = [
+                os.path.join(path, file_name) for file_name in done_files if file_name
+            ]
     return done_files
 
 
@@ -74,7 +77,8 @@ def rename_columns(df, columns):
             df = df.rename(columns=columns)
         else:
             raise ValueError(
-                "columns must be a dict with old labels as keys and new labels as values")
+                "columns must be a dict with old labels as keys and new labels as values"
+            )
     return df
 
 
@@ -89,7 +93,7 @@ def load_tags(recordings, options=None):
     columns = options.get("columns", DEFAULT_TAGS_COLUMNS)
     columns_type = options.get("columns_type", DEFAULT_TAGS_COLUMNS_TYPE)
 
-    # Get only the directory portion of pth
+    # Get only the directory portion of path
     recordings.loc[:, "dirname"] = recordings.path.apply(os.path.dirname)
     # Get unique folders
     folders = recordings.dirname.unique()
@@ -105,8 +109,11 @@ def load_tags(recordings, options=None):
             # Get list of completed files
             done_files = get_done_files(folder_path, full_path=True)
             # Get list of all files
-            files = [x for x in label_path.iterdir() if x.is_file()
-                     and x.suffix in extensions]
+            files = [
+                x
+                for x in label_path.iterdir()
+                if x.is_file() and x.suffix in extensions
+            ]
             # List of files to load
             selected = recs.name.values
             for f in files:
@@ -128,18 +135,21 @@ def load_tags(recordings, options=None):
                                 # Format columns
                                 df = rename_columns(df, columns)
                                 df.loc[:, "recording_id"] = int(rec_id)
+                                df.loc[:, "file_path"] = str(f)
                             except KeyError as ke:
-                                print("Key Error {0} found for file {1}. Skipping."
-                                      "Please make sure the file is correct "
-                                      "and has all columns".format(
-                                          ke, file_id))
+                                print(
+                                    "Key Error {0} found for file {1}. Skipping."
+                                    "Please make sure the file is correct "
+                                    "and has all columns".format(ke, file_id)
+                                )
                                 continue
                             dfs.append(df)
                         # Get recording path
                         rec_path = rec.iloc[0]["path"]
                         # Update original recording data frame to set tag status
-                        recordings.loc[recordings.path == rec_path,
-                                       "has_tags"] = 2 if rec_path in done_files else 1
+                        recordings.loc[recordings.path == rec_path, "has_tags"] = (
+                            2 if rec_path in done_files else 1
+                        )
     if dfs:
         # Create result dataframe from individual dataframes
         res = pd.concat(dfs)
