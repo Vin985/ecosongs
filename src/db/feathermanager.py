@@ -1,4 +1,5 @@
 import pathlib
+import pandas as pd
 
 import feather
 
@@ -18,7 +19,11 @@ class FeatherManager(DBManager):
             raise AttributeError("Please provide either table name or path to table")
         if path is None:
             path = self.db_root + table + self.FILE_EXTENSION
-        data = feather.read_dataframe(path)
+        path = pathlib.Path(path)
+        if path.exists():
+            data = feather.read_dataframe(path)
+        else:
+            data = pd.DataFrame()
         return data
 
     def save(self, table, data):
@@ -32,8 +37,7 @@ class FeatherManager(DBManager):
         self.save(table, data)
 
     def delete(self, table, data):
-        raise NotImplementedError(
-            "Function not implemented for this DB manager")
+        raise NotImplementedError("Function not implemented for this DB manager")
 
     def export_table(self, data, dest_path):
         dest_path = pathlib.Path(dest_path)
@@ -41,4 +45,3 @@ class FeatherManager(DBManager):
             dest_path.parent.mkdir(parents=True)
         data.reset_index(inplace=True, drop=True)
         data.to_feather(dest_path)
-    
