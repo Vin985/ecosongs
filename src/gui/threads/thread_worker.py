@@ -13,10 +13,12 @@ class ThreadWorker(QObject, ParallelWorker):
     done = Signal()
     error = Signal(str)
     results_saved = Signal()
+    cancelled = Signal()
 
     def __init__(self):
         QObject.__init__(self)
         ParallelWorker.__init__(self)
+        print(self.thread())
 
     def log(self, text):
         self.logging.emit(text)
@@ -40,14 +42,14 @@ class ThreadWorker(QObject, ParallelWorker):
         print("in cancel tasks")
         self.terminate_tasks()
         self.results = pd.DataFrame(self.results)
-        self.done.emit()
+        self.cancelled.emit()
         self.thread().requestInterruption()
 
     def update_progress(self, step=1):
         if self.with_progress:
             self.progress += step
             print("progress: " + str(self.progress))
-            self.progressed.emit(int(self.progress/self.nitems * 100))
+            self.progressed.emit(int(self.progress / self.nitems * 100))
 
     def perform_task(self):
         pass
