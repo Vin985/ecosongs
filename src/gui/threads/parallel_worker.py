@@ -41,7 +41,7 @@ class ParallelWorker:
         self.__options.update(options)
 
     def terminate_tasks(self):
-        print("in cancel tasks")
+        print("in parallel worker cancel tasks")
         self.pool.terminate()
         self.pool.join()
 

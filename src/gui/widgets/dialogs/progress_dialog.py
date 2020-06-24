@@ -64,6 +64,7 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
                 self.results_saved, type=Qt.BlockingQueuedConnection
             )
             self.worker.done.connect(self.task_done, type=Qt.BlockingQueuedConnection)
+            self.worker.cancelled.connect(self.task_done)
             self.worker.error.connect(self.log_error)
 
     def init_thread(self):
@@ -82,6 +83,7 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
 
     @Slot()
     def cancel(self):
+        print("in cancel")
         if self.started:
             self.cancelling.emit()
             self.started = 0
