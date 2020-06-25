@@ -4,6 +4,8 @@ import multiprocessing as mp
 import time
 import traceback
 
+print("in parallel worker")
+
 
 class ParallelWorker:
     def __init__(self):
@@ -106,8 +108,8 @@ class ParallelWorker:
         # perform logic
         async_results = []
         try:
-            self.pool = mp.Pool(
-                processes=processes, initializer=initializer, initargs=initargs
+            self.pool = mp.get_context("spawn").Pool(
+                processes=processes, initializer=initializer, initargs=initargs,
             )
             for chunk in chunks:
                 print("chunk: " + str(chunk))
