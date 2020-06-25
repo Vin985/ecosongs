@@ -33,18 +33,32 @@ class AudioAnalyzerWorker(ThreadWorker):
 
     @Slot()
     def detect_songs(self):
-        import analysis.detection.song_detector as song_detector
+        if not self.options["overwrite"]:
+            predictions = qApp.tables.activity_predictions.df
+            already_done = predictions.recording_id.unique()
+            print(self.recordings)
+            self.recordings = [
+                recording
+                for recording in self.recordings
+                if recording.id not in already_done
+            ]
+            print(self.recordings)
 
-        save_intermediate_results = self.options.get("save_intermediate_results", True)
-        callback = None
-        if save_intermediate_results:
-            callback = self.save_intermediate
-        self.perform_analysis(
-            song_detector.mp_detect_songs_chunk,
-            initializer=song_detector.mp_initialize_detector,
-            initargs=self.options["initargs"],
-            callback=callback,
-        )
+        if self.recordings:
+            import analysis.detection.song_detector as song_detector
+
+            save_intermediate_results = self.options.get(
+                "save_intermediate_results", True
+            )
+            callback = None
+            if save_intermediate_results:
+                callback = self.save_intermediate
+            self.perform_analysis(
+                song_detector.mp_detect_songs_chunk,
+                initializer=song_detector.mp_initialize_detector,
+                initargs=self.options["initargs"],
+                callback=callback,
+            )
 
     def perform_analysis(self, function, *args, **kwargs):
         self.results = []
