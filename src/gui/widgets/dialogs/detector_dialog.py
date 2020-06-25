@@ -14,11 +14,17 @@ class DetectorDialog(ProgressDialog):
         print("saved")
 
     def duration_message(self):
-        message = "Processed %d recordings in %0.3f seconds (%0.3fs/recording)" % (
-            self.worker.nitems,
-            self.duration,
-            self.duration / self.worker.nitems,
-        )
-        if self.worker.options["save"]:
-            message += ".\nSaving results, please wait..."
+        if self.worker.nitems:
+            message = "Processed %d recordings in %0.3f seconds (%0.3fs/recording)" % (
+                self.worker.nitems,
+                self.duration,
+                self.duration / self.worker.nitems,
+            )
+            if self.worker.options["save"]:
+                message += ".\nSaving results, please wait..."
+        else:
+            message = (
+                "Task completed in %0.3f seconds. No recordings were processed."
+                % (self.duration,)
+            )
         return message
