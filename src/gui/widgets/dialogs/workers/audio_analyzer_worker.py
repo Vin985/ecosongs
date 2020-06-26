@@ -36,15 +36,18 @@ class AudioAnalyzerWorker(ThreadWorker):
         if not self.options["overwrite"]:
             predictions = qApp.tables.activity_predictions.df
             already_done = predictions.recording_id.unique()
-            print(self.recordings)
             self.recordings = [
                 recording
                 for recording in self.recordings
                 if recording.id not in already_done
             ]
-            print(self.recordings)
 
         if self.recordings:
+            self.log(
+                "Processing {0} recordings. Please wait, this might take a while...".format(
+                    len(self.recordings)
+                )
+            )
             import analysis.detection.song_detector as song_detector
 
             save_intermediate_results = self.options.get(
