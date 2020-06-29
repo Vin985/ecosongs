@@ -105,6 +105,8 @@ class RecordingsTreeModel(QStandardItemModel):
     def check_predictions(self, prediction_list, item=None):
         if item is None:
             item = self.item(0, 0)
+            print(prediction_list)
+            print(19188 in prediction_list)
         have_predictions = 0
         if item.is_folder:
             for i in range(0, item.rowCount()):
