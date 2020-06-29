@@ -321,3 +321,12 @@ class AudioManager(PageWidget, Ui_AudioManager):
     def folder_query(self, folder_info):
         return " & ".join(['{} == "{}"'.format(k, v) for k, v in folder_info.items()])
 
+    def option_changed(self, option):
+        opt, value = option
+        if opt == "highlight_predictions":
+            if value:
+                recs = qApp.tables.activity_predictions.df.recording_id.unique()
+            else:
+                recs = []
+            self.tree_view.model().check_predictions(recs)
+

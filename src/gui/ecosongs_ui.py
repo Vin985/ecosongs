@@ -63,6 +63,9 @@ class Ui_Ecosongs(object):
         icon = QIcon()
         icon.addFile(u":/tango/file-new", QSize(), QIcon.Normal, QIcon.Off)
         self.action_import_files.setIcon(icon)
+        self.action_highlight_predictions = QAction(Ecosongs)
+        self.action_highlight_predictions.setObjectName(u"action_highlight_predictions")
+        self.action_highlight_predictions.setCheckable(True)
         self.centralwidget = QWidget(Ecosongs)
         self.centralwidget.setObjectName(u"centralwidget")
         sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -220,6 +223,7 @@ class Ui_Ecosongs(object):
         self.menu_calculate.addAction(self.action_ACI)
         self.toolBar.addAction(self.action_import_files)
         self.toolBar.addAction(self.aSpecScale)
+        self.toolBar.addAction(self.action_highlight_predictions)
 
         self.retranslateUi(Ecosongs)
 
@@ -248,6 +252,10 @@ class Ui_Ecosongs(object):
         self.action_import_files.setText(QCoreApplication.translate("Ecosongs", u"Import audio files", None))
 #if QT_CONFIG(tooltip)
         self.action_import_files.setToolTip(QCoreApplication.translate("Ecosongs", u"Import audio files", None))
+#endif // QT_CONFIG(tooltip)
+        self.action_highlight_predictions.setText(QCoreApplication.translate("Ecosongs", u"Highlight files with predictions", None))
+#if QT_CONFIG(tooltip)
+        self.action_highlight_predictions.setToolTip(QCoreApplication.translate("Ecosongs", u"Highlit files for which predictions have been calculated", None))
 #endif // QT_CONFIG(tooltip)
 
         __sortingEnabled = self.sidebar.isSortingEnabled()

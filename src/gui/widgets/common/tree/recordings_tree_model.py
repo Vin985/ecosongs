@@ -1,5 +1,12 @@
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QIcon, QPixmap, QStandardItem, QStandardItemModel
+from PySide2.QtGui import (
+    QIcon,
+    QPixmap,
+    QStandardItem,
+    QStandardItemModel,
+    QBrush,
+    QColor,
+)
 
 
 class RecordingItem(QStandardItem):
@@ -11,6 +18,12 @@ class FolderItem(QStandardItem):
 
 
 class RecordingsTreeModel(QStandardItemModel):
+
+    BG_GREEN = QBrush(QColor("#a8f79a"))
+    BG_WHITE = QBrush(QColor("#ffffff"))
+    BG_RED = QBrush(QColor("#ffa3a3"))
+    BG_ORANGE = QBrush(QColor("#f6e777"))
+
     FOLDER_ICON_PATH = ":/tango/folder"
     AUDIO_ICON_PATH = ":/tango/audio"
 
@@ -26,6 +39,7 @@ class RecordingsTreeModel(QStandardItemModel):
         self.clear()
         self.icons = self.create_icons()
         root = FolderItem("Audio")
+        self.default_background = root.background()
         self.appendRow(root)
         if not recordings.empty:
             recordings = recordings.sort_values(categories + ["date"])
@@ -87,3 +101,31 @@ class RecordingsTreeModel(QStandardItemModel):
         # path = self.create_item(recording.path)
         # parent.appendRow([item, path])
         parent.appendRow(item)
+
+    def check_predictions(self, prediction_list, item=None):
+        if item is None:
+            item = self.item(0, 0)
+        have_predictions = 0
+        if item.is_folder:
+            for i in range(0, item.rowCount()):
+                child = item.child(i, 0)
+                have_predictions += self.check_predictions(prediction_list, child)
+                if have_predictions > 0:
+                    if have_predictions == item.rowCount():
+                        item.setBackground(self.BG_GREEN)
+                        return 1
+                    else:
+                        item.setBackground(self.BG_ORANGE)
+                else:
+                    item.setBackground(self.default_background)
+        else:
+            if item.data()["id"] in prediction_list:
+                item.setBackground(self.BG_GREEN)
+                return 1
+            else:
+                item.setBackground(self.default_background)
+                return 0
+        return 0
+
+    def reset_background(self):
+        pass

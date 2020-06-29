@@ -290,6 +290,7 @@
    </attribute>
    <addaction name="action_import_files"/>
    <addaction name="aSpecScale"/>
+   <addaction name="action_highlight_predictions"/>
   </widget>
   <action name="aAbout">
    <property name="text">
@@ -369,6 +370,17 @@
    </property>
    <property name="toolTip">
     <string>Import audio files</string>
+   </property>
+  </action>
+  <action name="action_highlight_predictions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Highlight files with predictions</string>
+   </property>
+   <property name="toolTip">
+    <string>Highlit files for which predictions have been calculated</string>
    </property>
   </action>
  </widget>

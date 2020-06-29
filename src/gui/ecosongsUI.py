@@ -1,5 +1,8 @@
+from functools import partial
+
 from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QApplication, QMainWindow
+
 from gui.ecosongs_ui import Ui_Ecosongs
 
 
@@ -29,6 +32,7 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
         self.aExit.triggered.connect(self.exit)
         self.aSettings.triggered.connect(self.show_settings)
         self.action_import_files.triggered.connect(self.show_import_dialog)
+        self.action_highlight_predictions.triggered.connect(self.highlight_predictions)
 
     def initProgressBar(self, maxValue):
         self.progressBar.setEnabled(True)
@@ -39,6 +43,7 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
     def show_settings(self):
         print("show settings menu")
         from gui.widgets.dialogs.settingsdialog import SettingsDialog
+
         self.settingsDialog = SettingsDialog()
         self.settingsDialog.show()
 
@@ -66,6 +71,13 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
 
     def show_import_dialog(self):
         from gui.widgets.dialogs.file_import_wizard import FileImportWizard
+
         self.file_import = FileImportWizard()
         self.file_import.finished.connect(self.refresh_page)
         self.file_import.show()
+
+    def highlight_predictions(self):
+        cur_page = self.pages.currentWidget()
+        cur_page.option_changed(
+            ("highlight_predictions", self.action_highlight_predictions.isChecked())
+        )
