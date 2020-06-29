@@ -81,7 +81,6 @@ class TableModel:
         return df
 
     def save(self, update=False):
-        self.check_types()
         if update:
             self.dbmanager.update(self.TABLE_NAME, self._df)
         else:
@@ -115,39 +114,34 @@ class TableModel:
             self.next_id = max(table["id"]) + 1
         return table
 
-    def check_types(self, df=None):
+    def check_types(self, df):
         if self.COLUMNS_TYPE:
-            if df is None:
-                df = self._df
-            for k, v in self.COLUMNS_TYPE.items():
-                # TODO: do only if type is different
-                df[k] = df[k].astype(v)
+            df = df.astype(self.COLUMNS_TYPE)
+        return df
 
     def check_columns(self, df):
         df = self.check_ids(df)
         if not df.empty:
             if not all(item in df.columns for item in self.columns):
                 raise ValueError(
-                    "Not all required columns are present in the loaded table. Please make sure the"
-                    + " loaded table is the correct one. Required columns are {0}. Only found {1}.".format(
+                    "Not all required columns are present in the loaded table. "
+                    + "Please make sure the loaded table is the correct one. "
+                    + "Required columns are {0}. Only found {1}.".format(
                         self.columns, df.columns
                     )
                 )
-            self.check_types(df)
+            df = self.check_types(df)
         return df
 
     def get_duplicates_dict(self, df):
         return df[self.DUPLICATE_COLUMNS].drop_duplicates().to_dict(orient="list")
 
     def remove_duplicates(self, remove_in, remove_from):
-        # print("removing duplicates")
         if remove_from.empty:
             return remove_in
         if remove_in.empty:
             return remove_from
         duplicates_dict = self.get_duplicates_dict(remove_from)
-        # res = remove_in[~remove_in[self.DUPLICATE_COLUMNS].isin(
-        #     duplicates_dict).all(axis=1)]
         res = self.remove_rows(remove_in, self.DUPLICATE_COLUMNS, duplicates_dict)
         return res.copy()
 
@@ -165,6 +159,7 @@ class TableModel:
 
     def add(self, new, save=False, replace=True):
         dest = self.df
+        new = self.check_types(new)
         if replace:
             # if we replace, remove duplicates from old dataframe
             dest = self.remove_duplicates(self.df, new)
