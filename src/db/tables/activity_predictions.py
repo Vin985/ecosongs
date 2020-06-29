@@ -31,7 +31,6 @@ class ActivityPredictionsTable(TableModel):
         }
 
     def check_ids(self, table):
-        # Do not check ids as we do not use them for this table (index is time)
         return table
 
     def save(self, update=False):
@@ -39,6 +38,7 @@ class ActivityPredictionsTable(TableModel):
             self._df.drop(columns=["id"], inplace=True)
         self._df.activity = self._df.activity.round(3)
         self._df.time = self._df.time.round(3)
+        self._df = self._df.drop_duplicates()
         super().save(update)
 
     def get_events_by_id(self, recording_id, options):
