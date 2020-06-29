@@ -1,18 +1,15 @@
-
 import traceback
 from itertools import product
 
 import pandas as pd
-from PySide2.QtCore import Slot,  Signal
+from PySide2.QtCore import Slot, Signal
 
-from analysis.detection.detector_evaluation import (mp_get_stats,
-                                                    mp_initialize_evaluator)
+from analysis.detection.detector_evaluation import mp_get_stats, mp_initialize_evaluator
 from gui.threads.thread_worker import ThreadWorker
 from utils.commons import range_list
 
 
 class SensitivityWorker(ThreadWorker):
-
     def __init__(self, predictions, recordings, tags):
         super().__init__()
         self.recordings = recordings
@@ -38,27 +35,39 @@ class SensitivityWorker(ThreadWorker):
 
         try:
             min_activities = range_list(
-                opts["min_activity_start"], opts["min_activity_end"], opts["min_activity_step"])
+                opts["min_activity_start"],
+                opts["min_activity_end"],
+                opts["min_activity_step"],
+            )
             end_thresholds = range_list(
-                opts["end_threshold_start"], opts["end_threshold_end"], opts["end_threshold_step"])
+                opts["end_threshold_start"],
+                opts["end_threshold_end"],
+                opts["end_threshold_step"],
+            )
             min_durations = range_list(
-                opts["min_duration_start"], opts["min_duration_end"], opts["min_duration_step"])
+                opts["min_duration_start"],
+                opts["min_duration_end"],
+                opts["min_duration_step"],
+            )
         except Exception:
             self.error.emit(traceback.format_exc())
 
         if 0 in opts["methods"]:
             self.parameters += list(
-                product(*[0, min_activities, end_thresholds, min_durations]))
+                product(*[0, min_activities, end_thresholds, min_durations])
+            )
         if 1 in opts["methods"]:
-            self.parameters += list(
-                product(*[1, min_activities, 0, min_durations]))
+            self.parameters += list(product(*[1, min_activities, 0, min_durations]))
 
         # [{"a":x, "b":y} for x,y in test]
 
         self.options["chunksize_percent"] = 5
-        self.map(self.parameters, mp_get_stats,
-                 initializer=mp_initialize_evaluator,
-                 initargs=(self.predictions, self.recordings, self.tags))
+        self.map(
+            self.parameters,
+            mp_get_stats,
+            initializer=mp_initialize_evaluator,
+            initargs=(self.predictions, self.recordings, self.tags),
+        )
         self.done.emit()
 
     def save_results(self, audio_path, labels_path):
@@ -70,7 +79,11 @@ class SensitivityWorker(ThreadWorker):
                 params["audio_path"] = audio_path
                 params["labels_path"] = labels_path
                 options_id = analysis_options_table.add(
-                    params, analysis_type="detector_sensitivity", save=False, replace=False)
+                    params,
+                    analysis_type="detector_sensitivity",
+                    save=False,
+                    replace=False,
+                )
 
                 events["analysis_options"] = options_id
                 events_table.add(events, save=False, replace=True)
@@ -78,6 +91,7 @@ class SensitivityWorker(ThreadWorker):
                 stats_df = pd.DataFrame([stats])
                 stats_df["analysis_options"] = options_id
                 stats_table.add(stats_df, save=False)
+            # TODO: Warning, do not use save directly if possible
             analysis_options_table.save()
             events_table.save()
             stats_table.save()
