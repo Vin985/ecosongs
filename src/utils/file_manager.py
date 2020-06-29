@@ -6,7 +6,7 @@ import zipfile
 from datetime import datetime
 
 import pandas as pd
-from wac2wav import wac2wav
+
 
 from utils.wav_headers import get_wav_headers
 
@@ -29,13 +29,16 @@ class FileManager:
         Description of attribute `FILE_EXT`.
 
     """
+
     # TODO: put in config
     FILE_EXT = ("wac", "wav")
     # TODO: put in config
-    PATTERNS = {"Audiomoth2018": "(^[A-F0-9]{8}$)",
-                "Audiomoth2019": "(^\d{8}_\d{6}$)",
-                "SongMeter": "(.+)_(\d{8}_\d{6})",
-                "Ecosongs": "(.+)_(.+)_(\d{4}-\d{2}-\d{2}_\d{2}:\d{2}:\d{2})"}
+    PATTERNS = {
+        "Audiomoth2018": "(^[A-F0-9]{8}$)",
+        "Audiomoth2019": "(^\d{8}_\d{6}$)",
+        "SongMeter": "(.+)_(\d{8}_\d{6})",
+        "Ecosongs": "(.+)_(.+)_(\d{4}-\d{2}-\d{2}_\d{2}:\d{2}:\d{2})",
+    }
 
     def __init__(self, sites=None):
         self.file_infos = None
@@ -47,11 +50,14 @@ class FileManager:
         self.file_paths = ""
         self.to_wav = None
         self.archive = None
-        self.options = {"recursive": True, "recorder": RECORDER_AUTO, "folder": False,
-                        "site_info": {"site": 1, "year": 0, "plot": 2},
-                        "folder_hierarchy": True}
-        self.regex = {key: re.compile(value)
-                      for (key, value) in self.PATTERNS.items()}
+        self.options = {
+            "recursive": True,
+            "recorder": RECORDER_AUTO,
+            "folder": False,
+            "site_info": {"site": 1, "year": 0, "plot": 2},
+            "folder_hierarchy": True,
+        }
+        self.regex = {key: re.compile(value) for (key, value) in self.PATTERNS.items()}
 
     def log(self, text):
         print(text)
@@ -111,10 +117,18 @@ class FileManager:
             logging.warning("File is not a supported audio file")
             return
         # Get name
-        name = ''.join(f[:len(f) - 1])
+        name = "".join(f[: len(f) - 1])
 
-        res = {"error": 0, "site": None, "plot": None, "date": None,
-               "year": None, "name": None, "path": fullpath, "recorder": None}
+        res = {
+            "error": 0,
+            "site": None,
+            "plot": None,
+            "date": None,
+            "year": None,
+            "name": None,
+            "path": fullpath,
+            "recorder": None,
+        }
         res["ext"] = ext
         res["old_name"] = file_name
 
@@ -136,7 +150,9 @@ class FileManager:
         if self.options["folder_hierarchy"]:
             if len(path) < 4:
                 # TODO: handle errors
-                error = "Cannot extrapolate information from hierarchy, not enough folders"
+                error = (
+                    "Cannot extrapolate information from hierarchy, not enough folders"
+                )
             else:
                 res["site"] = path[self.options["site_info"]["site"] - 1]
                 res["year"] = path[self.options["site_info"]["year"] - 1]
@@ -147,8 +163,7 @@ class FileManager:
             res["plot"] = self.options["site_info"]["plot"]
 
         if res["date"]:
-            res["name"] = (res["plot"] +
-                           "_" + res["date"].strftime('%Y-%m-%d_%H:%M:%S'))
+            res["name"] = res["plot"] + "_" + res["date"].strftime("%Y-%m-%d_%H:%M:%S")
         else:
             res["name"] = name
 
@@ -170,9 +185,10 @@ class FileManager:
         for key, reg in self.regex.items():
             m = reg.match(file)
             if m:
-                return(key, m)
+                return (key, m)
         logging.warning(
-            "Name does not match any known recorder, skipping automatic detection")
+            "Name does not match any known recorder, skipping automatic detection"
+        )
         return (None, None)
 
     def extract_date(self, recorder, match):
@@ -201,8 +217,11 @@ class FileManager:
         return date
 
     def get_files_to_convert(self):
-        self.to_wav = list(self.file_infos.loc[self.file_infos.ext == "wac", [
-            'path', 'old_name', 'name']].itertuples(index=False))
+        self.to_wav = list(
+            self.file_infos.loc[
+                self.file_infos.ext == "wac", ["path", "old_name", "name"]
+            ].itertuples(index=False)
+        )
         print(self.to_wav)
 
     def files_loaded(self):
@@ -218,7 +237,7 @@ class FileManager:
 
     def open_archive(self, filename="backup_wac.zip"):
         if self.compress_old and self.root_dir:
-            self.archive = zipfile.ZipFile(self.root_dir + "/" + filename, 'w')
+            self.archive = zipfile.ZipFile(self.root_dir + "/" + filename, "w")
 
     def close_archive(self):
         if self.archive:
@@ -231,6 +250,8 @@ class FileManager:
     def convert_file(self, filename):
         print("in converting")
         try:
+            from wac2wav import wac2wav
+
             # TODO: add options to change audio type
             (path, old_name, new_name) = filename
             print(filename)
@@ -252,12 +273,15 @@ class FileManager:
                 mask = self.file_infos.path == path
                 cols = ["duration", "sample_rate", "path", "ext"]
                 self.file_infos.loc[mask, cols] = [
-                    headers["Duration"], headers["SampleRate"], new_path, "wav"]
+                    headers["Duration"],
+                    headers["SampleRate"],
+                    new_path,
+                    "wav",
+                ]
 
             if self.archive:
                 print("adding file to archive")
-                self.archive.write(
-                    filename, filename.replace(self.root_dir, ""))
+                self.archive.write(filename, filename.replace(self.root_dir, ""))
         except Exception as e:
             print(traceback.format_exc())
 
@@ -265,13 +289,12 @@ class FileManager:
         if not rename and not create_links:
             return
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
-        new_paths = [self.get_new_path(*row)
-                     for row in cols.itertuples(index=False)]
+        new_paths = [self.get_new_path(*row) for row in cols.itertuples(index=False)]
         tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
         for old, new in tmp:
             if not os.path.exists(os.path.dirname(new)):
                 os.makedirs(os.path.dirname(new))
-            if (os.path.exists(new) and overwrite):
+            if os.path.exists(new) and overwrite:
                 self.log(new + " already exists. Overwriting!")
                 os.remove(new)
             if create_links:
@@ -295,18 +318,17 @@ class FileManager:
         if self.dest_dir:
             new_path = new_path.replace(self.root_dir, self.dest_dir)
         new_path += ".wav"
-        return(new_path)
+        return new_path
 
     def create_links(self, overwrite=True):
         cols = self.file_infos.loc[:, ["path", "old_name", "name"]]
-        new_paths = [self.get_new_path(*row)
-                     for row in cols.itertuples(index=False)]
+        new_paths = [self.get_new_path(*row) for row in cols.itertuples(index=False)]
         tmp = list(zip(self.file_infos.loc[:, "path"], new_paths))
         for old, new in tmp:
             self.log("Creating link " + new + " to " + old)
             if not os.path.exists(os.path.dirname(new)):
                 os.makedirs(os.path.dirname(new))
-            if (os.path.exists(new) and overwrite):
+            if os.path.exists(new) and overwrite:
                 self.log(new + " already exists. Overwriting!")
                 os.remove(new)
             os.symlink(old, new)
