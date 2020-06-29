@@ -193,56 +193,20 @@
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_9">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Activity level</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_8">
-              <property name="text">
-               <string>End threshold</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>Minimum duration (ms)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QDoubleSpinBox" name="spin_min_duration">
-              <property name="keyboardTracking">
-               <bool>false</bool>
-              </property>
-              <property name="decimals">
-               <number>0</number>
-              </property>
-              <property name="maximum">
-               <double>10000.000000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>30.000000000000000</double>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_6">
               <property name="text">
                <string>Detect songs in selected recordings</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="SongEventsOptions" name="song_events_options" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
               </property>
              </widget>
             </item>
@@ -270,59 +234,6 @@
               </item>
              </layout>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Method</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QComboBox" name="combo_method">
-              <item>
-               <property name="text">
-                <string>Event detection</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Subsampling</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QDoubleSpinBox" name="spin_end_threshold">
-              <property name="keyboardTracking">
-               <bool>false</bool>
-              </property>
-              <property name="maximum">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>0.010000000000000</double>
-              </property>
-              <property name="value">
-               <double>0.600000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="spin_activity">
-              <property name="keyboardTracking">
-               <bool>false</bool>
-              </property>
-              <property name="maximum">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>0.010000000000000</double>
-              </property>
-              <property name="value">
-               <double>0.950000000000000</double>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
          </item>
@@ -338,9 +249,12 @@
     <string>Compute ACI</string>
    </property>
   </action>
-  <action name="action_detect_songs">
+  <action name="action_calculate_activity">
    <property name="text">
-    <string>Detect bird songs</string>
+    <string>Calculate biophonic activity</string>
+   </property>
+   <property name="toolTip">
+    <string>Calculate biophonic activity using a deep learning detector</string>
    </property>
   </action>
   <action name="action_delete">
@@ -362,6 +276,14 @@
    </property>
    <property name="toolTip">
     <string>Check and import tags for the selected files if any are found</string>
+   </property>
+  </action>
+  <action name="action_export_song_events">
+   <property name="text">
+    <string>Export song events</string>
+   </property>
+   <property name="toolTip">
+    <string>Export song events based on biophonic activity</string>
    </property>
   </action>
  </widget>
@@ -388,6 +310,12 @@
    <class>QSpectrogramOptions</class>
    <extends>QWidget</extends>
    <header>pysoundplayer.gui.QSpectrogramOptions.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SongEventsOptions</class>
+   <extends>QWidget</extends>
+   <header>gui.widgets.options.song_events_options.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

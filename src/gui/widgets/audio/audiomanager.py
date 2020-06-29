@@ -20,9 +20,6 @@ def update_path(path):
 
 
 class AudioManager(PageWidget, Ui_AudioManager):
-
-    EVENT_DETECTION_METHODS = ["standard", "subsampling"]
-
     def __init__(self):
         super().__init__()
         print(
@@ -60,19 +57,20 @@ class AudioManager(PageWidget, Ui_AudioManager):
         self.tree_view.selectionModel().selectionChanged.connect(
             self.tree_selection_changed
         )
-        self.add_actions()
-        self.show_folder_details()
+        # self.add_actions()
+        self.show_multiple_details()
 
-    def add_actions(self):
-        self.tree_view.addAction(self.action_ACI)
-        self.tree_view.addAction(self.action_detect_songs)
+    # def add_actions(self):
+    #     self.tree_view.addAction(self.action_ACI)
+    #     self.tree_view.addAction(self.action_detect_songs)
 
     def link_events(self):
         self.action_ACI.triggered.connect(self.compute_ACI)
-        self.action_detect_songs.triggered.connect(self.detect_songs)
+        self.action_calculate_activity.triggered.connect(self.detect_songs)
         self.action_delete.triggered.connect(self.show_delete_msg)
         self.action_create_links.triggered.connect(self.show_create_links_msg)
         self.action_import_tags.triggered.connect(self.import_tags)
+        self.action_export_song_events.triggered.connect(self.export_song_events)
 
         # self.time_slider.valueChanged.connect(self.update_spectrogram)
 
@@ -80,10 +78,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
         # self.checkbox_draw_events.toggled.connect(self.draw_events)
 
         self.group_draw_events.toggled.connect(self.draw_events)
-        self.spin_activity.valueChanged.connect(self.draw_events)
-        self.spin_end_threshold.valueChanged.connect(self.draw_events)
-        self.spin_min_duration.valueChanged.connect(self.draw_events)
-        self.combo_method.currentIndexChanged.connect(self.draw_events)
+        self.song_events_options.option_changed.connect(self.draw_events)
 
         self.sound_player.update_position.connect(
             self.spectrogram_viewer.update_sound_marker
@@ -104,40 +99,28 @@ class AudioManager(PageWidget, Ui_AudioManager):
         menu.addAction(self.action_import_tags)
         menu.addSeparator()
         menu.addAction(self.action_ACI)
-        menu.addAction(self.action_detect_songs)
+        menu.addAction(self.action_calculate_activity)
+        menu.addAction(self.action_export_song_events)
         menu.exec_(event.globalPos())
 
     @Slot()
     def tree_selection_changed(self, new, old):
-        # TODO: handle multiple selection
-        if not new.indexes() or len(new.indexes()) == 0:
-            self.show_folder_details()
-            return
-        # TODO: handle multiple selection
-        index = new.indexes()[0]
-        item = index.model().itemFromIndex(index)
-        if item.is_folder:
-            # item is folder
-            self.show_folder_details(item.data())
-        else:
-            # item is recording
-            self.show_recording_details(item.data())
+        if len(self.tree_view.selectedIndexes()) == 1:
+            index = new.indexes()[0]
+            item = index.model().itemFromIndex(index)
+            if not item.is_folder:
+                self.show_recording_details(item.data())
+                return
+        self.show_multiple_details()
 
     @Slot()
     def draw_events(self):
+        print("draw events")
         self.spectrogram_viewer.clear_rects()
         if self.group_draw_events.isChecked():
             predictions_table = qApp.tables.activity_predictions
             if not predictions_table.empty:
-                event_options = {
-                    "method": self.EVENT_DETECTION_METHODS[
-                        self.combo_method.currentIndex()
-                    ],
-                    "min_activity": self.spin_activity.value(),
-                    "end_threshold": self.spin_end_threshold.value(),
-                    "min_duration": self.spin_min_duration.value() / 1000,
-                    "isolate_events": True,
-                }
+                event_options = self.song_events_options.get_options()
                 events = predictions_table.get_events_by_id(
                     self.current_recording.id, event_options
                 )
@@ -231,6 +214,16 @@ class AudioManager(PageWidget, Ui_AudioManager):
         self.action_dialog.setModal(True)
         self.action_dialog.show()
 
+    @Slot()
+    def export_song_events(self):
+        print("Exporting song events")
+        recs = self.get_selected_recordings(selection_type="table")
+        from gui.widgets.dialogs.export_song_events_dialog import ExportSongEventsDialog
+
+        self.action_dialog = ExportSongEventsDialog(recs, parent=self)
+        self.action_dialog.setModal(True)
+        self.action_dialog.show()
+
     def delete_recordings(self):
         print("deleting...")
         recs = self.get_selected_recordings(selection_type="index")
@@ -274,10 +267,9 @@ class AudioManager(PageWidget, Ui_AudioManager):
         else:
             return qApp.load_recordings(res.index.values)
 
-    def show_folder_details(self, folder_info=None):
-        if folder_info is not None:
-            query = self.folder_query(folder_info)
-            res = qApp.tables.recordings.query(query)
+    def show_multiple_details(self):
+        if self.tree_view.selectedIndexes():
+            res = self.get_selected_recordings("table")
         else:
             res = qApp.tables.recordings.df
         if not res.empty:

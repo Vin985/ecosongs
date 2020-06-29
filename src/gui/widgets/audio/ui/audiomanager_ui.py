@@ -19,6 +19,7 @@ from pysoundplayer.gui.QSoundPlayer import QSoundPlayer
 from pysoundplayer.gui.QImageOptions import QImageOptions
 from pysoundplayer.gui.QSpectrogramViewer import QSpectrogramViewer
 from pysoundplayer.gui.QSpectrogramOptions import QSpectrogramOptions
+from gui.widgets.options.song_events_options import SongEventsOptions
 
 
 class Ui_AudioManager(object):
@@ -28,14 +29,16 @@ class Ui_AudioManager(object):
         AudioManager.resize(984, 682)
         self.action_ACI = QAction(AudioManager)
         self.action_ACI.setObjectName(u"action_ACI")
-        self.action_detect_songs = QAction(AudioManager)
-        self.action_detect_songs.setObjectName(u"action_detect_songs")
+        self.action_calculate_activity = QAction(AudioManager)
+        self.action_calculate_activity.setObjectName(u"action_calculate_activity")
         self.action_delete = QAction(AudioManager)
         self.action_delete.setObjectName(u"action_delete")
         self.action_create_links = QAction(AudioManager)
         self.action_create_links.setObjectName(u"action_create_links")
         self.action_import_tags = QAction(AudioManager)
         self.action_import_tags.setObjectName(u"action_import_tags")
+        self.action_export_song_events = QAction(AudioManager)
+        self.action_export_song_events.setObjectName(u"action_export_song_events")
         self.horizontalLayout_2 = QHBoxLayout(AudioManager)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.splitter = QSplitter(AudioManager)
@@ -171,37 +174,16 @@ class Ui_AudioManager(object):
         self.group_draw_events.setCheckable(True)
         self.gridLayout = QGridLayout(self.group_draw_events)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.label_9 = QLabel(self.group_draw_events)
-        self.label_9.setObjectName(u"label_9")
-        sizePolicy2.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
-        self.label_9.setSizePolicy(sizePolicy2)
-
-        self.gridLayout.addWidget(self.label_9, 3, 0, 1, 1)
-
-        self.label_8 = QLabel(self.group_draw_events)
-        self.label_8.setObjectName(u"label_8")
-
-        self.gridLayout.addWidget(self.label_8, 4, 0, 1, 1)
-
-        self.label_7 = QLabel(self.group_draw_events)
-        self.label_7.setObjectName(u"label_7")
-
-        self.gridLayout.addWidget(self.label_7, 5, 0, 1, 1)
-
-        self.spin_min_duration = QDoubleSpinBox(self.group_draw_events)
-        self.spin_min_duration.setObjectName(u"spin_min_duration")
-        self.spin_min_duration.setKeyboardTracking(False)
-        self.spin_min_duration.setDecimals(0)
-        self.spin_min_duration.setMaximum(10000.000000000000000)
-        self.spin_min_duration.setSingleStep(1.000000000000000)
-        self.spin_min_duration.setValue(30.000000000000000)
-
-        self.gridLayout.addWidget(self.spin_min_duration, 5, 1, 1, 1)
-
         self.label_6 = QLabel(self.group_draw_events)
         self.label_6.setObjectName(u"label_6")
 
         self.gridLayout.addWidget(self.label_6, 0, 0, 1, 1)
+
+        self.song_events_options = SongEventsOptions(self.group_draw_events)
+        self.song_events_options.setObjectName(u"song_events_options")
+        self.song_events_options.setMinimumSize(QSize(0, 20))
+
+        self.gridLayout.addWidget(self.song_events_options, 1, 0, 1, 2)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -216,36 +198,6 @@ class Ui_AudioManager(object):
 
 
         self.gridLayout.addLayout(self.horizontalLayout, 0, 1, 1, 1)
-
-        self.label_4 = QLabel(self.group_draw_events)
-        self.label_4.setObjectName(u"label_4")
-
-        self.gridLayout.addWidget(self.label_4, 1, 0, 1, 1)
-
-        self.combo_method = QComboBox(self.group_draw_events)
-        self.combo_method.addItem("")
-        self.combo_method.addItem("")
-        self.combo_method.setObjectName(u"combo_method")
-
-        self.gridLayout.addWidget(self.combo_method, 1, 1, 1, 1)
-
-        self.spin_end_threshold = QDoubleSpinBox(self.group_draw_events)
-        self.spin_end_threshold.setObjectName(u"spin_end_threshold")
-        self.spin_end_threshold.setKeyboardTracking(False)
-        self.spin_end_threshold.setMaximum(1.000000000000000)
-        self.spin_end_threshold.setSingleStep(0.010000000000000)
-        self.spin_end_threshold.setValue(0.600000000000000)
-
-        self.gridLayout.addWidget(self.spin_end_threshold, 4, 1, 1, 1)
-
-        self.spin_activity = QDoubleSpinBox(self.group_draw_events)
-        self.spin_activity.setObjectName(u"spin_activity")
-        self.spin_activity.setKeyboardTracking(False)
-        self.spin_activity.setMaximum(1.000000000000000)
-        self.spin_activity.setSingleStep(0.010000000000000)
-        self.spin_activity.setValue(0.950000000000000)
-
-        self.gridLayout.addWidget(self.spin_activity, 3, 1, 1, 1)
 
 
         self.horizontalLayout_3.addWidget(self.group_draw_events)
@@ -266,7 +218,10 @@ class Ui_AudioManager(object):
     def retranslateUi(self, AudioManager):
         AudioManager.setWindowTitle(QCoreApplication.translate("AudioManager", u"Form", None))
         self.action_ACI.setText(QCoreApplication.translate("AudioManager", u"Compute ACI", None))
-        self.action_detect_songs.setText(QCoreApplication.translate("AudioManager", u"Detect bird songs", None))
+        self.action_calculate_activity.setText(QCoreApplication.translate("AudioManager", u"Calculate biophonic activity", None))
+#if QT_CONFIG(tooltip)
+        self.action_calculate_activity.setToolTip(QCoreApplication.translate("AudioManager", u"Calculate biophonic activity using a deep learning detector", None))
+#endif // QT_CONFIG(tooltip)
         self.action_delete.setText(QCoreApplication.translate("AudioManager", u"Delete", None))
         self.action_create_links.setText(QCoreApplication.translate("AudioManager", u"Create virtual links", None))
 #if QT_CONFIG(tooltip)
@@ -275,6 +230,10 @@ class Ui_AudioManager(object):
         self.action_import_tags.setText(QCoreApplication.translate("AudioManager", u"Import tags", None))
 #if QT_CONFIG(tooltip)
         self.action_import_tags.setToolTip(QCoreApplication.translate("AudioManager", u"Check and import tags for the selected files if any are found", None))
+#endif // QT_CONFIG(tooltip)
+        self.action_export_song_events.setText(QCoreApplication.translate("AudioManager", u"Export song events", None))
+#if QT_CONFIG(tooltip)
+        self.action_export_song_events.setToolTip(QCoreApplication.translate("AudioManager", u"Export song events based on biophonic activity", None))
 #endif // QT_CONFIG(tooltip)
         self.label.setText(QCoreApplication.translate("AudioManager", u"Name", None))
         self.label_5.setText(QCoreApplication.translate("AudioManager", u"Year", None))
@@ -287,14 +246,7 @@ class Ui_AudioManager(object):
         self.groupBox.setTitle(QCoreApplication.translate("AudioManager", u"Spectrogram", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("AudioManager", u"Image", None))
         self.group_draw_events.setTitle(QCoreApplication.translate("AudioManager", u"Draw events", None))
-        self.label_9.setText(QCoreApplication.translate("AudioManager", u"Activity level", None))
-        self.label_8.setText(QCoreApplication.translate("AudioManager", u"End threshold", None))
-        self.label_7.setText(QCoreApplication.translate("AudioManager", u"Minimum duration (ms)", None))
         self.label_6.setText(QCoreApplication.translate("AudioManager", u"Detect songs in selected recordings", None))
         self.btn_export_pdf.setText(QCoreApplication.translate("AudioManager", u"Export events to pdf", None))
-        self.label_4.setText(QCoreApplication.translate("AudioManager", u"Method", None))
-        self.combo_method.setItemText(0, QCoreApplication.translate("AudioManager", u"Event detection", None))
-        self.combo_method.setItemText(1, QCoreApplication.translate("AudioManager", u"Subsampling", None))
-
     # retranslateUi
 
