@@ -1,4 +1,5 @@
 import time
+import traceback
 
 import numpy as np
 import pandas as pd
@@ -29,19 +30,24 @@ def mp_detect_songs(recording):
     assert DETECTION_OPTIONS is not None
     tic = time.time()
     preds = []
+    res_df = pd.DataFrame()
     # TODO: see if we can optimize with the recording object
-    preds = DETECTOR.classify(recording.path)
+    try:
+        preds = DETECTOR.classify(recording.path)
 
-    len_in_s = preds.shape[0] * HOP_LENGTH / DETECTOR.sample_rate
-    timeseq = np.linspace(0, len_in_s, preds.shape[0])
-    res_df = pd.DataFrame(
-        {"recording_id": recording.id, "time": timeseq, "activity": preds}
-    )
+        len_in_s = preds.shape[0] * HOP_LENGTH / DETECTOR.sample_rate
+        timeseq = np.linspace(0, len_in_s, preds.shape[0])
+        res_df = pd.DataFrame(
+            {"recording_id": recording.id, "time": timeseq, "activity": preds}
+        )
+        if DETECTION_OPTIONS.get("export_pdf", False):
+            predictions2pdf(res_df, recording)
+    except Exception:
+        print("Error classifying recording: ", recording.path)
     # print(res_df)
     # with open('demo/predictions2.pkl', 'wb') as f:
     #     pickle.dump(test, f, -1)
-    if DETECTION_OPTIONS.get("export_pdf", False):
-        predictions2pdf(res_df, recording)
+
     # events = detect_songs_events(res_df, recording_id=recording.id,
 
     #                              detection_options=DETECTION_OPTIONS)
