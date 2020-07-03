@@ -18,7 +18,6 @@ class ThreadWorker(QObject, ParallelWorker):
     def __init__(self):
         QObject.__init__(self)
         ParallelWorker.__init__(self)
-        print(self.thread())
 
     def log(self, text):
         self.logging.emit(text)
