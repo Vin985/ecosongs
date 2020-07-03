@@ -191,6 +191,10 @@ class Ui_ExportTableOptions(object):
 
         self.verticalLayout_3.addWidget(self.expand_frame)
 
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_3.addItem(self.verticalSpacer)
+
 
         self.retranslateUi(ExportTableOptions)
 
