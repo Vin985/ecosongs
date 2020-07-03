@@ -264,6 +264,8 @@ class AudioManager(PageWidget, Ui_AudioManager):
             return res.index.values
         elif selection_type == "table":
             return res
+        elif selection_type == "id":
+            return res.id.unique()
         else:
             return qApp.load_recordings(res.index.values)
 
