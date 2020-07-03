@@ -23,15 +23,14 @@ class SubsamplingDetector(Detector):
         return 0
 
     def get_tag_index(self, x, step, tags):
-        start = x.index.values[0].item() / 10**9
+        start = x.index.values[0].item() / 10 ** 9
         # start = x.index[0].timestamp()
         end = start + step / 1000
-        #interval = pd.Interval(start, end)
-        #tmp = tags.id[tags.index.overlaps(interval)].unique()
-        tmp = np.unique(tags["id"][(tags["start"] < end) & (
-            tags["end"] >= start)])
+        # interval = pd.Interval(start, end)
+        # tmp = tags.id[tags.index.overlaps(interval)].unique()
+        tmp = np.unique(tags["id"][(tags["start"] < end) & (tags["end"] >= start)])
         idx = ",".join(tmp)
-        #idx = ",".join(list(map(str, tmp)))
+        # idx = ",".join(list(map(str, tmp)))
         return idx
 
     def isolate_events(self, predictions, step):
@@ -51,15 +50,27 @@ class SubsamplingDetector(Detector):
                 diff = x.datetime - prev_time
                 if diff > step:
                     end = prev_time + step
-                    events.append({"event_id": event_id, "recording_id": x.recording_id,
-                                   "start": start.timestamp(), "end": end.timestamp()})
+                    events.append(
+                        {
+                            "event_id": event_id,
+                            "recording_id": x.recording_id,
+                            "start": start.timestamp(),
+                            "end": end.timestamp(),
+                        }
+                    )
                     event_id += 1
                     start = x.datetime
                 prev_time = x.datetime
 
             end = prev_time + step
-            events.append({"event_id": event_id, "recording_id": x.recording_id,
-                           "start": start.timestamp(), "end": end.timestamp()})
+            events.append(
+                {
+                    "event_id": event_id,
+                    "recording_id": x.recording_id,
+                    "start": start.timestamp(),
+                    "end": end.timestamp(),
+                }
+            )
 
         events = pd.DataFrame(events)
         return events
@@ -68,16 +79,14 @@ class SubsamplingDetector(Detector):
         preds = predictions[["time", "activity"]].copy()
         min_activity = options.get("min_activity", self.DEFAULT_MIN_ACTIVITY)
         step = options.get("min_duration", self.DEFAULT_MIN_DURATION) * 1000
-        isolate_events = options.get(
-            "isolate_events", self.DEFAULT_ISOLATE_EVENTS)
+        isolate_events = options.get("isolate_events", self.DEFAULT_ISOLATE_EVENTS)
 
-        preds.loc[:, "datetime"] = pd.to_datetime(preds.time * 10**9)
+        preds.loc[:, "datetime"] = pd.to_datetime(preds.time * 10 ** 9)
         preds.set_index("datetime", inplace=True)
 
-        resampled = preds.resample(str(step)+"ms")
+        resampled = preds.resample(str(step) + "ms")
         # TODO: add resampling method in options
-        resample_func = functools.partial(
-            self.resample_max, threshold=min_activity)
+        resample_func = functools.partial(self.resample_max, threshold=min_activity)
         res = resampled.agg({"activity": resample_func})
         res.rename(columns={"activity": "event"}, inplace=True)
         res["recording_id"] = recording_id
@@ -91,21 +100,19 @@ class SubsamplingDetector(Detector):
         recording_id = predictions.name
         current_tags = tags.loc[tags.recording_id == recording_id]
         # self.associate_tags(predictions, current_tags)
-        min_activity = options.get(
-            "min_activity", self.DEFAULT_MIN_ACTIVITY)
+        min_activity = options.get("min_activity", self.DEFAULT_MIN_ACTIVITY)
         step = options.get("min_duration", self.DEFAULT_MIN_DURATION) * 1000
 
-        resampled = predictions.resample(str(step)+"ms")
-        resample_func = functools.partial(
-            self.resample_max, threshold=min_activity)
-        #tags2 = current_tags[["id", "tag_start", "tag_end"]].to_numpy()
-        tmp_tags = {"id": current_tags.id.to_numpy().astype(str),
-                    "start": current_tags.tag_start.to_numpy(),
-                    "end": current_tags.tag_end.to_numpy()}
-        tag_func = functools.partial(
-            self.get_tag_index, step=step, tags=tmp_tags)
-        res = resampled.agg({"activity": resample_func,
-                             "tag_index": tag_func})
+        resampled = predictions.resample(str(step) + "ms")
+        resample_func = functools.partial(self.resample_max, threshold=min_activity)
+        # tags2 = current_tags[["id", "tag_start", "tag_end"]].to_numpy()
+        tmp_tags = {
+            "id": current_tags.id.to_numpy().astype(str),
+            "start": current_tags.tag_start.to_numpy(),
+            "end": current_tags.tag_end.to_numpy(),
+        }
+        tag_func = functools.partial(self.get_tag_index, step=step, tags=tmp_tags)
+        res = resampled.agg({"activity": resample_func, "tag_index": tag_func})
         res["recording_id"] = recording_id
         res.rename(columns={"activity": "event"}, inplace=True)
         return res
@@ -137,21 +144,30 @@ class SubsamplingDetector(Detector):
 
         fn2 = len(all_tags) - len(matched_tags)
 
-        precision = tp/(tp+fp)
-        recall = tp/(tp+fn)
-        recall2 = tp/(tp+fn2)
-        return {"precision": precision, "recall": recall,
-                "recall2": recall2, "tp": tp, "tn": tn,
-                "fp": fp, "fn": fn, "fn2": fn2}
+        precision = tp / (tp + fp)
+        recall = tp / (tp + fn)
+        recall2 = tp / (tp + fn2)
+        return {
+            "precision": precision,
+            "recall": recall,
+            "recall2": recall2,
+            "tp": tp,
+            "tn": tn,
+            "fp": fp,
+            "fn": fn,
+            "fn2": fn2,
+        }
 
     def get_recording_events_apply(self, predictions, options):
+        print(predictions.name)
         recording_id = predictions.recording_id.values[0]
         return self.get_recording_events(predictions, recording_id, options)
 
     def get_events(self, predictions, options=None):
         options = options or {}
         events = predictions.groupby("recording_id", as_index=False).apply(
-            self.get_recording_events_apply, options)
+            self.get_recording_events_apply, options
+        )
         # events = predictions.groupby("recording_id", as_index=False).parallel_apply(
         #     self.get_recording_events_apply, options)
         events.reset_index(inplace=True)
@@ -164,14 +180,15 @@ class SubsamplingDetector(Detector):
         preds.loc[:, "tag"] = -1
         preds.loc[:, "tag_index"] = -1
         preds.loc[:, "event"] = -1
-        preds.loc[:, "datetime"] = pd.to_datetime(preds.time * 10**9)
+        preds.loc[:, "datetime"] = pd.to_datetime(preds.time * 10 ** 9)
         preds.set_index("datetime", inplace=True)
         # interval_index = pd.IntervalIndex.from_arrays(
         #     tags.tag_start, tags.tag_end)
         # tags.set_index(interval_index, inplace=True)
 
         events = preds.groupby("recording_id", as_index=False).apply(
-            self.match_events_apply, tags, options)
+            self.match_events_apply, tags, options
+        )
         events["tag"] = 0
         events.loc[events.tag_index != "", "tag"] = 1
         stats = self.get_stats(events, expand_index=True)
