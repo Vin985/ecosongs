@@ -24,11 +24,11 @@ class ProgressDialog(QDialog, Ui_ProgressDialog):
         self.log_message = ""
         self.lbl_message.setHidden(True)
         self.lbl_error.setHidden(True)
-        self.adjustSize()
 
     def init_options_widget(self, widget):
         self.options_widget = widget
         self.content_layout.addWidget(self.options_widget)
+        self.adjustSize()
 
     @property
     def worker(self):
