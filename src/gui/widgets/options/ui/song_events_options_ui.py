@@ -71,8 +71,6 @@ class Ui_SongEventsOptions(object):
         self.gridLayout_2.addWidget(self.spin_activity, 4, 1, 1, 1)
 
         self.combo_method = QComboBox(SongEventsOptions)
-        self.combo_method.addItem("")
-        self.combo_method.addItem("")
         self.combo_method.setObjectName(u"combo_method")
 
         self.gridLayout_2.addWidget(self.combo_method, 0, 1, 1, 1)
@@ -87,6 +85,12 @@ class Ui_SongEventsOptions(object):
 
         self.gridLayout_2.addWidget(self.spin_min_duration, 7, 1, 1, 1)
 
+        self.checkbox_isolate_events = QCheckBox(SongEventsOptions)
+        self.checkbox_isolate_events.setObjectName(u"checkbox_isolate_events")
+        self.checkbox_isolate_events.setEnabled(True)
+
+        self.gridLayout_2.addWidget(self.checkbox_isolate_events, 8, 0, 1, 2)
+
 
         self.retranslateUi(SongEventsOptions)
 
@@ -99,8 +103,9 @@ class Ui_SongEventsOptions(object):
         self.label_8.setText(QCoreApplication.translate("SongEventsOptions", u"End threshold", None))
         self.label_7.setText(QCoreApplication.translate("SongEventsOptions", u"Minimum duration (ms)", None))
         self.label_4.setText(QCoreApplication.translate("SongEventsOptions", u"Method", None))
-        self.combo_method.setItemText(0, QCoreApplication.translate("SongEventsOptions", u"Event detection", None))
-        self.combo_method.setItemText(1, QCoreApplication.translate("SongEventsOptions", u"Subsampling", None))
-
+#if QT_CONFIG(tooltip)
+        self.checkbox_isolate_events.setToolTip(QCoreApplication.translate("SongEventsOptions", u"<html><head/><body><p>Returns only isolated events instead of each subsampled time period </p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.checkbox_isolate_events.setText(QCoreApplication.translate("SongEventsOptions", u"Isolate events", None))
     # retranslateUi
 

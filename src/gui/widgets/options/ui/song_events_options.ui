@@ -97,18 +97,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QComboBox" name="combo_method">
-     <item>
-      <property name="text">
-       <string>Event detection</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Subsampling</string>
-      </property>
-     </item>
-    </widget>
+    <widget class="QComboBox" name="combo_method"/>
    </item>
    <item row="7" column="1">
     <widget class="QDoubleSpinBox" name="spin_min_duration">
@@ -126,6 +115,19 @@
      </property>
      <property name="value">
       <double>300.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="2">
+    <widget class="QCheckBox" name="checkbox_isolate_events">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Returns only isolated events instead of each subsampled time period &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Isolate events</string>
      </property>
     </widget>
    </item>
