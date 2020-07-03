@@ -8,6 +8,7 @@ from db.dbmanager import DBManager
 
 class FeatherManager(DBManager):
 
+    NAME = "feather"
     FILE_EXTENSION = ".feather"
 
     def __init__(self, path, **kwargs):
