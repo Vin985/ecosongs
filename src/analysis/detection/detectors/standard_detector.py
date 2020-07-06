@@ -23,6 +23,7 @@ class StandardDetector(Detector):
         predictions = predictions[["activity", "recording_id", "time"]]
         events = predictions.groupby("recording_id", as_index=False, observed=True)
         if options.get("parallel", True):
+            print("paralleling")
             events = events.parallel_apply(self.get_recording_events, options)
         else:
             events = events.apply(self.get_recording_events, options)
@@ -32,6 +33,7 @@ class StandardDetector(Detector):
         events.reset_index(inplace=True)
         events = events[self.EVENTS_COLUMNS.keys()]
         events.rename(columns=self.EVENTS_COLUMNS, inplace=True)
+        print("get events done")
         return events
 
     def get_recording_events(self, predictions, options=None):
