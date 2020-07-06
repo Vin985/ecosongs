@@ -1,7 +1,8 @@
 import logging
-import sys
 import resource
+import sys
 
+from pandarallel import pandarallel
 from PySide2.QtWidgets import QApplication
 
 from db import dbutils
@@ -9,12 +10,7 @@ from db.tablemanager import TableManager
 from gui.ecosongsUI import EcosongsUI
 from gui.utils.settings import Settings
 
-# import tracemalloc
-
-# # print(os.environ['LD_LIBRARY_PATH'])
-#
-# print(sys.version)
-# print(sys.path)
+pandarallel.initialize()
 
 
 class Ecosongs(QApplication):
@@ -50,8 +46,6 @@ class Ecosongs(QApplication):
 
 
 if __name__ == "__main__":
-    # tracemalloc.start(25)
-    # logging.basicConfig(filename='example.log', level=logging.DEBUG)
     logging.basicConfig(level=logging.DEBUG)
     print(
         "Main: Memory usage: %s (kb)"
@@ -63,13 +57,6 @@ if __name__ == "__main__":
         % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     )
     ui = EcosongsUI()
-    # snapshot = tracemalloc.take_snapshot()
-    # top_stats = snapshot.statistics('traceback')
 
-    # # pick the biggest memory block
-    # stat = top_stats[0]
-    # print("%s memory blocks: %.1f KiB" % (stat.count, stat.size / 1024))
-    # for line in stat.traceback.format():
-    #     print(line)
     ui.showMaximized()
     sys.exit(app.exec_())
