@@ -1,5 +1,3 @@
-from functools import partial
-
 from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QApplication, QMainWindow
 
