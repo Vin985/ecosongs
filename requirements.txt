@@ -17,3 +17,6 @@ plotnine
 xlrd
 pyaudio
 pysoundfile
+colorcet
+pyqtgraph
+pandarallel
