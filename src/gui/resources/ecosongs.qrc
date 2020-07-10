@@ -8,5 +8,6 @@
         <file alias="folder">icons/tango/scalable/folder.svg</file>
         <file alias="file-new">icons/tango/scalable/document-new.svg</file>
         <file alias="folder-new">icons/tango/scalable/folder-new.svg</file>
+        <file alias="refresh">icons/tango/scalable/view-refresh.svg</file>
     </qresource>
 </RCC>
