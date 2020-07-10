@@ -71,6 +71,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
         self.action_create_links.triggered.connect(self.show_create_links_msg)
         self.action_import_tags.triggered.connect(self.import_tags)
         self.action_export_song_events.triggered.connect(self.export_song_events)
+        self.action_evaluate_detector.triggered.connect(self.evaluate_detector)
 
         # self.time_slider.valueChanged.connect(self.update_spectrogram)
 
@@ -101,6 +102,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
         menu.addAction(self.action_ACI)
         menu.addAction(self.action_calculate_activity)
         menu.addAction(self.action_export_song_events)
+        menu.addAction(self.action_evaluate_detector)
         menu.exec_(event.globalPos())
 
     @Slot()
@@ -239,6 +241,14 @@ class AudioManager(PageWidget, Ui_AudioManager):
         )
         # TODO : delete other dependencies
 
+    def evaluate_detector(self):
+        opts = {
+            "selected_recordings": self.get_selected_recordings("table")[
+                ["id", "has_tags"]
+            ]
+        }
+        self.change_page.emit("analysis", opts)
+
     def get_selected_recordings(self, selection_type=None):
         res = None
         sel_recs = []
@@ -265,7 +275,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
         elif selection_type == "table":
             return res
         elif selection_type == "id":
-            return res.id.unique()
+            return list(res.id.unique())
         else:
             return qApp.load_recordings(res.index.values)
 
