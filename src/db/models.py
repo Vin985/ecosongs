@@ -160,14 +160,13 @@ class TableModel:
 
     def add(self, new, save=False, replace=True):
         dest = self.df
-        new = self.check_types(new)
+        new = self.check_columns(new)
         if replace:
             # if we replace, remove duplicates from old dataframe
             dest = self.remove_duplicates(self.df, new)
         else:
             # remove duplicates from new dataframe
             new = self.remove_duplicates(new, self.df)
-        new = self.check_ids(new)
         if not new.empty:
             self.update(table=dest.append(new, ignore_index=True, sort=True), save=save)
         return new
