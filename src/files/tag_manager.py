@@ -157,4 +157,4 @@ def load_tags(recordings, options=None):
         res.reset_index(inplace=True)
         res.rename(columns={"index": "tag_index"}, inplace=True)
     recordings.drop("dirname", axis=1, inplace=True)
-    return res  # (res, recordings)
+    return (res, recordings)
