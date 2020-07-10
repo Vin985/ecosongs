@@ -17,3 +17,13 @@ src/results
 src/plots
 Ecosongs.mm
 *.pro.user
+src/test/test copy.py
+src/test/test_import.py
+src/test/test_plot_activity_subsampling.py
+src/test/test.py
+src/gui/widgets/common/checkable_combobox.py
+src/gui/widgets/common/unit_lineedit.py
+src/gui/widgets/common/ui/labeled_slider_ui.py
+src/gui/ecosongs_new.ui
+src/test/db/feather/analysis_options copy.feather.bak
+src/plot/export_data_celine.py
