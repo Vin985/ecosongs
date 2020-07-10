@@ -217,6 +217,7 @@ class FileImportWizard(QWizard, Ui_FileImportWizard):
             self.table_files.setEnabled(True)
             model = self.file_manager.file_infos
             # TODO: date format in config/options
+            model.date.astype("datetime64")
             model["date"] = model["date"].dt.strftime("%Y-%m-%d %H:%M:%S")
             self.table_files.setModel(model)
             self.table_files.resizeColumnsToContents()
