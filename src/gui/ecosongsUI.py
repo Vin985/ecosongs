@@ -8,10 +8,11 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
     def __init__(self):
         super().__init__()
         self.settingsDialog = None
+        self.page_options = None
+        self.current_page = 0
         self.setupUi(self)
         self.loadConfig()
         self.linkEvents()
-        self.current_page = 0
         self.change_page(self.sidebar.currentRow())
 
     def loadConfig(self):
@@ -25,6 +26,7 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
 
         # Navigation: change page when icon is clicked
         self.sidebar.currentRowChanged.connect(self.change_page)
+        self.pages.change_page.connect(self.change_page_from_widget)
 
     def linkActions(self):
         self.aExit.triggered.connect(self.exit)
@@ -49,19 +51,24 @@ class EcosongsUI(QMainWindow, Ui_Ecosongs):
     def exit(self):
         QApplication.quit()
 
-    def init_page_display(self, index):
+    def init_page_display(self, index, opts):
         page = self.pages.widget(index)
-        page.enter_page()
+        page.enter_page(opts)
 
     def clear_page_display(self, index):
         page = self.pages.widget(index)
         page.leave_page()
 
+    def change_page_from_widget(self, index, opts=None):
+        self.page_options = opts
+        self.sidebar.setCurrentRow(index)
+
     def change_page(self, index):
         self.clear_page_display(self.current_page)
-        self.init_page_display(index)
+        self.init_page_display(index, self.page_options)
         self.pages.setCurrentIndex(index)
         self.current_page = index
+        self.page_options = None
 
     def refresh_page(self):
         # TODO: refresh current page if needed

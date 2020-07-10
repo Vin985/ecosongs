@@ -18,8 +18,9 @@ from PySide2.QtWidgets import *
 from gui.widgets.dbmanager.dbexplorer import DBExplorer
 from gui.widgets.audio.audiomanager import AudioManager
 from gui.widgets.analysis.analysis import Analysis
+from gui.widgets.common.page_stacked_widget import PageStackedWidget
 
-from  . import ecosongs_rc
+import ecosongs_rc
 
 class Ui_Ecosongs(object):
     def setupUi(self, Ecosongs):
@@ -76,7 +77,8 @@ class Ui_Ecosongs(object):
         self.centralwidget.setAutoFillBackground(True)
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.pages = QStackedWidget(self.centralwidget)
+        self.horizontalLayout.setContentsMargins(9, 9, 9, 9)
+        self.pages = PageStackedWidget(self.centralwidget)
         self.pages.setObjectName(u"pages")
         sizePolicy2 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy2.setHorizontalStretch(6)

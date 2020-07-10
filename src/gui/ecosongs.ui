@@ -30,8 +30,20 @@
     <bool>true</bool>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="leftMargin">
+     <number>9</number>
+    </property>
+    <property name="topMargin">
+     <number>9</number>
+    </property>
+    <property name="rightMargin">
+     <number>9</number>
+    </property>
+    <property name="bottomMargin">
+     <number>9</number>
+    </property>
     <item>
-     <widget class="QStackedWidget" name="pages">
+     <widget class="PageStackedWidget" name="pages">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>6</horstretch>
@@ -401,6 +413,12 @@
    <class>Analysis</class>
    <extends>QWidget</extends>
    <header>gui.widgets.analysis.analysis.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PageStackedWidget</class>
+   <extends>QStackedWidget</extends>
+   <header>gui.widgets.common.page_stacked_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
