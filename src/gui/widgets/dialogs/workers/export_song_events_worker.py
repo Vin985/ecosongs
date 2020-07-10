@@ -19,7 +19,6 @@ class ExportSongEventsWorker(ThreadWorker):
         detector = detectors.DETECTORS[self.options["method"]]
         events = detector.get_events(predictions_df, self.options)
         events = events.merge(self.recordings, left_on="recording_id", right_on="id")
-        print(events)
         events = events.drop(columns=["recording_id", "id"])
         events.reset_index(inplace=True, drop=True)
 
