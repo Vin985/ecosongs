@@ -162,7 +162,7 @@ class FileManager:
             res["year"] = self.options["site_info"]["year"]
             res["plot"] = self.options["site_info"]["plot"]
 
-        if res["date"]:
+        if res["date"] is not pd.NaT:
             res["name"] = res["plot"] + "_" + res["date"].strftime("%Y-%m-%d_%H:%M:%S")
         else:
             res["name"] = name
@@ -193,7 +193,7 @@ class FileManager:
 
     def extract_date(self, recorder, match):
         if not recorder:
-            return None
+            return pd.NaT
         return getattr(self, "extract_date_" + recorder.lower())(match)
 
     def extract_date_audiomoth2018(self, match):
