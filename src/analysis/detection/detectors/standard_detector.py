@@ -144,4 +144,4 @@ class StandardDetector(Detector):
         matches = self.get_matches(events, tags)
         stats = self.get_stats(events, matches)
         print("Stats for options {0}: {1}".format(options, stats))
-        return [options, stats, events]
+        return [options, stats, events, matches]
