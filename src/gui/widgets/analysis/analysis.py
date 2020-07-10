@@ -6,15 +6,21 @@ import resource
 
 class Analysis(PageWidget, Ui_Analysis):
     def __init__(self):
-        print('analysis1: Memory usage: %s (kb)' %
-              resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         super().__init__()
+        self.opts = None
         self.setupUi(self)
-        print('analysis2: Memory usage: %s (kb)' %
-              resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         self.link_events()
 
     # Define callbacks when events happen
     def link_events(self):
         # Link menu actions
-        pass
+        self.analysis_tabs.currentChanged.connect(self.change_tab)
+
+    def change_tab(self, index):
+        tab = self.analysis_tabs.widget(index)
+        tab.enter_tab(self.opts)
+
+    def enter_page(self, opts):
+        self.opts = opts
+        tab = self.analysis_tabs.currentWidget()
+        tab.enter_tab(self.opts)

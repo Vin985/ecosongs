@@ -3,16 +3,16 @@
 ################################################################################
 ## Form generated from reading UI file 'analysis.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.14.1
+## Created by: Qt User Interface Compiler version 5.15.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QMetaObject, QObject, QPoint,
-    QRect, QSize, QUrl, Qt)
+from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
+    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QLinearGradient, QPalette, QPainter, QPixmap,
-    QRadialGradient)
+    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
+    QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
 from gui.widgets.analysis.detection_evaluator import DetectionEvaluator
@@ -21,11 +21,17 @@ from gui.widgets.plot.sensitivity_plot import SensitivityPlot
 
 class Ui_Analysis(object):
     def setupUi(self, Analysis):
-        if Analysis.objectName():
+        if not Analysis.objectName():
             Analysis.setObjectName(u"Analysis")
         Analysis.resize(506, 366)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Analysis.sizePolicy().hasHeightForWidth())
+        Analysis.setSizePolicy(sizePolicy)
         self.horizontalLayout = QHBoxLayout(Analysis)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.analysis_tabs = QTabWidget(Analysis)
         self.analysis_tabs.setObjectName(u"analysis_tabs")
         self.detector_evaluation = DetectionEvaluator()
