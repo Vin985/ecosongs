@@ -15,12 +15,13 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
+from gui.widgets.options.song_events_options import SongEventsOptions
 from pysoundplayer.gui.QSoundPlayer import QSoundPlayer
 from pysoundplayer.gui.QImageOptions import QImageOptions
 from pysoundplayer.gui.QSpectrogramViewer import QSpectrogramViewer
 from pysoundplayer.gui.QSpectrogramOptions import QSpectrogramOptions
-from gui.widgets.options.song_events_options import SongEventsOptions
 
+import ecosongs_rc
 
 class Ui_AudioManager(object):
     def setupUi(self, AudioManager):
@@ -39,6 +40,8 @@ class Ui_AudioManager(object):
         self.action_import_tags.setObjectName(u"action_import_tags")
         self.action_export_song_events = QAction(AudioManager)
         self.action_export_song_events.setObjectName(u"action_export_song_events")
+        self.action_evaluate_detector = QAction(AudioManager)
+        self.action_evaluate_detector.setObjectName(u"action_evaluate_detector")
         self.horizontalLayout_2 = QHBoxLayout(AudioManager)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.splitter = QSplitter(AudioManager)
@@ -49,6 +52,23 @@ class Ui_AudioManager(object):
         self.verticalLayout_6 = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
+
+        self.btn_refresh = QPushButton(self.verticalLayoutWidget)
+        self.btn_refresh.setObjectName(u"btn_refresh")
+        icon = QIcon()
+        icon.addFile(u":/tango/refresh", QSize(), QIcon.Normal, QIcon.Off)
+        self.btn_refresh.setIcon(icon)
+
+        self.horizontalLayout_4.addWidget(self.btn_refresh)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout_4)
+
         self.tree_view = QTreeView(self.verticalLayoutWidget)
         self.tree_view.setObjectName(u"tree_view")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
@@ -235,6 +255,11 @@ class Ui_AudioManager(object):
 #if QT_CONFIG(tooltip)
         self.action_export_song_events.setToolTip(QCoreApplication.translate("AudioManager", u"Export song events based on biophonic activity", None))
 #endif // QT_CONFIG(tooltip)
+        self.action_evaluate_detector.setText(QCoreApplication.translate("AudioManager", u"Evaluate detector", None))
+#if QT_CONFIG(tooltip)
+        self.action_evaluate_detector.setToolTip(QCoreApplication.translate("AudioManager", u"Evaluate the performance of the detector on the selected recordings", None))
+#endif // QT_CONFIG(tooltip)
+        self.btn_refresh.setText(QCoreApplication.translate("AudioManager", u"Refresh", None))
         self.label.setText(QCoreApplication.translate("AudioManager", u"Name", None))
         self.label_5.setText(QCoreApplication.translate("AudioManager", u"Year", None))
         self.lbl_year.setText("")

@@ -22,6 +22,34 @@
      <widget class="QWidget" name="verticalLayoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_refresh">
+           <property name="text">
+            <string>Refresh</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../../resources/ecosongs.qrc">
+             <normaloff>:/tango/refresh</normaloff>:/tango/refresh</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QTreeView" name="tree_view">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -286,8 +314,22 @@
     <string>Export song events based on biophonic activity</string>
    </property>
   </action>
+  <action name="action_evaluate_detector">
+   <property name="text">
+    <string>Evaluate detector</string>
+   </property>
+   <property name="toolTip">
+    <string>Evaluate the performance of the detector on the selected recordings</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>SongEventsOptions</class>
+   <extends>QWidget</extends>
+   <header>gui.widgets.options.song_events_options.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>QSoundPlayer</class>
    <extends>QWidget</extends>
@@ -312,13 +354,9 @@
    <header>pysoundplayer.gui.QSpectrogramOptions.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>SongEventsOptions</class>
-   <extends>QWidget</extends>
-   <header>gui.widgets.options.song_events_options.h</header>
-   <container>1</container>
-  </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../../resources/ecosongs.qrc"/>
+ </resources>
  <connections/>
 </ui>
