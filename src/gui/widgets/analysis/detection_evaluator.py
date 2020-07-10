@@ -1,16 +1,17 @@
 import os
 from time import time
+import pandas as pd
 
 from PySide2 import QtCore
-from PySide2.QtWidgets import QFileDialog, QWidget  # , qApp
+from PySide2.QtWidgets import QFileDialog
 
-from analysis.detection import detector_evaluation
-from gui.widgets.analysis.ui.detection_evaluator_ui import \
-    Ui_DetectionEvaluator
+from analysis.detection import detectors
+from gui.widgets.analysis.ui.detection_evaluator_ui import Ui_DetectionEvaluator
+from gui.widgets.common.tab_widget import TabWidget
 from gui.widgets.dialogs.sensitivity_dialog import SensitivityDialog
 
 
-class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):
+class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
 
     DEFAULT_LABEL_FOLDER = "labels"
     MSG_LABEL_COLOR = {"info": "blue", "warning": "orange", "error": "red"}
@@ -19,106 +20,106 @@ class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):
         super().__init__()
         self.setupUi(self)
         self.link_events()
-        self.init_form()
         self.files = []
-        self.tags_df = None
-        self.predictions_df = None
-        self.recordings_df = None
+        self.tags_df = pd.DataFrame()
+        self.predictions_df = pd.DataFrame()
+        self.recordings_df = pd.DataFrame()
+        self.selected_recordings = []
 
         self.all_tags = []
 
     # Define callbacks when events happen
 
     def link_events(self):
+        # Checkboxes
+        self.checkbox_show_tags.clicked.connect(self.show_tags_table)
         # Buttons
-        self.btn_audio_folder.clicked.connect(self.select_audio_folder)
-        self.btn_label_folder.clicked.connect(self.select_label_folder)
-        self.btn_load_data.clicked.connect(self.load_data)
+        # self.btn_audio_folder.clicked.connect(self.select_audio_folder)
+        # self.btn_label_folder.clicked.connect(self.select_label_folder)
+        # self.btn_load_data.clicked.connect(self.load_data)
         self.btn_calculate.clicked.connect(self.calculate)
-        self.btn_sensitivity.clicked.connect(self.launch_sensitivity_analysis)
+        # self.btn_sensitivity.clicked.connect(self.launch_sensitivity_analysis)
 
-        # sliders
-        self.slider_min_activity.sliderMoved.connect(self.update_min_activity)
-        self.slider_end_threshold.sliderMoved.connect(
-            self.update_end_threshold)
-        self.slider_min_duration.sliderMoved.connect(self.update_min_duration)
+        # # sliders
+        # self.list_include_tag.itemSelectionChanged.connect(self.include_tag)
+        # self.list_exclude_tag.itemSelectionChanged.connect(self.exclude_tag)
 
-        self.list_include_tag.itemSelectionChanged.connect(self.include_tag)
-        self.list_exclude_tag.itemSelectionChanged.connect(self.exclude_tag)
+    def init_ui(self):
+        self.load_tags()
 
-    def init_form(self):
-        self.input_audio_folder.setText(
-            "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Reference/split")
-        self.input_label_folder.setText(
-            "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Reference/split/labels")
+    def enter_tab(self, opts):
+        if opts:
+            self.recordings_df = opts.get("selected_recordings", pd.DataFrame())
+        self.init_ui()
+
+    def load_tags(self):
+        tags_df = qApp.tables.tags.df
+        if not self.recordings_df.empty:
+            if self.checkbox_only_done.isChecked():
+                self.selected_recordings = list(
+                    self.recordings_df.loc[
+                        self.recordings_df.has_tags == 2, "id"
+                    ].unique()
+                )
+            else:
+                self.selected_recordings = self.recordings_df.id.unique()
+            tags_df = tags_df.loc[tags_df.recording_id.isin(self.selected_recordings)]
+        self.tags_df = tags_df
+        self.table_tags.setModel(self.tags_df)
+        self.update_tag_selection_ui()
+
+    def update_tag_selection_ui(self):
+        msg = "Found {0} recordings with tags. {1} tags loaded".format(
+            len(self.tags_df.recording_id.unique()), self.tags_df.shape[0],
+        )
+
+        if self.selected_recordings:
+            msg = ("{0} recordings were selected. " + msg).format(
+                self.recordings_df.shape[0]
+            )
+        self.lbl_selected_tags.setText(msg)
+        self.show_tags_table()
+
+    def show_tags_table(self):
+        self.table_tags.setHidden(not self.checkbox_show_tags.isChecked())
 
     #############
     ### Slots ###
     #############
 
-    # Select folder where audio files are
-    @QtCore.Slot()
-    def select_audio_folder(self):
-        self.browse(self.input_audio_folder)
-        if self.cb_check_label.isChecked():
-            audio_path = self.input_audio_folder.text()
-            tmp_label_path = os.path.join(
-                audio_path, self.DEFAULT_LABEL_FOLDER)
-            if os.path.exists(tmp_label_path):
-                self.input_label_folder.setText(tmp_label_path)
-                self.display_message(
-                    "Found 'labels' folder below the selected audio folder. Using this folder by default for labels.")
-
-    # Select folder where label files are
-    @QtCore.Slot()
-    def select_label_folder(self):
-        self.browse(self.input_label_folder)
-
-    # Load data from audio files and labels
-    @QtCore.Slot()
-    def load_data(self):
-        print("loading data")
-        if not self.input_audio_folder.text() or not self.input_label_folder.text():
-            self.display_message(
-                "Audio or label folder are missing. Please select them properly before trying to load data.", "error")
-            return
-
-        self.files, self.tags_df = detector_evaluation.load_annotations(root_path=self.input_audio_folder.text(),
-                                                                        tags_path=self.input_label_folder.text(),
-                                                                        only_done=self.cb_only_done.isChecked())
-
-        paths = [os.path.join(self.input_audio_folder.text(), file_name)
-                 for file_name in self.files]
-        self.recordings_df = qApp.tables.recordings.get_recordings_by_path(
-            paths)
-        recording_ids = self.recordings_df.id.tolist()
-        self.predictions_df = qApp.tables.activity_predictions.get_predictions_by_recordings(
-            recording_ids)
-
-        self.display_message("{0} annotations found in {1} files".format(
-            self.tags_df.shape[0], len(self.files)))
-        self.enable_options()
-
     # Calculate the statistics to evaluate the detection performance
     @QtCore.Slot()
     def calculate(self):
 
-        event_options = {"min_activity": int(self.slider_min_activity.value()) / 100,
-                         "min_duration": int(self.slider_min_duration.value()) / 100,
-                         "end_threshold": int(self.slider_end_threshold.value()) / 100}
-        events_df = detector_evaluation.get_events(
-            self.predictions_df, event_options)
-
-        events_df = detector_evaluation.prepare_events(
-            events_df, self.recordings_df)
+        event_options = self.song_events_options.get_options()
+        detector = detectors.DETECTORS[event_options["method"]]
+        predictions_df = qApp.tables.activity_predictions.df
+        predictions_df = predictions_df.loc[
+            predictions_df.recording_id.isin(self.selected_recordings)
+        ]
+        print(self.selected_recordings)
+        print(self.predictions_df)
+        print(self.tags_df.columns)
 
         tic = time()
-        matches_df = detector_evaluation.get_matches(events_df, self.tags_df)
-        print("Took %0.6fs to match events" % (time() - tic))
+        res = detector.evaluate(predictions_df, self.tags_df, event_options)
+        print(res[0])
+        res = detector.evaluate(
+            predictions_df,
+            self.tags_df.loc[self.tags_df.background == False],
+            event_options,
+        )
+        print(res[0])
+        res = detector.evaluate(
+            predictions_df,
+            self.tags_df.loc[self.tags_df.background == True],
+            event_options,
+        )
+        print(res[0])
+        # res = detector.evaluate(predictions_df, self.tags_df.loc[], event_options)
+        print("Took %0.6fs to evaluate predictions" % (time() - tic))
         tic = time()
-        stats = detector_evaluation.get_stats(matches_df, events_df)
-        print("Took %0.6fs to get_stats" % (time() - tic))
-        self.display_stats(stats)
+        # self.display_stats(stats)
 
     def display_stats(self, stats):
         print(stats)
@@ -147,12 +148,14 @@ class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):
     @QtCore.Slot()
     def launch_sensitivity_analysis(self):
         print("launching")
-        self.sensitivity_dialog = SensitivityDialog(parent=self,
-                                                    predictions=self.predictions_df,
-                                                    recordings=self.recordings_df,
-                                                    tags=self.tags_df,
-                                                    audio_path=self.input_audio_folder.text(),
-                                                    labels_path=self.input_label_folder.text())
+        self.sensitivity_dialog = SensitivityDialog(
+            parent=self,
+            predictions=self.predictions_df,
+            recordings=self.recordings_df,
+            tags=self.tags_df,
+            audio_path=self.input_audio_folder.text(),
+            labels_path=self.input_label_folder.text(),
+        )
         self.sensitivity_dialog.setModal(True)
         self.sensitivity_dialog.show()
 
@@ -189,13 +192,12 @@ class DetectionEvaluator(QWidget, Ui_DetectionEvaluator):
     ### File browsing ###
     #####################
 
-     # Generic method to browse for files
+    # Generic method to browse for files
     def browse(self, text_input):
         default = os.getcwd()
         if text_input.text():
             default = text_input.text()
-        text = QFileDialog.getExistingDirectory(self, "Choose directory",
-                                                default)
+        text = QFileDialog.getExistingDirectory(self, "Choose directory", default)
         # Update gui input
         text_input.setText(text)
 
