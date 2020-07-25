@@ -103,20 +103,20 @@ class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
 
         tic = time()
         res = detector.evaluate(predictions_df, self.tags_df, event_options)
-        print(res[0])
-        res = detector.evaluate(
-            predictions_df,
-            self.tags_df.loc[self.tags_df.background == False],
-            event_options,
-        )
-        print(res[0])
-        res = detector.evaluate(
-            predictions_df,
-            self.tags_df.loc[self.tags_df.background == True],
-            event_options,
-        )
-        print(res[0])
         # res = detector.evaluate(predictions_df, self.tags_df.loc[], event_options)
+        print(res)
+        matches = res.get("matches", None)
+        if matches is not None:
+            print("saving")
+            matches.to_csv("test/db/matches.csv")
+        events = res.get("events", None)
+        if events is not None:
+            print("saving")
+            events.to_csv("test/db/events.csv")
+        tags = res.get("tags", None)
+        if tags is not None:
+            print("saving")
+            tags.to_csv("test/db/tags.csv")
         print("Took %0.6fs to evaluate predictions" % (time() - tic))
         tic = time()
         # self.display_stats(stats)
