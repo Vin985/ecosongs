@@ -11,6 +11,7 @@ DEFAULT_TAGS_COLUMNS = {
     "LabelEndTime_Seconds": "tag_end",
     "overlap": "overlap",
     "background": "background",
+    "noise": "noise",
 }
 DEFAULT_TAGS_COLUMNS_TYPE = {"overlap": "str"}
 
