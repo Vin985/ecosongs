@@ -7,11 +7,12 @@ from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QMenu, QMessageBox
 
 import utils.commons as utils
+from analysis.detection.detectors import DETECTORS
 from audio.recording import Recording
-from gui.widgets.common.tree.recordings_tree_model import RecordingsTreeModel
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from gui.widgets.common.page_widget import PageWidget
-from pysoundplayer.gui.settings import SoundPlayerSettings
+from gui.widgets.common.tree.recordings_tree_model import RecordingsTreeModel
+from pysoundviewer.gui.settings import SoundPlayerSettings
 
 
 def update_path(path):
@@ -120,12 +121,14 @@ class AudioManager(PageWidget, Ui_AudioManager):
         print("draw events")
         self.spectrogram_viewer.clear_rects()
         if self.group_draw_events.isChecked():
-            predictions_table = qApp.tables.activity_predictions
-            if not predictions_table.empty:
+            self.draw_tags()
+            predictions = qApp.tables.activity_predictions.get_predictions_by_id(
+                self.current_recording.id
+            )
+            if not predictions.empty:
                 event_options = self.song_events_options.get_options()
-                events = predictions_table.get_events_by_id(
-                    self.current_recording.id, event_options
-                )
+                detector = DETECTORS[event_options.get("method", "standard")]
+                events = detector.get_recording_events(predictions, event_options)
                 if not events.empty:
                     for event in events.itertuples():
                         # # TODO: externalize color
@@ -133,6 +136,10 @@ class AudioManager(PageWidget, Ui_AudioManager):
                             event.start, event.end, color="#99ebef00"
                         )
             self.draw_silences()
+
+    def draw_tags(self):
+        if self.current_recording.has_tags:
+            print("has tags")
 
     def draw_silences(self, draw=True):
         silences = self.sound_player.audio.get_silences(top_db=80)
@@ -341,4 +348,3 @@ class AudioManager(PageWidget, Ui_AudioManager):
             else:
                 recs = []
             self.tree_view.model().check_predictions(recs)
-

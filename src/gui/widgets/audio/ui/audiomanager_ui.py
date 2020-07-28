@@ -15,11 +15,11 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
+from pysoundplayer.widget.sound_player_widget import SoundPlayerWidget
 from gui.widgets.options.song_events_options import SongEventsOptions
-from pysoundplayer.gui.QSoundPlayer import QSoundPlayer
-from pysoundplayer.gui.QImageOptions import QImageOptions
-from pysoundplayer.gui.QSpectrogramViewer import QSpectrogramViewer
-from pysoundplayer.gui.QSpectrogramOptions import QSpectrogramOptions
+from pysoundviewer.gui.widgets.image_options_widget import ImageOptionsWidget
+from pysoundviewer.gui.widgets.spectrogram_viewer import SpectrogramViewer
+from pysoundviewer.gui.widgets.spectrogram_options_widget import SpectrogramOptionsWidget
 
 import ecosongs_rc
 
@@ -151,14 +151,14 @@ class Ui_AudioManager(object):
 
         self.verticalLayout.addLayout(self.gridLayout_2)
 
-        self.spectrogram_viewer = QSpectrogramViewer(self.details_pane)
+        self.spectrogram_viewer = SpectrogramViewer(self.details_pane)
         self.spectrogram_viewer.setObjectName(u"spectrogram_viewer")
         sizePolicy.setHeightForWidth(self.spectrogram_viewer.sizePolicy().hasHeightForWidth())
         self.spectrogram_viewer.setSizePolicy(sizePolicy)
 
         self.verticalLayout.addWidget(self.spectrogram_viewer)
 
-        self.sound_player = QSoundPlayer(self.details_pane)
+        self.sound_player = SoundPlayerWidget(self.details_pane)
         self.sound_player.setObjectName(u"sound_player")
 
         self.verticalLayout.addWidget(self.sound_player)
@@ -169,7 +169,7 @@ class Ui_AudioManager(object):
         self.groupBox.setObjectName(u"groupBox")
         self.verticalLayout_2 = QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.spectrogram_options = QSpectrogramOptions(self.groupBox)
+        self.spectrogram_options = SpectrogramOptionsWidget(self.groupBox)
         self.spectrogram_options.setObjectName(u"spectrogram_options")
 
         self.verticalLayout_2.addWidget(self.spectrogram_options)
@@ -181,7 +181,7 @@ class Ui_AudioManager(object):
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.verticalLayout_3 = QVBoxLayout(self.groupBox_2)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.image_options = QImageOptions(self.groupBox_2)
+        self.image_options = ImageOptionsWidget(self.groupBox_2)
         self.image_options.setObjectName(u"image_options")
 
         self.verticalLayout_3.addWidget(self.image_options)

@@ -174,7 +174,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QSpectrogramViewer" name="spectrogram_viewer" native="true">
+        <widget class="SpectrogramViewer" name="spectrogram_viewer" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -184,7 +184,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QSoundPlayer" name="sound_player" native="true"/>
+        <widget class="SoundPlayerWidget" name="sound_player" native="true"/>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -195,7 +195,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QSpectrogramOptions" name="spectrogram_options" native="true"/>
+             <widget class="SpectrogramOptionsWidget" name="spectrogram_options" native="true"/>
             </item>
            </layout>
           </widget>
@@ -207,7 +207,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
-             <widget class="QImageOptions" name="image_options" native="true"/>
+             <widget class="ImageOptionsWidget" name="image_options" native="true"/>
             </item>
            </layout>
           </widget>
@@ -325,33 +325,33 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>SoundPlayerWidget</class>
+   <extends>QWidget</extends>
+   <header>pysoundplayer.widget.sound_player_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>SongEventsOptions</class>
    <extends>QWidget</extends>
    <header>gui.widgets.options.song_events_options.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QSoundPlayer</class>
+   <class>ImageOptionsWidget</class>
    <extends>QWidget</extends>
-   <header>pysoundplayer.gui.QSoundPlayer.h</header>
+   <header>pysoundviewer.gui.widgets.image_options_widget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QImageOptions</class>
+   <class>SpectrogramViewer</class>
    <extends>QWidget</extends>
-   <header>pysoundplayer.gui.QImageOptions.h</header>
+   <header>pysoundviewer.gui.widgets.spectrogram_viewer.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QSpectrogramViewer</class>
+   <class>SpectrogramOptionsWidget</class>
    <extends>QWidget</extends>
-   <header>pysoundplayer.gui.QSpectrogramViewer.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QSpectrogramOptions</class>
-   <extends>QWidget</extends>
-   <header>pysoundplayer.gui.QSpectrogramOptions.h</header>
+   <header>pysoundviewer.gui.widgets.spectrogram_options_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
