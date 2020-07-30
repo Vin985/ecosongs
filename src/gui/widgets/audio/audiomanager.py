@@ -132,14 +132,29 @@ class AudioManager(PageWidget, Ui_AudioManager):
                 if not events.empty:
                     for event in events.itertuples():
                         # # TODO: externalize color
-                        self.spectrogram_viewer.draw_rect(
-                            event.start, event.end, color="#99ebef00"
+                        self.spectrogram_viewer.draw_annotation(
+                            {
+                                "start": event.start,
+                                "end": event.end,
+                                "color": "#99ebef00",
+                            }
                         )
             self.draw_silences()
 
     def draw_tags(self):
         if self.current_recording.has_tags:
-            print("has tags")
+            tags = qApp.tables.tags.get_recording_tags(self.current_recording.id)
+            for tag in tags.itertuples():
+                self.spectrogram_viewer.draw_annotation(
+                    {
+                        "start": tag.tag_start,
+                        "end": tag.tag_end,
+                        "text": ".".join([str(tag.tag_index), tag.tag]),
+                        "text_color": None,
+                        # "vertical_offset": 10,
+                        "color": "#99a4cafd",
+                    }
+                )
 
     def draw_silences(self, draw=True):
         silences = self.sound_player.audio.get_silences(top_db=80)

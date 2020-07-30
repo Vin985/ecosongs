@@ -26,5 +26,8 @@ class TagsTable(TableModel):
     def __init__(self, df=None, dbmanager=None):
         TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
+    def get_recording_tags(self, recording_id):
+        return self.df.loc[self.df.recording_id == recording_id]
+
     # test if rain or wind:
     # df.loc[(df.noise & NOISE["rain"]) > 0 ]
