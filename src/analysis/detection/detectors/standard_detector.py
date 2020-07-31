@@ -7,18 +7,6 @@ from .detector import Detector
 class StandardDetector(Detector):
     def __init__(self):
         super().__init__()
-        # self._events = pd.DataFrame()
-        # self.matches = pd.DataFrame()
-
-    # @property
-    # def events(self):
-    #     if not self._events:
-    #         self._events = self.get_events()
-    #     return self._events
-
-    # @events.setter
-    # def events(self, df):
-    #     self._events = df
 
     def get_events(self, predictions, options):
         predictions = predictions[["activity", "recording_id", "time"]]
@@ -76,64 +64,6 @@ class StandardDetector(Detector):
         events = pd.DataFrame(events)
         return events
 
-    # def get_events(self, predictions, options, tags):
-    #     predictions = predictions[["activity", "recording_id", "time"]]
-    #     events = predictions.groupby("recording_id", as_index=False, observed=True)
-    #     events = events.apply(self.get_recording_events, options, tags)
-    #     events.reset_index(inplace=True)
-    #     events.drop(["level_0", "level_1"], axis=1, inplace=True)
-    #     events["event_duration"] = events["end"] - events["start"]
-    #     events.reset_index(inplace=True)
-    #     events = events[self.EVENTS_COLUMNS.keys()]
-    #     events.rename(columns=self.EVENTS_COLUMNS, inplace=True)
-    #     print("get events done")
-    #     return events
-
-    # def get_recording_events(self, predictions, options=None, tags=None):
-    #     options = options or {}
-    #     min_activity = options.get("min_activity", self.DEFAULT_MIN_ACTIVITY)
-    #     end_threshold = options.get("end_threshold", self.DEFAULT_END_THRESHOLD)
-    #     min_duration = options.get("min_duration", self.DEFAULT_MIN_DURATION)
-    #     event_index = 0
-    #     ongoing = False
-    #     events = []
-    #     start = 0
-    #     end = 0
-    #     tags = tags.loc[tags.recording_id == predictions.name]
-    #     has_events = np.zeros((predictions.shape[0], 2))
-    #     has_tags = np.zeros((predictions.shape[0], 2))
-    #     current_tag = {}
-    #     index = 0
-    #     # def detect_songs_events(predictions):
-    #     for activity, recording_id, pred_time in predictions.itertuples(index=False):
-    #         # Check if prediction is above a defined threshold
-    #         if activity > min_activity:
-    #             # If not in a song, create a new event
-    #             if not ongoing:
-    #                 ongoing = True
-    #                 event_index += 1
-    #                 start = pred_time
-    #         elif ongoing:
-    #             # if above an end threshold, consider it as a single event
-    #             if activity > end_threshold:
-    #                 continue
-    #             # If below the threshold and in an active event, end it
-    #             ongoing = False
-    #             end = pred_time
-    #             # log event if its duration is greater than minimum threshold
-    #             if (end - start) > min_duration:
-    #                 events.append(
-    #                     {
-    #                         "event_index": event_index,
-    #                         "recording_id": recording_id,
-    #                         "start": start,
-    #                         "end": end,
-    #                     }
-    #                 )
-    #             index += 1
-    #     events = pd.DataFrame(events)
-    #     return events
-
     def associate_recordings(self, events, recordings):
         events = events.merge(
             recordings[["id", "name"]], left_on="recording_id", right_on="id"
@@ -157,12 +87,6 @@ class StandardDetector(Detector):
         match_df.loc[match_df.event_id.isna(), "event_id"] = -1
         match_df.event_id = match_df.event_id.astype("int")
         match_df.reset_index(inplace=True)
-        # match_df["overlap_duration"] = np.minimum(
-        #     match_df.event_end, match_df.tag_end
-        # ) - np.maximum(match_df.event_start, match_df.tag_start)
-
-        # match_df["event_overlap"] = match_df.overlap_duration / match_df.event_duration
-        # match_df["tag_overlap"] = match_df.overlap_duration / match_df.tag_duration
 
         return match_df
 
