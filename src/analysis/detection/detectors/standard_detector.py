@@ -161,17 +161,20 @@ class StandardDetector(Detector):
 
     def get_overlap_duration(self, match_df, overlap_type):
         overlap_func = getattr(self, overlap_type + "_overlap_duration")
-        overlap_duration = (
-            match_df.groupby(overlap_type + "_id")
-            .apply(overlap_func)
-            .rename(overlap_type + "_overlap_duration")
-            .reset_index()
-        )
-        tmp = match_df.merge(overlap_duration)
-        tmp[overlap_type + "_overlap"] = (
-            tmp[overlap_type + "_overlap_duration"] / tmp[overlap_type + "_duration"]
-        )
-        return tmp
+        if not match_df.empty:
+            overlap_duration = (
+                match_df.groupby(overlap_type + "_id")
+                .apply(overlap_func)
+                .rename(overlap_type + "_overlap_duration")
+                .reset_index()
+            )
+            tmp = match_df.merge(overlap_duration)
+            tmp[overlap_type + "_overlap"] = (
+                tmp[overlap_type + "_overlap_duration"]
+                / tmp[overlap_type + "_duration"]
+            )
+            return tmp
+        return pd.DataFrame()
 
     @staticmethod
     def tags_active_duration(tags):
@@ -206,15 +209,18 @@ class StandardDetector(Detector):
             ],
         ].copy()
 
-        matched = self.get_overlap_duration(matched, "event")
-        matched = self.get_overlap_duration(matched, "tag")
+        if matched.empty:
+            res = matched
+        else:
+            matched = self.get_overlap_duration(matched, "event")
+            matched = self.get_overlap_duration(matched, "tag")
 
-        dtc_threshold = options.get("dtc_threshold", 0.3)
-        gtc_threshold = options.get("gtc_threshold", 0.1)
-        res = matched.loc[
-            (matched.event_overlap >= dtc_threshold) & (matched.tag_overlap)
-            >= gtc_threshold
-        ]
+            dtc_threshold = options.get("dtc_threshold", 0.3)
+            gtc_threshold = options.get("gtc_threshold", 0.1)
+            res = matched.loc[
+                (matched.event_overlap >= dtc_threshold) & (matched.tag_overlap)
+                >= gtc_threshold
+            ]
 
         true_positives = res.event_id.unique()
         n_true_positives = len(true_positives)
@@ -223,12 +229,12 @@ class StandardDetector(Detector):
         false_positive_rate = n_false_positives / self.tags_active_duration(tags)
 
         matched_tags_id = res.tag_id.unique()
-        tags["matched"] = 0
+        tags.loc[:, "matched"] = 0
         tags.loc[tags.id.isin(matched_tags_id), "matched"] = 1
         n_tags_matched = len(matched_tags_id)
         n_tags_unmatched = tags.shape[0] - n_tags_matched
 
-        events["matched"] = 0
+        events.loc[:, "matched"] = 0
         events.loc[events.event_id.isin(true_positives), "matched"] = 1
 
         stats = {
