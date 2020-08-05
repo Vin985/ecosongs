@@ -7,8 +7,6 @@ from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QMenu, QMessageBox
 
 import utils.commons as utils
-from analysis.detection.detectors import DETECTORS
-from audio.recording import Recording
 from gui.widgets.audio.ui.audiomanager_ui import Ui_AudioManager
 from gui.widgets.common.page_widget import PageWidget
 from gui.widgets.common.tree.recordings_tree_model import RecordingsTreeModel
@@ -29,7 +27,6 @@ class AudioManager(PageWidget, Ui_AudioManager):
         )
         self.setupUi(self)
         self.current_recording = None
-        self.song_classifier = None
         self.action_dialog = None
         self.settings = SoundPlayerSettings()
         self.share_settings()
@@ -77,16 +74,17 @@ class AudioManager(PageWidget, Ui_AudioManager):
         # self.time_slider.valueChanged.connect(self.update_spectrogram)
 
         self.btn_export_pdf.clicked.connect(self.export_pdf)
-        # self.checkbox_draw_events.toggled.connect(self.draw_events)
 
-        self.group_draw_events.toggled.connect(self.draw_events)
-        self.song_events_options.option_changed.connect(self.draw_events)
+        self.checkbox_draw_events.clicked.connect(self.draw_annotations)
+        self.checkbox_draw_tags.clicked.connect(self.draw_annotations)
+        self.checkbox_show_overlaps.clicked.connect(self.draw_annotations)
+        self.song_events_options.option_changed.connect(self.draw_annotations)
 
         self.sound_player.update_position.connect(
             self.spectrogram_viewer.update_sound_marker
         )
         self.spectrogram_viewer.seek.connect(self.sound_player.seek)
-        self.spectrogram_viewer.spectrogram_drawn.connect(self.draw_events)
+        self.spectrogram_viewer.spectrogram_drawn.connect(self.draw_annotations)
         self.image_options.option_updated.connect(self.spectrogram_viewer.update_image)
         self.spectrogram_options.option_updated.connect(
             self.spectrogram_viewer.update_spectrogram
@@ -116,45 +114,79 @@ class AudioManager(PageWidget, Ui_AudioManager):
                 return
         self.show_multiple_details()
 
-    @Slot()
     def draw_events(self):
-        print("draw events")
-        self.spectrogram_viewer.clear_rects()
-        if self.group_draw_events.isChecked():
-            self.draw_tags()
-            predictions = qApp.tables.activity_predictions.get_predictions_by_id(
-                self.current_recording.id
-            )
-            if not predictions.empty:
-                event_options = self.song_events_options.get_options()
-                detector = DETECTORS[event_options.get("method", "standard")]
-                events = detector.get_recording_events(predictions, event_options)
-                if not events.empty:
-                    for event in events.itertuples():
-                        # # TODO: externalize color
-                        self.spectrogram_viewer.draw_annotation(
-                            {
-                                "start": event.start,
-                                "end": event.end,
-                                "color": "#99ebef00",
-                            }
+        event_options = self.song_events_options.get_options()
+        events = self.current_recording.get_events(event_options)
+        if not events.empty:
+            for event in events.itertuples():
+                # # TODO: externalize color
+                fill_color = "#99ebef00"
+                text = ""
+                if self.checkbox_show_overlaps.isChecked():
+                    if hasattr(event, "matched"):
+                        text = "event overlap: " + str(
+                            round(
+                                self.current_recording.get_event_overlap(
+                                    event.event_id
+                                ),
+                                2,
+                            )
                         )
-            self.draw_silences()
+                        if event.matched:
+                            fill_color = "#34d300"  # "#ff1c8f6a"
+                # color = "#991c8f6a"  else "#99ebef00"
+                self.spectrogram_viewer.draw_annotation(
+                    {
+                        "start": event.event_start,
+                        "end": event.event_end,
+                        "color": "#99ebef00",
+                        "fill_color": fill_color,
+                        "text": text,
+                    }
+                )
+        return None
+        # self.draw_silences()
 
     def draw_tags(self):
-        if self.current_recording.has_tags:
-            tags = qApp.tables.tags.get_recording_tags(self.current_recording.id)
+        if self.current_recording.tag_status():
+            event_options = self.song_events_options.get_options()
+            tags = self.current_recording.get_tags(event_options)
             for tag in tags.itertuples():
+                fill_color = "#99a4cafd"
+                text = ""
+                top_offset = 0
+                if self.checkbox_show_overlaps.isChecked():
+                    if hasattr(tag, "matched"):
+                        text = (
+                            " (overlap: "
+                            + str(
+                                round(self.current_recording.get_tag_overlap(tag.id), 2)
+                            )
+                            + ")"
+                        )
+                        if tag.matched:
+                            fill_color = "#34d300"
+                        top_offset = 30
                 self.spectrogram_viewer.draw_annotation(
                     {
                         "start": tag.tag_start,
                         "end": tag.tag_end,
-                        "text": ".".join([str(tag.tag_index), tag.tag]),
+                        "text": ".".join([str(tag.tag_index), tag.tag]) + text,
                         "text_color": None,
-                        # "vertical_offset": 10,
+                        "top_offset": top_offset,
                         "color": "#99a4cafd",
+                        "fill_color": fill_color,
                     }
                 )
+
+    @Slot()
+    def draw_annotations(self):
+        if self.current_recording:
+            self.spectrogram_viewer.clear_rects()
+            if self.checkbox_draw_events.isChecked():
+                self.draw_events()
+            if self.checkbox_draw_tags.isChecked():
+                self.draw_tags()
 
     def draw_silences(self, draw=True):
         silences = self.sound_player.audio.get_silences(top_db=80)
@@ -302,6 +334,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
             return qApp.load_recordings(res.index.values)
 
     def show_multiple_details(self):
+        self.current_recording = None
         if self.tree_view.selectedIndexes():
             res = self.get_selected_recordings("table")
         else:
@@ -336,10 +369,26 @@ class AudioManager(PageWidget, Ui_AudioManager):
             except AttributeError:
                 print(traceback.format_exc())
 
+    def get_recording(self, index):
+        self.current_recording = qApp.tables.recordings.get_recording(index)
+        # Load predictions
+        if self.current_recording.predictions is None:
+            self.current_recording.predictions = qApp.tables.activity_predictions.get_predictions_by_id(
+                self.current_recording.id
+            ).copy()
+        # Load tags
+        if self.current_recording.has_tags and self.current_recording.tags is None:
+            self.current_recording.tags = qApp.tables.tags.get_recording_tags(
+                self.current_recording.id
+            ).copy()
+
     def show_recording_details(self, file_info):
         # TODO: setting to enable/disable display on each selection change
         # TODO: improve performance to avoid reloading everything.
-        self.current_recording = Recording(file_info)
+        self.get_recording(file_info["Index"])
+        # self.current_recording = (
+        #     qApp.tables.recordings.get_recording()
+        # )  # Recording(file_info)
         self.show_recording_info(["id", "name", "path", "year"])
         self.load_file(self.current_recording.path)
 

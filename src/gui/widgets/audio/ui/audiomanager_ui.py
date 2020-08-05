@@ -191,20 +191,9 @@ class Ui_AudioManager(object):
 
         self.group_draw_events = QGroupBox(self.details_pane)
         self.group_draw_events.setObjectName(u"group_draw_events")
-        self.group_draw_events.setCheckable(True)
         self.gridLayout = QGridLayout(self.group_draw_events)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.label_6 = QLabel(self.group_draw_events)
-        self.label_6.setObjectName(u"label_6")
-
-        self.gridLayout.addWidget(self.label_6, 0, 0, 1, 1)
-
-        self.song_events_options = SongEventsOptions(self.group_draw_events)
-        self.song_events_options.setObjectName(u"song_events_options")
-        self.song_events_options.setMinimumSize(QSize(0, 20))
-
-        self.gridLayout.addWidget(self.song_events_options, 1, 0, 1, 2)
-
+        self.gridLayout.setContentsMargins(-1, 1, -1, -1)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -218,6 +207,44 @@ class Ui_AudioManager(object):
 
 
         self.gridLayout.addLayout(self.horizontalLayout, 0, 1, 1, 1)
+
+        self.label_6 = QLabel(self.group_draw_events)
+        self.label_6.setObjectName(u"label_6")
+
+        self.gridLayout.addWidget(self.label_6, 0, 0, 1, 1)
+
+        self.song_events_options = SongEventsOptions(self.group_draw_events)
+        self.song_events_options.setObjectName(u"song_events_options")
+        self.song_events_options.setMinimumSize(QSize(0, 20))
+
+        self.gridLayout.addWidget(self.song_events_options, 2, 0, 1, 2)
+
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.checkbox_draw_events = QCheckBox(self.group_draw_events)
+        self.checkbox_draw_events.setObjectName(u"checkbox_draw_events")
+        self.checkbox_draw_events.setChecked(True)
+
+        self.horizontalLayout_5.addWidget(self.checkbox_draw_events)
+
+        self.checkbox_draw_tags = QCheckBox(self.group_draw_events)
+        self.checkbox_draw_tags.setObjectName(u"checkbox_draw_tags")
+        self.checkbox_draw_tags.setChecked(True)
+
+        self.horizontalLayout_5.addWidget(self.checkbox_draw_tags)
+
+        self.checkbox_show_overlaps = QCheckBox(self.group_draw_events)
+        self.checkbox_show_overlaps.setObjectName(u"checkbox_show_overlaps")
+        self.checkbox_show_overlaps.setChecked(True)
+
+        self.horizontalLayout_5.addWidget(self.checkbox_show_overlaps)
+
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_5)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_5, 1, 0, 1, 2)
 
 
         self.horizontalLayout_3.addWidget(self.group_draw_events)
@@ -270,8 +297,11 @@ class Ui_AudioManager(object):
         self.lbl_path.setText("")
         self.groupBox.setTitle(QCoreApplication.translate("AudioManager", u"Spectrogram", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("AudioManager", u"Image", None))
-        self.group_draw_events.setTitle(QCoreApplication.translate("AudioManager", u"Draw events", None))
-        self.label_6.setText(QCoreApplication.translate("AudioManager", u"Detect songs in selected recordings", None))
+        self.group_draw_events.setTitle(QCoreApplication.translate("AudioManager", u"Annotations", None))
         self.btn_export_pdf.setText(QCoreApplication.translate("AudioManager", u"Export events to pdf", None))
+        self.label_6.setText(QCoreApplication.translate("AudioManager", u"Detect songs in selected recordings", None))
+        self.checkbox_draw_events.setText(QCoreApplication.translate("AudioManager", u"Draw events", None))
+        self.checkbox_draw_tags.setText(QCoreApplication.translate("AudioManager", u"Draw tags", None))
+        self.checkbox_show_overlaps.setText(QCoreApplication.translate("AudioManager", u"Show overlaps", None))
     # retranslateUi
 
