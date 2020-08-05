@@ -6,44 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>482</width>
-    <height>169</height>
+    <width>524</width>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_9">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Activity level</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QDoubleSpinBox" name="spin_end_threshold">
-     <property name="keyboardTracking">
-      <bool>false</bool>
-     </property>
-     <property name="maximum">
-      <double>1.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.010000000000000</double>
-     </property>
-     <property name="value">
-      <double>0.600000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0" colspan="2">
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="11" column="0" colspan="2">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -59,13 +30,6 @@
      </property>
     </spacer>
    </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="label_8">
-     <property name="text">
-      <string>End threshold</string>
-     </property>
-    </widget>
-   </item>
    <item row="7" column="0">
     <widget class="QLabel" name="label_7">
      <property name="text">
@@ -77,6 +41,33 @@
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>Method</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="2">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Ground truth tolerance criteria</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Detection tolerance criteria</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_9">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Activity level</string>
      </property>
     </widget>
    </item>
@@ -96,8 +87,34 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="combo_method"/>
+   <item row="8" column="1">
+    <widget class="QDoubleSpinBox" name="spin_dtc">
+     <property name="keyboardTracking">
+      <bool>false</bool>
+     </property>
+     <property name="maximum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.300000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0" colspan="2">
+    <widget class="QCheckBox" name="checkbox_isolate_events">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Returns only isolated events instead of each subsampled time period &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Isolate events</string>
+     </property>
+    </widget>
    </item>
    <item row="7" column="1">
     <widget class="QDoubleSpinBox" name="spin_min_duration">
@@ -118,18 +135,47 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0" colspan="2">
-    <widget class="QCheckBox" name="checkbox_isolate_events">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="8" column="3">
+    <widget class="QDoubleSpinBox" name="spin_gtc">
+     <property name="keyboardTracking">
+      <bool>false</bool>
      </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Returns only isolated events instead of each subsampled time period &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <property name="maximum">
+      <double>1.000000000000000</double>
      </property>
-     <property name="text">
-      <string>Isolate events</string>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.300000000000000</double>
      </property>
     </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>End threshold</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="3">
+    <widget class="QDoubleSpinBox" name="spin_end_threshold">
+     <property name="keyboardTracking">
+      <bool>false</bool>
+     </property>
+     <property name="maximum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.600000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2">
+    <widget class="QComboBox" name="combo_method"/>
    </item>
   </layout>
  </widget>
