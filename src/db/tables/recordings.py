@@ -6,24 +6,35 @@ from db.models import TableModel
 
 class RecordingsTable(TableModel):
     TABLE_NAME = "recordings"
-    COLUMNS = ["name", "year", "site",
-               "plot", "date", "path",
-               "ext", "recorder", "duration", "sample_rate", "has_tags"]  # , "old_name"]
+    COLUMNS = [
+        "name",
+        "year",
+        "site",
+        "plot",
+        "date",
+        "path",
+        "ext",
+        "recorder",
+        "duration",
+        "sample_rate",
+        "has_tags",
+    ]  # , "old_name"]
     DUPLICATE_COLUMNS = ["name", "plot", "site", "year"]
-    COLUMNS_TYPE = {"ext": "category",
-                    "plot": "category",
-                    "recorder": "category",
-                    "site": "category",
-                    "year": "category",
-                    "has_tags": "category",
-                    "sample_rate": "category",
-                    "id": np.int32,
-                    "duration": np.float32}
+    COLUMNS_TYPE = {
+        "ext": "category",
+        "plot": "category",
+        "recorder": "category",
+        "site": "category",
+        "year": "category",
+        "has_tags": "category",
+        "sample_rate": "category",
+        "id": np.int32,
+        "duration": np.float32,
+    }
     REFERRED_BY = ["activity_predictions"]
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS,
-                            df=df, dbmanager=dbmanager)
+        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
         self.recordings = {}
 
     def load_recordings(self, indexes):
@@ -44,8 +55,10 @@ class RecordingsTable(TableModel):
         to_load = [idx for idx in indexes if idx not in self.recordings]
         if to_load:
             to_load = self._df.loc[indexes]
-            to_update = {row.Index: Recording(row._asdict())
-                         for row in to_load.itertuples(index=True)}
+            to_update = {
+                row.Index: Recording(row._asdict())
+                for row in to_load.itertuples(index=True)
+            }
             self.recordings.update(to_update)
         return [self.recordings[idx] for idx in indexes]
 
