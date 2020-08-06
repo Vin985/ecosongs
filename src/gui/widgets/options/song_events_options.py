@@ -1,5 +1,5 @@
 from PySide2.QtWidgets import QWidget
-from PySide2.QtCore import Signal
+from PySide2.QtCore import Signal, Qt
 
 from gui.widgets.options.ui.song_events_options_ui import Ui_SongEventsOptions
 from analysis.detection import detectors
@@ -17,6 +17,7 @@ class SongEventsOptions(QWidget, Ui_SongEventsOptions):
         self.link_events()
 
     def init_ui(self):
+        self.gridLayout.setAlignment(Qt.AlignTop)
         self.combo_method.addItems(self.methods)
         self.checkbox_isolate_events.setEnabled(
             self.methods[self.combo_method.currentIndex()] == "subsampling"
@@ -26,6 +27,8 @@ class SongEventsOptions(QWidget, Ui_SongEventsOptions):
         self.spin_activity.valueChanged.connect(self.emit_signal)
         self.spin_end_threshold.valueChanged.connect(self.emit_signal)
         self.spin_min_duration.valueChanged.connect(self.emit_signal)
+        self.spin_dtc.valueChanged.connect(self.emit_signal)
+        self.spin_gtc.valueChanged.connect(self.emit_signal)
         self.combo_method.currentIndexChanged.connect(self.change_method)
 
     def emit_signal(self, *args, **kwargs):
@@ -43,5 +46,7 @@ class SongEventsOptions(QWidget, Ui_SongEventsOptions):
             "end_threshold": self.spin_end_threshold.value(),
             "min_duration": self.spin_min_duration.value() / 1000,
             "isolate_events": self.checkbox_isolate_events.isChecked(),
+            "dtc_threshold": self.spin_dtc.value(),
+            "gtc_threshold": self.spin_gtc.value(),
         }
         return opts
