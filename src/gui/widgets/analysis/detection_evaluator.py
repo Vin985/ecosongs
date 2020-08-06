@@ -25,6 +25,7 @@ class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
         self.predictions_df = pd.DataFrame()
         self.recordings_df = pd.DataFrame()
         self.selected_recordings = []
+        self.stats = {}
 
         self.all_tags = []
 
@@ -97,39 +98,50 @@ class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
         predictions_df = predictions_df.loc[
             predictions_df.recording_id.isin(self.selected_recordings)
         ]
-        print(self.selected_recordings)
-        print(self.predictions_df)
-        print(self.tags_df.columns)
 
         tic = time()
         res = detector.evaluate(predictions_df, self.tags_df, event_options)
+        self.stats = res
+
+        self.display_results(res)
         # res = detector.evaluate(predictions_df, self.tags_df.loc[], event_options)
-        print(res)
-        matches = res.get("matches", None)
-        if matches is not None:
-            print("saving")
-            matches.to_csv("test/db/matches.csv")
-        events = res.get("events", None)
-        if events is not None:
-            print("saving")
-            events.to_csv("test/db/events.csv")
-        tags = res.get("tags", None)
-        if tags is not None:
-            print("saving")
-            tags.to_csv("test/db/tags.csv")
+        # print(res)
+        # matches = res.get("matches", None)
+        # if matches is not None:
+        #     print("saving")
+        #     matches.to_csv("test/db/matches.csv")
+        # events = res.get("events", None)
+        # if events is not None:
+        #     print("saving")
+        #     events.to_csv("test/db/events.csv")
+        # tags = res.get("tags", None)
+        # if tags is not None:
+        #     print("saving")
+        #     tags.to_csv("test/db/tags.csv")
         print("Took %0.6fs to evaluate predictions" % (time() - tic))
         tic = time()
         # self.display_stats(stats)
 
-    def display_stats(self, stats):
-        print(stats)
-        self.results_widget.setEnabled(True)
-        self.lbl_n_events.setText(str(stats["n_events"]))
-        self.lbl_n_annots.setText(str(stats["n_tags"]))
-        self.lbl_events_matched.setText(str(stats["true_positive_events"]))
-        self.lbl_annots_matched.setText(str(stats["n_tags_matched"]))
-        self.lbl_precision.setText(str(round(stats["precision"], 3)))
-        self.lbl_recall.setText(str(round(stats["recall"], 3)))
+    def display_results(self, results):
+
+        self.group_results.setEnabled(True)
+        stats = results["stats"]
+        for key, value in stats.items():
+            lbl = getattr(self, "lbl_" + key)
+            lbl.setText(str(value))
+            lbl.setEnabled(True)
+        # self.lbl_n_events.setText(str(stats["n_events"]))
+
+        # self.lbl_n_true_positives.setText(str(stats["n_true_positives"]))
+        # self.lbl_false_positives.setText(str(stats["n_false_positives"]))
+        # self.lbl_precision.setText(
+        #     str(round(stats["n_true_positives"] / stats["n_events"], 3))
+        # )
+        # self.lbl_true_positive_ratio(str())
+
+        # self.lbl_n_tags.setText(str(stats["n_tags"]))
+        # self.lbl_n_tags
+        # self.lbl_recall.setText(str(round(stats["recall"], 3)))
 
     # Filter the annotations by keeping the files with the selected tags.
     # Prevents the selected tags to be excluded.

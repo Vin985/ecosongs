@@ -23,7 +23,7 @@ class Ui_DetectionEvaluator(object):
     def setupUi(self, DetectionEvaluator):
         if not DetectionEvaluator.objectName():
             DetectionEvaluator.setObjectName(u"DetectionEvaluator")
-        DetectionEvaluator.resize(845, 802)
+        DetectionEvaluator.resize(1118, 802)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -33,7 +33,9 @@ class Ui_DetectionEvaluator(object):
         font.setFamily(u"Ubuntu")
         DetectionEvaluator.setFont(font)
         self.horizontalLayout_5 = QHBoxLayout(DetectionEvaluator)
+        self.horizontalLayout_5.setSpacing(3)
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(3, 3, 3, 3)
         self.splitter = QSplitter(DetectionEvaluator)
         self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Horizontal)
@@ -182,21 +184,28 @@ class Ui_DetectionEvaluator(object):
         self.verticalLayout_5.addItem(self.verticalSpacer_2)
 
         self.splitter.addWidget(self.verticalLayoutWidget)
-        self.scrollArea = QScrollArea(self.splitter)
-        self.scrollArea.setObjectName(u"scrollArea")
+        self.results_scrollArea = QScrollArea(self.splitter)
+        self.results_scrollArea.setObjectName(u"results_scrollArea")
         sizePolicy4 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy4.setHorizontalStretch(2)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
-        self.scrollArea.setSizePolicy(sizePolicy4)
-        self.scrollArea.setFrameShape(QFrame.NoFrame)
-        self.scrollArea.setWidgetResizable(True)
+        sizePolicy4.setHeightForWidth(self.results_scrollArea.sizePolicy().hasHeightForWidth())
+        self.results_scrollArea.setSizePolicy(sizePolicy4)
+        self.results_scrollArea.setAutoFillBackground(True)
+        self.results_scrollArea.setStyleSheet(u"#results_scrollArea { background: transparent; }\n"
+"#results_scrollArea > QWidget > QWidget { background: transparent; }\n"
+"#results_scrollArea > QWidget > QScrollBar { background: palette(base); }")
+        self.results_scrollArea.setFrameShape(QFrame.NoFrame)
+        self.results_scrollArea.setFrameShadow(QFrame.Plain)
+        self.results_scrollArea.setWidgetResizable(True)
+        self.results_scrollArea.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 326, 770))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 558, 796))
+        self.scrollAreaWidgetContents.setAutoFillBackground(False)
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(9, 0, 0, 0)
+        self.verticalLayout.setContentsMargins(9, 6, 9, 0)
         self.verticalLayout_6 = QVBoxLayout()
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.table_tags = DataFrameTableView(self.scrollAreaWidgetContents)
@@ -206,97 +215,138 @@ class Ui_DetectionEvaluator(object):
 
         self.verticalLayout_6.addWidget(self.table_tags)
 
-        self.results_widget = QWidget(self.scrollAreaWidgetContents)
-        self.results_widget.setObjectName(u"results_widget")
-        self.results_widget.setEnabled(False)
-        self.verticalLayout_2 = QVBoxLayout(self.results_widget)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.groupBox_3 = QGroupBox(self.results_widget)
-        self.groupBox_3.setObjectName(u"groupBox_3")
-        self.groupBox_3.setEnabled(False)
-        self.gridLayout_2 = QGridLayout(self.groupBox_3)
+        self.group_results = QGroupBox(self.scrollAreaWidgetContents)
+        self.group_results.setObjectName(u"group_results")
+        self.group_results.setEnabled(True)
+        self.gridLayout_2 = QGridLayout(self.group_results)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.lbl_events_matched = QLabel(self.groupBox_3)
-        self.lbl_events_matched.setObjectName(u"lbl_events_matched")
-
-        self.gridLayout_2.addWidget(self.lbl_events_matched, 2, 1, 1, 1)
-
-        self.label_13 = QLabel(self.groupBox_3)
-        self.label_13.setObjectName(u"label_13")
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.lbl_true_positives_ratio = QLabel(self.group_results)
+        self.lbl_true_positives_ratio.setObjectName(u"lbl_true_positives_ratio")
         font2 = QFont()
         font2.setFamily(u"Ubuntu")
         font2.setPointSize(11)
         font2.setBold(True)
         font2.setWeight(75)
-        self.label_13.setFont(font2)
+        self.lbl_true_positives_ratio.setFont(font2)
 
-        self.gridLayout_2.addWidget(self.label_13, 3, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.lbl_true_positives_ratio, 5, 1, 1, 1)
 
-        self.table_results = DataFrameTableView(self.groupBox_3)
-        self.table_results.setObjectName(u"table_results")
-        self.table_results.horizontalHeader().setStretchLastSection(True)
+        self.label = QLabel(self.group_results)
+        self.label.setObjectName(u"label")
 
-        self.gridLayout_2.addWidget(self.table_results, 0, 0, 1, 4)
+        self.gridLayout_2.addWidget(self.label, 3, 0, 1, 1)
 
-        self.label_22 = QLabel(self.groupBox_3)
+        self.lbl_n_true_positives = QLabel(self.group_results)
+        self.lbl_n_true_positives.setObjectName(u"lbl_n_true_positives")
+
+        self.gridLayout_2.addWidget(self.lbl_n_true_positives, 2, 1, 1, 1)
+
+        self.label_22 = QLabel(self.group_results)
         self.label_22.setObjectName(u"label_22")
 
         self.gridLayout_2.addWidget(self.label_22, 2, 2, 1, 1)
 
-        self.label_18 = QLabel(self.groupBox_3)
-        self.label_18.setObjectName(u"label_18")
-
-        self.gridLayout_2.addWidget(self.label_18, 1, 2, 1, 1)
-
-        self.lbl_recall = QLabel(self.groupBox_3)
-        self.lbl_recall.setObjectName(u"lbl_recall")
-        self.lbl_recall.setFont(font2)
-
-        self.gridLayout_2.addWidget(self.lbl_recall, 3, 3, 1, 1)
-
-        self.label_17 = QLabel(self.groupBox_3)
-        self.label_17.setObjectName(u"label_17")
-
-        self.gridLayout_2.addWidget(self.label_17, 1, 0, 1, 1)
-
-        self.lbl_annots_matched = QLabel(self.groupBox_3)
-        self.lbl_annots_matched.setObjectName(u"lbl_annots_matched")
-
-        self.gridLayout_2.addWidget(self.lbl_annots_matched, 2, 3, 1, 1)
-
-        self.lbl_n_events = QLabel(self.groupBox_3)
-        self.lbl_n_events.setObjectName(u"lbl_n_events")
-
-        self.gridLayout_2.addWidget(self.lbl_n_events, 1, 1, 1, 1)
-
-        self.lbl_n_annots = QLabel(self.groupBox_3)
-        self.lbl_n_annots.setObjectName(u"lbl_n_annots")
-
-        self.gridLayout_2.addWidget(self.lbl_n_annots, 1, 3, 1, 1)
-
-        self.label_15 = QLabel(self.groupBox_3)
-        self.label_15.setObjectName(u"label_15")
-        self.label_15.setFont(font2)
-
-        self.gridLayout_2.addWidget(self.label_15, 3, 2, 1, 1)
-
-        self.label_21 = QLabel(self.groupBox_3)
+        self.label_21 = QLabel(self.group_results)
         self.label_21.setObjectName(u"label_21")
 
         self.gridLayout_2.addWidget(self.label_21, 2, 0, 1, 1)
 
-        self.lbl_precision = QLabel(self.groupBox_3)
+        self.label_13 = QLabel(self.group_results)
+        self.label_13.setObjectName(u"label_13")
+        self.label_13.setFont(font2)
+
+        self.gridLayout_2.addWidget(self.label_13, 5, 0, 1, 1)
+
+        self.label_18 = QLabel(self.group_results)
+        self.label_18.setObjectName(u"label_18")
+
+        self.gridLayout_2.addWidget(self.label_18, 1, 2, 1, 1)
+
+        self.lbl_n_tags = QLabel(self.group_results)
+        self.lbl_n_tags.setObjectName(u"lbl_n_tags")
+
+        self.gridLayout_2.addWidget(self.lbl_n_tags, 1, 3, 1, 1)
+
+        self.label_17 = QLabel(self.group_results)
+        self.label_17.setObjectName(u"label_17")
+
+        self.gridLayout_2.addWidget(self.label_17, 1, 0, 1, 1)
+
+        self.table_results = DataFrameTableView(self.group_results)
+        self.table_results.setObjectName(u"table_results")
+        self.table_results.setEnabled(True)
+        self.table_results.horizontalHeader().setStretchLastSection(True)
+
+        self.gridLayout_2.addWidget(self.table_results, 0, 0, 1, 4)
+
+        self.lbl_n_events = QLabel(self.group_results)
+        self.lbl_n_events.setObjectName(u"lbl_n_events")
+
+        self.gridLayout_2.addWidget(self.lbl_n_events, 1, 1, 1, 1)
+
+        self.lbl_n_tags_matched = QLabel(self.group_results)
+        self.lbl_n_tags_matched.setObjectName(u"lbl_n_tags_matched")
+
+        self.gridLayout_2.addWidget(self.lbl_n_tags_matched, 2, 3, 1, 1)
+
+        self.label_2 = QLabel(self.group_results)
+        self.label_2.setObjectName(u"label_2")
+        font3 = QFont()
+        font3.setPointSize(11)
+        font3.setBold(True)
+        font3.setWeight(75)
+        self.label_2.setFont(font3)
+
+        self.gridLayout_2.addWidget(self.label_2, 4, 0, 1, 1)
+
+        self.label_15 = QLabel(self.group_results)
+        self.label_15.setObjectName(u"label_15")
+        self.label_15.setFont(font2)
+
+        self.gridLayout_2.addWidget(self.label_15, 4, 2, 1, 1)
+
+        self.lbl_recall = QLabel(self.group_results)
+        self.lbl_recall.setObjectName(u"lbl_recall")
+        self.lbl_recall.setFont(font2)
+
+        self.gridLayout_2.addWidget(self.lbl_recall, 4, 3, 1, 1)
+
+        self.label_3 = QLabel(self.group_results)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setFont(font3)
+
+        self.gridLayout_2.addWidget(self.label_3, 5, 2, 1, 1)
+
+        self.lbl_false_positive_rate = QLabel(self.group_results)
+        self.lbl_false_positive_rate.setObjectName(u"lbl_false_positive_rate")
+        self.lbl_false_positive_rate.setFont(font3)
+
+        self.gridLayout_2.addWidget(self.lbl_false_positive_rate, 5, 3, 1, 1)
+
+        self.lbl_precision = QLabel(self.group_results)
         self.lbl_precision.setObjectName(u"lbl_precision")
-        self.lbl_precision.setFont(font2)
+        self.lbl_precision.setFont(font3)
 
-        self.gridLayout_2.addWidget(self.lbl_precision, 3, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.lbl_precision, 4, 1, 1, 1)
+
+        self.label_6 = QLabel(self.group_results)
+        self.label_6.setObjectName(u"label_6")
+
+        self.gridLayout_2.addWidget(self.label_6, 3, 2, 1, 1)
+
+        self.lbl_n_tags_unmatched = QLabel(self.group_results)
+        self.lbl_n_tags_unmatched.setObjectName(u"lbl_n_tags_unmatched")
+
+        self.gridLayout_2.addWidget(self.lbl_n_tags_unmatched, 3, 3, 1, 1)
+
+        self.lbl_n_false_positives = QLabel(self.group_results)
+        self.lbl_n_false_positives.setObjectName(u"lbl_n_false_positives")
+
+        self.gridLayout_2.addWidget(self.lbl_n_false_positives, 3, 1, 1, 1)
 
 
-        self.verticalLayout_2.addWidget(self.groupBox_3)
-
-
-        self.verticalLayout_6.addWidget(self.results_widget)
+        self.verticalLayout_6.addWidget(self.group_results)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
@@ -307,22 +357,22 @@ class Ui_DetectionEvaluator(object):
 
         self.btn_export = QPushButton(self.scrollAreaWidgetContents)
         self.btn_export.setObjectName(u"btn_export")
-        font3 = QFont()
-        font3.setFamily(u"Ubuntu")
-        font3.setBold(True)
-        font3.setWeight(75)
-        self.btn_export.setFont(font3)
+        font4 = QFont()
+        font4.setFamily(u"Ubuntu")
+        font4.setBold(True)
+        font4.setWeight(75)
+        self.btn_export.setFont(font4)
 
         self.horizontalLayout_4.addWidget(self.btn_export)
 
         self.btn_sensitivity = QPushButton(self.scrollAreaWidgetContents)
         self.btn_sensitivity.setObjectName(u"btn_sensitivity")
-        font4 = QFont()
-        font4.setFamily(u"Ubuntu")
-        font4.setPointSize(9)
-        font4.setBold(True)
-        font4.setWeight(75)
-        self.btn_sensitivity.setFont(font4)
+        font5 = QFont()
+        font5.setFamily(u"Ubuntu")
+        font5.setPointSize(9)
+        font5.setBold(True)
+        font5.setWeight(75)
+        self.btn_sensitivity.setFont(font5)
 
         self.horizontalLayout_4.addWidget(self.btn_sensitivity)
 
@@ -336,8 +386,8 @@ class Ui_DetectionEvaluator(object):
 
         self.verticalLayout.addItem(self.verticalSpacer)
 
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.splitter.addWidget(self.scrollArea)
+        self.results_scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.splitter.addWidget(self.results_scrollArea)
 
         self.horizontalLayout_5.addWidget(self.splitter)
 
@@ -361,19 +411,39 @@ class Ui_DetectionEvaluator(object):
         self.label_10.setText(QCoreApplication.translate("DetectionEvaluator", u"Exclude tags", None))
         self.checkbox_keep_by_default.setText(QCoreApplication.translate("DetectionEvaluator", u"Keep tags by default", None))
         self.btn_calculate.setText(QCoreApplication.translate("DetectionEvaluator", u"Calculate statistics", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("DetectionEvaluator", u"Results", None))
-        self.lbl_events_matched.setText("")
-        self.label_13.setText(QCoreApplication.translate("DetectionEvaluator", u"Precision:", None))
-        self.label_22.setText(QCoreApplication.translate("DetectionEvaluator", u"N annotations matched:", None))
-        self.label_18.setText(QCoreApplication.translate("DetectionEvaluator", u"N annotations:", None))
-        self.lbl_recall.setText("")
-        self.label_17.setText(QCoreApplication.translate("DetectionEvaluator", u"N Events detected:", None))
-        self.lbl_annots_matched.setText("")
+        self.group_results.setTitle(QCoreApplication.translate("DetectionEvaluator", u"Results", None))
+        self.lbl_true_positives_ratio.setText("")
+        self.label.setText(QCoreApplication.translate("DetectionEvaluator", u"False positives:", None))
+        self.lbl_n_true_positives.setText("")
+        self.label_22.setText(QCoreApplication.translate("DetectionEvaluator", u"Matched tags:", None))
+        self.label_21.setText(QCoreApplication.translate("DetectionEvaluator", u"True positives:", None))
+#if QT_CONFIG(tooltip)
+        self.label_13.setToolTip(QCoreApplication.translate("DetectionEvaluator", u"True positive ratio = True positives / Tags ", None))
+#endif // QT_CONFIG(tooltip)
+        self.label_13.setText(QCoreApplication.translate("DetectionEvaluator", u"True positive ratio:", None))
+        self.label_18.setText(QCoreApplication.translate("DetectionEvaluator", u"Tags:", None))
+        self.lbl_n_tags.setText("")
+        self.label_17.setText(QCoreApplication.translate("DetectionEvaluator", u"Detected events:", None))
         self.lbl_n_events.setText("")
-        self.lbl_n_annots.setText("")
+        self.lbl_n_tags_matched.setText("")
+#if QT_CONFIG(tooltip)
+        self.label_2.setToolTip(QCoreApplication.translate("DetectionEvaluator", u"Precision = True positives / Detected Events", None))
+#endif // QT_CONFIG(tooltip)
+        self.label_2.setText(QCoreApplication.translate("DetectionEvaluator", u"Precision:", None))
+#if QT_CONFIG(tooltip)
+        self.label_15.setToolTip(QCoreApplication.translate("DetectionEvaluator", u"Recall = Matched tags / Tags", None))
+#endif // QT_CONFIG(tooltip)
         self.label_15.setText(QCoreApplication.translate("DetectionEvaluator", u"Recall:", None))
-        self.label_21.setText(QCoreApplication.translate("DetectionEvaluator", u"N events matched:", None))
+        self.lbl_recall.setText("")
+#if QT_CONFIG(tooltip)
+        self.label_3.setToolTip(QCoreApplication.translate("DetectionEvaluator", u"False positive rate: False positives/ Tags duration", None))
+#endif // QT_CONFIG(tooltip)
+        self.label_3.setText(QCoreApplication.translate("DetectionEvaluator", u"False positive rate", None))
+        self.lbl_false_positive_rate.setText("")
         self.lbl_precision.setText("")
+        self.label_6.setText(QCoreApplication.translate("DetectionEvaluator", u"Unmatched tags:", None))
+        self.lbl_n_tags_unmatched.setText("")
+        self.lbl_n_false_positives.setText("")
         self.btn_export.setText(QCoreApplication.translate("DetectionEvaluator", u"Export results", None))
         self.btn_sensitivity.setText(QCoreApplication.translate("DetectionEvaluator", u"Launch sensistivity analysis", None))
     # retranslateUi

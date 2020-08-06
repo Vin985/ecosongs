@@ -225,14 +225,18 @@ class StandardDetector(Detector):
         true_positives = res.event_id.unique()
         n_true_positives = len(true_positives)
         n_false_positives = events.shape[0] - n_true_positives
-        true_positives_ratio = n_true_positives / tags.shape[0]
-        false_positive_rate = n_false_positives / self.tags_active_duration(tags)
+        true_positives_ratio = round(n_true_positives / tags.shape[0], 3)
+        false_positive_rate = round(
+            n_false_positives / self.tags_active_duration(tags), 3
+        )
+        precision = round(n_true_positives / events.shape[0], 3)
 
         matched_tags_id = res.tag_id.unique()
         tags.loc[:, "matched"] = 0
         tags.loc[tags.id.isin(matched_tags_id), "matched"] = 1
         n_tags_matched = len(matched_tags_id)
         n_tags_unmatched = tags.shape[0] - n_tags_matched
+        recall = round(n_tags_matched / tags.shape[0], 3)
 
         events.loc[:, "matched"] = 0
         events.loc[events.event_id.isin(true_positives), "matched"] = 1
@@ -246,6 +250,8 @@ class StandardDetector(Detector):
             "n_tags_unmatched": n_tags_unmatched,
             "true_positives_ratio": true_positives_ratio,
             "false_positive_rate": false_positive_rate,
+            "precision": precision,
+            "recall": recall,
         }
         return {
             "stats": stats,
