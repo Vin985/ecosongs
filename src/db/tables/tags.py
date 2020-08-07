@@ -16,9 +16,7 @@ class TagsTable(TableModel):
         "tag_duration",
         "noise",
     ]
-    COLUMNS_TYPE = {
-        "recording_id": int,
-    }
+    COLUMNS_TYPE = {"recording_id": int, "tag": "category"}
     DUPLICATE_COLUMNS = ["recording_id", "tag", "tag_start", "tag_end"]
 
     NOISE = {"rain": 1, "wind": 2}
