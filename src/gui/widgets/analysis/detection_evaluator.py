@@ -1,7 +1,8 @@
 import os
 from time import time
-import pandas as pd
 
+import pandas as pd
+import pyqtgraph as pg
 from PySide2 import QtCore
 from PySide2.QtWidgets import QFileDialog
 
@@ -9,6 +10,7 @@ from analysis.detection import detectors
 from gui.widgets.analysis.ui.detection_evaluator_ui import Ui_DetectionEvaluator
 from gui.widgets.common.tab_widget import TabWidget
 from gui.widgets.dialogs.sensitivity_dialog import SensitivityDialog
+from pyqtextra.pyqtgraph.RotateAxisItem import RotateAxisItem
 
 
 class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
@@ -33,11 +35,7 @@ class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
 
     def link_events(self):
         # Checkboxes
-        self.checkbox_show_tags.clicked.connect(self.show_tags_table)
-        # Buttons
-        # self.btn_audio_folder.clicked.connect(self.select_audio_folder)
-        # self.btn_label_folder.clicked.connect(self.select_label_folder)
-        # self.btn_load_data.clicked.connect(self.load_data)
+        self.checkbox_show_tags.clicked.connect(self.show_explore_tabs)
         self.btn_calculate.clicked.connect(self.calculate)
         # self.btn_sensitivity.clicked.connect(self.launch_sensitivity_analysis)
 
@@ -67,7 +65,39 @@ class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
             tags_df = tags_df.loc[tags_df.recording_id.isin(self.selected_recordings)]
         self.tags_df = tags_df
         self.table_tags.setModel(self.tags_df)
+
+        self.init_barplot()
+
         self.update_tag_selection_ui()
+
+    def init_barplot(self):
+
+        tags = self.tags_df.drop_duplicates().copy()
+        counts = (
+            tags["tag"]
+            .value_counts()
+            .reset_index()
+            .rename(columns={"index": "tag_name", "tag": "count"})
+            .sort_values("tag_name")
+        )
+        print(counts)
+
+        bar_graph = pg.BarGraphItem(
+            x=range(1, counts.shape[0] + 1),
+            width=1,
+            height=counts["count"],
+            name=counts["tag_name"],
+        )
+
+        pg.setConfigOptions(foreground="#000000", background="w")
+        plt = pg.PlotWidget()
+        plt.setWindowTitle("pyqtgraph example: BarGraphItem")
+        plt.addItem(bar_graph)
+        axis = RotateAxisItem("bottom", angle=-90)
+        axis.setTicks([list(enumerate(counts["tag_name"], 1))])
+        plt.setAxisItems({"bottom": axis})
+
+        self.plot_layout.replaceWidget(self.plot_widget, plt)
 
     def update_tag_selection_ui(self):
         msg = "Found {0} recordings with tags. {1} tags loaded".format(
@@ -79,10 +109,10 @@ class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
                 self.recordings_df.shape[0]
             )
         self.lbl_selected_tags.setText(msg)
-        self.show_tags_table()
+        self.show_explore_tabs()
 
-    def show_tags_table(self):
-        self.table_tags.setHidden(not self.checkbox_show_tags.isChecked())
+    def show_explore_tabs(self):
+        self.explore_tabs.setHidden(not self.checkbox_show_tags.isChecked())
 
     #############
     ### Slots ###
@@ -104,44 +134,28 @@ class DetectionEvaluator(TabWidget, Ui_DetectionEvaluator):
         self.stats = res
 
         self.display_results(res)
-        # res = detector.evaluate(predictions_df, self.tags_df.loc[], event_options)
-        # print(res)
-        # matches = res.get("matches", None)
+        # matches = res.get("matched", None)
         # if matches is not None:
         #     print("saving")
-        #     matches.to_csv("test/db/matches.csv")
+        #     matches.to_csv("test/db/matches2.csv")
         # events = res.get("events", None)
         # if events is not None:
         #     print("saving")
-        #     events.to_csv("test/db/events.csv")
+        #     events.to_csv("test/db/events2.csv")
         # tags = res.get("tags", None)
         # if tags is not None:
         #     print("saving")
-        #     tags.to_csv("test/db/tags.csv")
+        #     tags.to_csv("test/db/tags2.csv")
         print("Took %0.6fs to evaluate predictions" % (time() - tic))
         tic = time()
-        # self.display_stats(stats)
 
     def display_results(self, results):
-
         self.group_results.setEnabled(True)
         stats = results["stats"]
         for key, value in stats.items():
             lbl = getattr(self, "lbl_" + key)
             lbl.setText(str(value))
             lbl.setEnabled(True)
-        # self.lbl_n_events.setText(str(stats["n_events"]))
-
-        # self.lbl_n_true_positives.setText(str(stats["n_true_positives"]))
-        # self.lbl_false_positives.setText(str(stats["n_false_positives"]))
-        # self.lbl_precision.setText(
-        #     str(round(stats["n_true_positives"] / stats["n_events"], 3))
-        # )
-        # self.lbl_true_positive_ratio(str())
-
-        # self.lbl_n_tags.setText(str(stats["n_tags"]))
-        # self.lbl_n_tags
-        # self.lbl_recall.setText(str(round(stats["recall"], 3)))
 
     # Filter the annotations by keeping the files with the selected tags.
     # Prevents the selected tags to be excluded.

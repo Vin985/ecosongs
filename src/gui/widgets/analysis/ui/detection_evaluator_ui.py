@@ -208,16 +208,37 @@ class Ui_DetectionEvaluator(object):
         self.verticalLayout.setContentsMargins(9, 6, 9, 0)
         self.verticalLayout_6 = QVBoxLayout()
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.table_tags = DataFrameTableView(self.scrollAreaWidgetContents)
+        self.explore_tabs = QTabWidget(self.scrollAreaWidgetContents)
+        self.explore_tabs.setObjectName(u"explore_tabs")
+        self.table_tab = QWidget()
+        self.table_tab.setObjectName(u"table_tab")
+        self.verticalLayout_4 = QVBoxLayout(self.table_tab)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_4.setContentsMargins(0, 6, 0, 0)
+        self.table_tags = DataFrameTableView(self.table_tab)
         self.table_tags.setObjectName(u"table_tags")
         self.table_tags.setMinimumSize(QSize(0, 200))
         self.table_tags.horizontalHeader().setStretchLastSection(True)
 
-        self.verticalLayout_6.addWidget(self.table_tags)
+        self.verticalLayout_4.addWidget(self.table_tags)
+
+        self.explore_tabs.addTab(self.table_tab, "")
+        self.barplot_tab = QWidget()
+        self.barplot_tab.setObjectName(u"barplot_tab")
+        self.plot_layout = QVBoxLayout(self.barplot_tab)
+        self.plot_layout.setObjectName(u"plot_layout")
+        self.plot_widget = QWidget(self.barplot_tab)
+        self.plot_widget.setObjectName(u"plot_widget")
+
+        self.plot_layout.addWidget(self.plot_widget)
+
+        self.explore_tabs.addTab(self.barplot_tab, "")
+
+        self.verticalLayout_6.addWidget(self.explore_tabs)
 
         self.group_results = QGroupBox(self.scrollAreaWidgetContents)
         self.group_results.setObjectName(u"group_results")
-        self.group_results.setEnabled(True)
+        self.group_results.setEnabled(False)
         self.gridLayout_2 = QGridLayout(self.group_results)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -275,7 +296,7 @@ class Ui_DetectionEvaluator(object):
 
         self.table_results = DataFrameTableView(self.group_results)
         self.table_results.setObjectName(u"table_results")
-        self.table_results.setEnabled(True)
+        self.table_results.setEnabled(False)
         self.table_results.horizontalHeader().setStretchLastSection(True)
 
         self.gridLayout_2.addWidget(self.table_results, 0, 0, 1, 4)
@@ -394,6 +415,9 @@ class Ui_DetectionEvaluator(object):
 
         self.retranslateUi(DetectionEvaluator)
 
+        self.explore_tabs.setCurrentIndex(1)
+
+
         QMetaObject.connectSlotsByName(DetectionEvaluator)
     # setupUi
 
@@ -411,6 +435,8 @@ class Ui_DetectionEvaluator(object):
         self.label_10.setText(QCoreApplication.translate("DetectionEvaluator", u"Exclude tags", None))
         self.checkbox_keep_by_default.setText(QCoreApplication.translate("DetectionEvaluator", u"Keep tags by default", None))
         self.btn_calculate.setText(QCoreApplication.translate("DetectionEvaluator", u"Calculate statistics", None))
+        self.explore_tabs.setTabText(self.explore_tabs.indexOf(self.table_tab), QCoreApplication.translate("DetectionEvaluator", u"Table", None))
+        self.explore_tabs.setTabText(self.explore_tabs.indexOf(self.barplot_tab), QCoreApplication.translate("DetectionEvaluator", u"Barplot", None))
         self.group_results.setTitle(QCoreApplication.translate("DetectionEvaluator", u"Results", None))
         self.lbl_true_positives_ratio.setText("")
         self.label.setText(QCoreApplication.translate("DetectionEvaluator", u"False positives:", None))
