@@ -95,18 +95,19 @@ start_pos = 1 - (bar_width * nbars / 2)
 for i in range(0, len(types)):
     x0 = x + start_pos + i * bar_width
     y = count_long.loc[count_long.matched == types[i], "n_tags"]
-    print(len(x0), len(y))
-    bg[types[i]] = pg.BarGraphItem(x0=x0, height=y, width=bar_width, brush=colors[i])
+    bg[types[i]] = pg.BarGraphItem(
+        x0=x0, height=y, width=bar_width, brush=colors[i], name=types[i]
+    )
 
 print(bg)
 
 #%%
 pg.setConfigOptions(foreground="#000000", background="w")
-win = pg.plot(axisItems={"bottom": RotateAxisItem})
-win.setWindowTitle("pyqtgraph example: BarGraphItem")
+plt = pg.plot()
+plt.addLegend()
+plt.setWindowTitle("pyqtgraph example: BarGraphItem")
 for item in bg.values():
-    print(item)
-    win.addItem(item)
+    plt.addItem(item)
 
 # axis = RotateAxisItem("bottom").setTicks(
 #     [list(enumerate(count_long.tag.cat.categories, 1))]
@@ -114,7 +115,7 @@ for item in bg.values():
 
 axis = RotateAxisItem("bottom", angle=-90)
 axis.setTicks([list(enumerate(count_long.tag.cat.categories, 1))])
-win.setAxisItems({"bottom": axis})
+plt.setAxisItems({"bottom": axis})
 
 # win.addItem(axis)
 
