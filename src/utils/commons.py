@@ -1,6 +1,10 @@
 from collections import namedtuple
 
 
+def is_df_empty(df):
+    return df is None or df.empty
+
+
 def str2bool(str):
     if type(str) == bool:
         return str
