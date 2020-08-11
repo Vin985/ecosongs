@@ -11,32 +11,68 @@ from scipy.io import wavfile
 from analysis.detection.lib import train_helpers
 from analysis.spectrogram import Spectrogram
 
-# Custom functions and classes
-sys.path.append("../lib")
 
 N_FFT = 2048
 HOP_LENGTH = 1024  # 512
 N_MELS = 32  # 128
 
 
-class TFClassifier(object):
+class CityNetClassifier1(object):
     def __init__(self, opts, weights_path):
         """Create the layers of the neural network, with the same options we used in training"""
         self.opts = namedtuple("opts", opts.keys())(*opts.values())
-        tf.reset_default_graph()
+        tf.compat.v1.reset_default_graph()
+        tf.compat.v1.disable_eager_execution()
 
         # config = tf.ConfigProto(device_count={"GPU": 0}, log_device_placement=True)
         # self.sess = tf.Session(config=config)
 
-        self.sess = tf.Session()
-        self.sess.run(tf.global_variables_initializer())
+        self.sess = tf.compat.v1.Session()
+        self.sess.run(tf.compat.v1.global_variables_initializer())
 
         net_options = {xx: opts[xx] for xx in train_helpers.net_params}
         self.net = train_helpers.create_net(SPEC_HEIGHT=N_MELS, **net_options)
+        # self.net = train_helpers.create_net(SPEC_HEIGHT=N_MELS, **net_options)
+        # self.net.load_weights(weights_path)
 
-        train_saver = tf.train.Saver()
+        train_saver = tf.compat.v1.train.Saver()
         print("Loading from {}".format(weights_path))
         train_saver.restore(self.sess, weights_path)
+
+        print("loaded")
+
+        # Create an object which will iterate over the test spectrograms
+        # appropriately
+        self.test_sampler = train_helpers.SpecSampler(
+            batch_size=256,
+            hww_x=self.opts.HWW_X,
+            hww_y=self.opts.HWW_Y,
+            do_aug=False,
+            learn_log=self.opts.LEARN_LOG,
+            randomise=False,
+            seed=10,
+            balanced=False,
+        )
+
+    def __init__new(self, opts, weights_path):
+        """Create the layers of the neural network, with the same options we used in training"""
+        self.opts = namedtuple("opts", opts.keys())(*opts.values())
+        # tf.compat.v1.reset_default_graph()
+
+        # config = tf.ConfigProto(device_count={"GPU": 0}, log_device_placement=True)
+        # self.sess = tf.Session(config=config)
+
+        # self.sess = tf.compat.v1.Session()
+        # self.sess.run(tf.compat.v1.global_variables_initializer())
+
+        net_options = {xx: opts[xx] for xx in train_helpers.net_params}
+        # self.net = train_helpers.create_net_old(SPEC_HEIGHT=N_MELS, **net_options)
+        self.net = train_helpers.create_net(SPEC_HEIGHT=N_MELS, **net_options)
+        # self.net.load_weights(weights_path)
+
+        train_saver = tf.compat.v1.train.Saver()
+        print("Loading from {}".format(weights_path))
+        # train_saver.restore(self.sess, weights_path)
 
         # Create an object which will iterate over the test spectrograms
         # appropriately
