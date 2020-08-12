@@ -4,7 +4,7 @@ import traceback
 import numpy as np
 import pandas as pd
 
-from analysis.detection.lib.tf_classifier import HOP_LENGTH, TFClassifier
+from analysis.detection.lib.tf_classifier import HOP_LENGTH, CityNetClassifier1
 from analysis.detection.predictions_utils import predictions2pdf
 
 DETECTOR = None
@@ -13,7 +13,7 @@ DETECTION_OPTIONS = None
 
 def mp_initialize_detector(model_options, weight_path, detection_options):
     global DETECTOR, DETECTION_OPTIONS
-    DETECTOR = TFClassifier(model_options, weight_path)
+    DETECTOR = CityNetClassifier1(model_options, weight_path)
     DETECTION_OPTIONS = detection_options
 
 
