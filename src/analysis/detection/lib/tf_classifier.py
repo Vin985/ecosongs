@@ -129,6 +129,7 @@ class CityNetClassifier1(object):
     def classify(self, wavpath=None):
         """Apply the classifier"""
         tic = time()
+        
         if wavpath is not None:
             self.load_wav(wavpath, loadmethod="librosa")
             self.compute_spec()
@@ -141,5 +142,6 @@ class CityNetClassifier1(object):
             pred = self.sess.run(self.net["output"], feed_dict={self.net["input"]: Xb})
             probas.append(pred)
         # print("Took %0.3fs to classify" % (time() - tic))
+        print("Classified {0} in {1}".format(wavpath, time()-tic))
 
         return np.vstack(probas)[:, 1]
