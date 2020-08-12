@@ -43,7 +43,7 @@ class Recording(BaseModel):
         return string
 
     def tag_status(self, complete=True):
-        if self.tags.empty:
+        if is_df_empty(self.tags):
             return 0
         if complete:
             return int(self.has_tags == self.TAGS_COMPLETE)
