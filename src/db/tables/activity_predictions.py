@@ -48,7 +48,9 @@ class ActivityPredictionsTable(TableModel):
         return events
 
     def get_predictions_by_id(self, recording_id):
-        return self.df.loc[self.df["recording_id"] == recording_id]
+        if not self.df.empty:
+            return self.df.loc[self.df["recording_id"] == recording_id]
+        return pd.DataFrame()
 
     def get_events(self, recording_ids, event_options):
         if not isinstance(recording_ids, list):
