@@ -4,6 +4,7 @@ test_dir:  'test/'
 audio_dir: 'wavs/'
 annotations_dir: 'annotations/'
 dest_dir: 'extracted2/'
+model_dir: '/mnt/win/UMoncton/Doctorat/dev/ecosongs/src/test/citynet2/models/'
 # Spectrogram options
 spec_type: 'mel'
 ensemble_members: 1
@@ -12,15 +13,17 @@ HWW_Y: 10
 learn_log: 0
 do_augmentation: 1
 # network parameters
+channels: 4
 do_batch_norm: 1
 num_filters: 128
 num_dense_filters: 512
 conv_filter_width: 4
 wiggle_room: 5
-max_epochs: 5
+max_epochs: 10
 learning_rate: 0.001
 classname: 'biotic'
 run_type: 'test_citynet'
+val_prop: 0.3
 A: 0.001 # biotic 
 B: 10.0 #biotic
 # A: 0.025 # anthropic

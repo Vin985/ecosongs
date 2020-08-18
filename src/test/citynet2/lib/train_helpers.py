@@ -117,7 +117,14 @@ class SpecSampler(object):
                     )
 
                     X[count, 2] = (X[count, 1] - X[count, 1].mean()) / X[count, 1].std()
-                    X[count, 3] = X[count, 1] / X[count, 1].max()
+                    x1max = X[count, 1].max()
+                    if x1max != 0:
+                        X[count, 3] = X[count, 1] / x1max
+                    else:
+                        X[count, 3] = X[count, 1]
+
+                    if np.isnan(np.sum(X[count, 3])):
+                        print("error")
 
                 y[count] = self.labels[(loc - self.hww_y) : (loc + self.hww_y)].max()
                 if self.learn_log:
@@ -162,6 +169,7 @@ def create_net(
 
     channels = 4
     net = collections.OrderedDict()
+    regularizer = slim.l2_regularizer(0.0005)
 
     net["input"] = tf.compat.v1.placeholder(
         tf.float32, (None, SPEC_HEIGHT, HWW_X * 2, channels), name="input"
@@ -173,6 +181,7 @@ def create_net(
         padding="valid",
         activation_fn=None,
         biases_initializer=None,
+        weights_regularizer=regularizer,
     )
     net["conv1_1"] = tf.nn.leaky_relu(net["conv1_1"], alpha=1 / 3)
 
@@ -183,23 +192,34 @@ def create_net(
         padding="valid",
         activation_fn=None,
         biases_initializer=None,
+        weights_regularizer=regularizer,
     )
     net["conv1_2"] = tf.nn.leaky_relu(net["conv1_2"], alpha=1 / 3)
 
     W = net["conv1_2"].shape[2]
-    net["pool2"] = slim.max_pool2d(net["conv1_2"], kernel_size=(1, W), stride=(1, 1))
+    net["pool2"] = slim.max_pool2d(net["conv1_2"], kernel_size=(1, W), stride=(1, 1),)
 
     net["pool2"] = tf.transpose(net["pool2"], (0, 3, 2, 1))
     net["pool2_flat"] = slim.flatten(net["pool2"])
 
     net["fc6"] = slim.fully_connected(
-        net["pool2_flat"], NUM_DENSE_UNITS, activation_fn=None, biases_initializer=None
+        net["pool2_flat"],
+        NUM_DENSE_UNITS,
+        activation_fn=None,
+        biases_initializer=None,
+        weights_regularizer=regularizer,
     )
+    net["fc6"] = tf.nn.dropout(net["fc6"], 0.5)
     net["fc6"] = tf.nn.leaky_relu(net["fc6"], alpha=1 / 3)
 
     net["fc7"] = slim.fully_connected(
-        net["fc6"], NUM_DENSE_UNITS, activation_fn=None, biases_initializer=None
+        net["fc6"],
+        NUM_DENSE_UNITS,
+        activation_fn=None,
+        biases_initializer=None,
+        weights_regularizer=regularizer,
     )
+    net["fc7"] = tf.nn.dropout(net["fc7"], 0.5)
     net["fc7"] = tf.nn.leaky_relu(net["fc7"], alpha=1 / 3)
 
     net["fc8"] = slim.fully_connected(net["fc7"], 2, activation_fn=None)
@@ -207,6 +227,41 @@ def create_net(
     net["output"] = tf.nn.softmax(net["fc8"])
 
     return net
+
+
+class EcosongsModel:
+    def __init__(self, opts):
+        super().__init__()
+        self.opts = opts
+        self.layers = {
+            "conv1_1": tf.keras.layers.Conv2D(
+                self.opts.get("num_filters", 128),
+                (
+                    self.opts["spec_height"] - self.opts["wiggle_room"],
+                    self.opts["conv_filter_width"],
+                ),
+                input_shape=(
+                    self.opts["spec_height"],
+                    self.opts["HWW_X"] * 2,
+                    self.opts["channels"],
+                ),
+                bias_initializer=None,
+                padding="valid",
+                activation=None,
+                name="conv1_1",
+            ),
+            "leaky_relu": tf.keras.layers.LeakyReLU(alpha=1 / 3),
+        }
+
+        self.flatten = Flatten()
+        self.d1 = Dense(128, activation="relu")
+        self.d2 = Dense(10)
+
+    def call(self, x):
+        x = self.conv1(x)
+        x = self.flatten(x)
+        x = self.d1(x)
+        return self.d2(x)
 
 
 def create_net_new(

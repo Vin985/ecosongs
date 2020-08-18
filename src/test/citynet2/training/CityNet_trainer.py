@@ -10,6 +10,7 @@ import tf_slim as slim
 import yaml
 from scipy.ndimage.interpolation import zoom
 from tqdm import tqdm
+import random
 
 from lib.data_helpers import load_annotations
 from lib.train_helpers import SpecSampler, create_net
@@ -106,7 +107,7 @@ class CityNetTrainer:
         y = []
 
         src_dir = self.paths[data_type + "_spec_dir"]
-        for file_name in os.listdir(src_dir)[0:100]:
+        for file_name in os.listdir(src_dir):
             print("Loading file: ", file_name)
             annots, spec = self.load_data_helper(src_dir + file_name)
             X.append(spec)
@@ -139,15 +140,29 @@ class CityNetTrainer:
         in as parameters!
         """
         if val_X is None:
-            val_X = test_X
-            val_y = test_y
+            n_val = int(self.opts.get("val_prop", 0.2) * len(train_X))
+            print(n_val)
+            print(len(train_X))
+            val_idx = random.sample(range(0, len(train_X)), n_val)
+            tmp_train_x, val_X, tmp_train_y, val_y = [], [], [], []
+            for i in range(0, len(train_X)):
+                if i in val_idx:
+                    val_X.append(train_X[i])
+                    val_y.append(train_y[i])
+                else:
+                    tmp_train_x.append(train_X[i])
+                    tmp_train_y.append(train_y[i])
+            train_X = tmp_train_x
+            train_y = tmp_train_y
+            print(len(train_X))
+            print(len(val_X))
 
         print("in train and test")
         tf.compat.v1.disable_eager_execution()
 
         # # creaging samplers and batch iterators
         train_sampler = SpecSampler(
-            64,
+            128,
             self.opts["HWW_X"],
             self.opts["HWW_Y"],
             self.opts["do_augmentation"],
@@ -156,7 +171,7 @@ class CityNetTrainer:
             balanced=True,
         )
         test_sampler = SpecSampler(
-            64,
+            128,
             self.opts["HWW_X"],
             self.opts["HWW_Y"],
             False,
@@ -190,7 +205,7 @@ class CityNetTrainer:
                 logits=trn_output, labels=y_in
             )
         )
-        _test_loss = tf.compat.v1.reduce_mean(
+        _test_loss = tf.reduce_mean(
             tf.nn.sparse_softmax_cross_entropy_with_logits(
                 logits=test_output, labels=y_in
             )
@@ -256,41 +271,43 @@ class CityNetTrainer:
 
             #######################
             # TESTING
-            results_savedir = self.force_make_dir(
-                self.paths["logging_dir"] + "results/"
-            )
-            predictions_savedir = self.force_make_dir(
-                self.paths["logging_dir"] + "per_file_predictions/"
-            )
+            # results_savedir = self.force_make_dir(
+            #     self.paths["logging_dir"] + "results/"
+            # )
+            # predictions_savedir = self.force_make_dir(
+            #     self.paths["logging_dir"] + "per_file_predictions/"
+            # )
 
-            test_sampler = SpecSampler(
-                64,
-                self.opts["HWW_X"],
-                self.opts["HWW_Y"],
-                False,
-                self.opts["learn_log"],
-                randomise=False,
-                seed=10,
-                balanced=False,
-            )
-            for fname, spec, y in zip(test_files, test_X, test_y):
-                probas = []
-                y_true = []
-                for Xb, yb in test_sampler([spec], [y]):
-                    preds = sess.run(test_output, feed_dict={x_in: Xb})
-                    probas.append(preds)
-                    y_true.append(yb)
+            # test_sampler = SpecSampler(
+            #     128,
+            #     self.opts["HWW_X"],
+            #     self.opts["HWW_Y"],
+            #     False,
+            #     self.opts["learn_log"],
+            #     randomise=False,
+            #     seed=10,
+            #     balanced=False,
+            # )
+            # for fname, spec, y in zip(test_files, test_X, test_y):
+            #     probas = []
+            #     y_true = []
+            #     for Xb, yb in test_sampler([spec], [y]):
+            #         preds = sess.run(test_output, feed_dict={x_in: Xb})
+            #         probas.append(preds)
+            #         y_true.append(yb)
 
-                y_pred_prob = np.vstack(probas)
-                y_true = np.hstack(y_true)
-                y_pred = np.argmax(y_pred_prob, axis=1)
+            #     y_pred_prob = np.vstack(probas)
+            #     y_true = np.hstack(y_true)
+            #     y_pred = np.argmax(y_pred_prob, axis=1)
 
-                print("Saving to {}".format(predictions_savedir))
-                with open(predictions_savedir + fname, "wb") as f:
-                    pickle.dump([y_true, y_pred_prob], f, -1)
+            #     print("Saving to {}".format(predictions_savedir))
+            #     with open(predictions_savedir + fname, "wb") as f:
+            #         pickle.dump([y_true, y_pred_prob], f, -1)
 
             # save weights from network
-            saver.save(sess, results_savedir + "weights_%d.pkl" % 1, global_step=1)
+            saver.save(
+                sess, self.paths["results_dir"] + self.opts["model_name"], global_step=1
+            )
 
     def train(self):
 
@@ -304,17 +321,13 @@ class CityNetTrainer:
 
         for idx in range(self.opts["ensemble_members"]):
             print("train ensemble: ", idx)
-            self.paths["logging_dir"] = self.opts[
-                "base_dir"
-            ] + "predictions/%s/%d/%s/" % (
-                self.opts["run_type"],
-                idx,
-                self.opts["classname"],
+            self.paths["results_dir"] = (
+                self.opts["model_dir"] + self.opts["model_name"] + "/"
             )
-            self.force_make_dir(self.paths["logging_dir"])
+            self.force_make_dir(self.paths["results_dir"])
             # sys.stdout = ui.Logger(logging_dir + "log.txt")
 
-            with open(self.paths["logging_dir"] + "network_opts.yaml", "w") as f:
+            with open(self.paths["results_dir"] + "network_opts.yaml", "w") as f:
                 yaml.dump(self.opts, f, default_flow_style=False)
 
             self.train_and_test(

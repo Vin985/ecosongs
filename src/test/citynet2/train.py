@@ -1,10 +1,11 @@
 import yaml
 import os
 
-try:
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-except:
-    pass
+# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+# try:
+#     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# except:
+#     pass
 
 from training.utils import create_detection_dataset, train_citynet
 
@@ -13,8 +14,9 @@ from training.CityNet_trainer import CityNetTrainer
 
 if __name__ == "__main__":
 
-    stream = open("CONFIG.yaml", "r")
+    stream = open("src/test/citynet2/CONFIG.yaml", "r")
     opts = yaml.load(stream, Loader=yaml.Loader)
+    opts["model_name"] = "citynet_dropout2"
     print(opts)
 
     trainer = CityNetTrainer(opts)
