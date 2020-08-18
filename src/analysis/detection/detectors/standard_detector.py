@@ -265,5 +265,5 @@ class StandardDetector(Detector):
         events = self.get_events(predictions, options)
         matches = self.get_matches(events, tags)
         stats = self.get_stats(events, tags, matches, options)
-        print("Stats for options {0}: {1}".format(options, stats))
+        print("Stats for options {0}: {1}".format(options, stats["stats"]))
         return stats
