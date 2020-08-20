@@ -11,14 +11,16 @@ import yaml
 from scipy.ndimage.interpolation import zoom
 from tqdm import tqdm
 import random
+import datetime
 
 from lib.data_helpers import load_annotations
 from lib.train_helpers import SpecSampler, create_net
 
 
 class CityNetTrainer:
-    def __init__(self, opts):
+    def __init__(self, opts, model=None):
         self.opts = opts
+        self.model = model
         self.paths = self.set_paths()
 
     def set_paths(self):
@@ -107,7 +109,7 @@ class CityNetTrainer:
         y = []
 
         src_dir = self.paths[data_type + "_spec_dir"]
-        for file_name in os.listdir(src_dir):
+        for file_name in os.listdir(src_dir)[0:10]:
             print("Loading file: ", file_name)
             annots, spec = self.load_data_helper(src_dir + file_name)
             X.append(spec)
@@ -333,4 +335,57 @@ class CityNetTrainer:
             self.train_and_test(
                 train_X, test_X, train_y, test_y, test_files,
             )
+
+    def train_model(self):
+        if not self.model:
+            raise AttributeError("No model found")
+        # X: spectrograms, y: labels
+        train_X, train_y = self.load_data("train")
+        # test_X, test_y = self.load_data("test")
+
+        print("data_loaded")
+
+        # test_files = os.listdir(self.paths["test_spec_dir"])
+
+        self.paths["results_dir"] = (
+            self.opts["model_dir"] + self.opts["model_name"] + "/"
+        )
+        self.force_make_dir(self.paths["results_dir"])
+        # sys.stdout = ui.Logger(logging_dir + "log.txt")
+
+        with open(self.paths["results_dir"] + "network_opts.yaml", "w") as f:
+            yaml.dump(self.opts, f, default_flow_style=False)
+        model = self.model.net
+
+        def tf_loss(y_true, y_pred):
+            return tf.reduce_mean(
+                tf.nn.sparse_softmax_cross_entropy_with_logits(
+                    labels=y_true, logits=y_pred
+                )
+            )
+
+        log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(
+            log_dir=log_dir, histogram_freq=1
+        )
+
+        train_sampler = SpecSampler(
+            128,
+            self.opts["HWW_X"],
+            self.opts["HWW_Y"],
+            self.opts["do_augmentation"],
+            self.opts["learn_log"],
+            randomise=True,
+            balanced=True,
+        )
+
+        model.compile(
+            optimizer="adam", loss=tf_loss, metrics=["accuracy"],
+        )
+
+        model.fit(
+            train_sampler(train_X, train_y),
+            epochs=10,
+            callbacks=[tensorboard_callback],
+        )
 

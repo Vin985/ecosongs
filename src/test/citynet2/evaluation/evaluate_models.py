@@ -99,7 +99,30 @@ res2 = evaluate_model(model2_opts, evaluator)
 
 
 #%%
+model3_opts = {
+    "name": "citynet_dropout2",
+    "model_root": "../models/",
+    "options_file": "../models/citynet_dropout2/network_opts.yaml",
+    "weight_path": "../models/citynet_dropout2/citynet_dropout2-1",
+    "save_dest": db_path / "predictions_citynet_dropout2.feather",
+    "save_dest_root": db_path,
+}
 
+res3 = evaluate_model(model3_opts, evaluator)
+
+#%%
+model4_opts = {
+    "name": "citynet_dropout3",
+    "model_root": "../models/",
+    "options_file": "../models/citynet_dropout3/network_opts.yaml",
+    "weight_path": "../models/citynet_dropout3/citynet_dropout3-1",
+    "save_dest": db_path / "predictions_citynet_dropout3.feather",
+    "save_dest_root": db_path,
+}
+
+res3 = evaluate_model(model4_opts, evaluator)
+
+#%%
 
 # db_opts = {
 #     "database": "ecosongs",
