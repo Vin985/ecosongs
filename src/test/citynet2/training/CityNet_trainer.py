@@ -109,7 +109,7 @@ class CityNetTrainer:
         y = []
 
         src_dir = self.paths[data_type + "_spec_dir"]
-        for file_name in os.listdir(src_dir)[0:10]:
+        for file_name in os.listdir(src_dir):
             print("Loading file: ", file_name)
             annots, spec = self.load_data_helper(src_dir + file_name)
             X.append(spec)
@@ -389,3 +389,7 @@ class CityNetTrainer:
             callbacks=[tensorboard_callback],
         )
 
+    def train_model2(self):
+        if not self.model:
+            raise AttributeError("No model found")
+        self.model.train(self.load_data("train"), self.load_data("test"))
