@@ -1,3 +1,4 @@
+import os
 from collections import namedtuple
 
 
@@ -26,6 +27,12 @@ def format_s2hms(seconds):
 
 def fullclassname(cls):
     return cls.__module__ + "." + cls.__name__
+
+
+def force_make_dir(dirpath):
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+    return dirpath
 
 
 def frange_positive(start, stop=None, step=None, endpoint=True, decimals=2):
