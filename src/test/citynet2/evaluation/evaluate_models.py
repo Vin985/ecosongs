@@ -13,9 +13,11 @@ import feather
 # currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 # parentdir = os.path.dirname(currentdir)
 os.sys.path.insert(0, "/mnt/win/UMoncton/Doctorat/dev/ecosongs/src")
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 try:
     # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     from analysis.detection.lib.tf_classifier import HOP_LENGTH, CityNetClassifier1
+    from analysis.detection.models.CityNetTF2 import CityNetTF2
     from db import dbutils
     from db.tablemanager import TableManager
     from analysis.detection.detectors import DETECTORS
@@ -34,6 +36,19 @@ def get_model(model_opts):
     return model
 
 
+def get_model_tf2(model_opts):
+    stream = open(model_opts["options_file"], "r")
+    model_options = yaml.load(stream, Loader=yaml.Loader) or {}
+    model_options["resample"] = None
+    model_options["remove_noise"] = False
+    weight_path = model_opts["weight_path"]
+
+    # model = CityNetClassifier1(model_options, weight_path)
+    model = CityNetTF2(model_options)
+    model.model.load_weights(weight_path)
+    return model
+
+
 def get_predictions(recordings, model, hop_length=HOP_LENGTH):
     res = []
     for recording in recordings.itertuples():
@@ -41,8 +56,11 @@ def get_predictions(recordings, model, hop_length=HOP_LENGTH):
         res_df = pd.DataFrame()
         # TODO: see if we can optimize with the recording object
         try:
-            preds = model.classify(recording.path)
-            len_in_s = preds.shape[0] * hop_length / model.sample_rate
+            (preds, sr) = model.classify(recording.path)
+            # print(tmp)
+            # preds = tmp["preds"]
+            # sr = tmp["sr"]
+            len_in_s = preds.shape[0] * hop_length / sr
             timeseq = np.linspace(0, len_in_s, preds.shape[0])
             res_df = pd.DataFrame(
                 {"recording_id": recording.id, "time": timeseq, "activity": preds}
@@ -57,7 +75,10 @@ def get_predictions(recordings, model, hop_length=HOP_LENGTH):
 
 def evaluate_model(model_options, detector):
     if not os.path.exists(model_options["save_dest"]):
-        model = get_model(model_options)
+        if model_options.get("is_tf2", False):
+            model = get_model_tf2(model_options)
+        else:
+            model = get_model(model_options)
         predictions = get_predictions(recordings, model)
         predictions.reset_index(drop=True).to_feather(model_options["save_dest"])
     else:
@@ -121,6 +142,19 @@ model4_opts = {
 }
 
 res3 = evaluate_model(model4_opts, evaluator)
+
+#%%
+model5_opts = {
+    "name": "CityNetTF2",
+    "model_root": "../models/",
+    "options_file": "../models/CityNetTF2/20200821_155149/network_opts.yaml",
+    "weight_path": "../models/CityNetTF2/20200821_155149/test",
+    "save_dest": db_path / "predictions_CityNetTF2.feather",
+    "save_dest_root": db_path,
+    "is_tf2": True,
+}
+
+res5 = evaluate_model(model5_opts, evaluator)
 
 #%%
 
