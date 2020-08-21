@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import Model, layers, regularizers, Input
 
-from analysis.detection.lib.dl_model import DLModel
+from analysis.detection.models.dl_model import DLModel
 
 
 class DCASESpeechLab(DLModel):
