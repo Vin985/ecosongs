@@ -34,7 +34,7 @@ class CityNetTF2(DLModel):
                 self.opts["hww_x"] * 2,
                 self.opts["channels"],
             ),
-            batch_size=128,
+            # batch_size=128,
             dtype=tf.float32,
         )
         x = layers.Conv2D(
@@ -46,42 +46,42 @@ class CityNetTF2(DLModel):
             bias_initializer=None,
             padding="valid",
             activation=None,
-            name="conv1_1",
+            # name="conv1_1",
             kernel_regularizer=regularizers.l2(0.001),
         )(inputs)
-        x = layers.LeakyReLU(alpha=1 / 3)(x)
+        x = layers.LeakyReLU(alpha=1 / 3, name="conv1_1",)(x)
         x = layers.Conv2D(
             self.opts.get("num_filters", 128),
             (1, 3),
             bias_initializer=None,
             padding="valid",
             activation=None,
-            name="conv1_2",
+            # name="conv1_2",
             kernel_regularizer=regularizers.l2(0.001),
         )(x)
-        x = layers.LeakyReLU(alpha=1 / 3)(x)
+        x = layers.LeakyReLU(alpha=1 / 3, name="conv1_2",)(x)
         W = x.shape[2]
-        x = layers.MaxPool2D(pool_size=(1, W), strides=(1, 1),)(x)
+        x = layers.MaxPool2D(pool_size=(1, W), strides=(1, 1), name="pool2")(x)
         x = tf.transpose(x, (0, 3, 2, 1))
-        x = layers.Flatten()(x)
+        x = layers.Flatten(name="pool2_flat")(x)
         x = layers.Dense(
             self.opts["num_dense_units"],
             activation=None,
             bias_initializer=None,
             kernel_regularizer=regularizers.l2(0.001),
         )(x)
-        x = layers.Dropout(self.opts["dropout"])(x)
-        x = layers.LeakyReLU(alpha=1 / 3)(x)
+        # x = layers.Dropout(self.opts["dropout"])(x)
+        x = layers.LeakyReLU(alpha=1 / 3, name="fc6")(x)
         x = layers.Dense(
             self.opts["num_dense_units"],
             activation=None,
             bias_initializer=None,
-            kernel_regularizer=regularizers.l2(0.001),
+            # kernel_regularizer=regularizers.l2(0.001),
         )(x)
-        x = layers.Dropout(self.opts["dropout"])(x)
-        x = layers.LeakyReLU(alpha=1 / 3)(x)
+        # x = layers.Dropout(self.opts["dropout"])(x)
+        x = layers.LeakyReLU(alpha=1 / 3, name="fc7")(x)
         outputs = layers.Dense(
-            2, activation=None, kernel_regularizer=regularizers.l2(0.001),
+            2, activation=None, name="fc8"  # kernel_regularizer=regularizers.l2(0.001),
         )(x)
         print("end_layers")
         model = Model(inputs, outputs, name=self.NAME)
@@ -162,10 +162,16 @@ class CityNetTF2(DLModel):
         self.train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
             name="train_accuracy"
         )
+        # tf.keras.metrics.BinaryAccuracy(
+        #     name="train_accuracy", threshold=0.8
+        # )
         self.test_loss = tf.keras.metrics.Mean(name="test_loss")
         self.test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
             name="test_accuracy"
         )
+        # tf.keras.metrics.BinaryAccuracy(
+        #     name="test_accuracy", threshold=0.8
+        # )
         self.save_params()
         for epoch in range(self.opts["max_epochs"]):
             # Reset the metrics at the start of the next epoch
