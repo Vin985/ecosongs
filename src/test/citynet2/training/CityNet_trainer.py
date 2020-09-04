@@ -42,37 +42,42 @@ class CityNetTrainer:
         )
         return paths
 
-    def create_detection_dataset(self, data_type="train"):
-        base = self.paths[data_type + "_root_dir"]
-        dest_dir = base + self.opts["dest_dir"]
-        audio_dir = base + self.opts["audio_dir"]
-        labels_dir = base + self.opts["annotations_dir"]
+    def create_detection_datasets(self, data_type="train"):
+        for root_dir in self.opts["root_dirs"]:
+            root_dir = Path(root_dir) / data_type
+            dest_dir = root_dir / self.opts["dest_dir"]
+            audio_dir = root_dir / self.opts["audio_dir"]
+            labels_dir = root_dir / self.opts["annotations_dir"]
 
-        # load in the annotations
-        save_dir = Path(dest_dir + self.opts.get("spec_type", "mel") + "/")
-        if not save_dir.exists():
-            save_dir.mkdir(parents=True)
+            # load in the annotations
+            save_dir = dest_dir / self.opts.get("spec_type", "mel")
+            if not save_dir.exists():
+                save_dir.mkdir(parents=True)
 
-        for fname in os.listdir(audio_dir):
-            savename = save_dir / fname.replace(".wav", ".pkl")
-
-            # load the annottion
-            try:
-                if not os.path.exists(savename):
-                    annots, wav, sample_rate = load_annotations(
-                        fname, audio_dir, labels_dir
-                    )
-
-                    spec = self.generate_spectrogram(wav, sample_rate)
-
-                    # save to disk
-                    with open(savename, "wb") as f:
-                        pickle.dump((annots, spec), f, -1)
+            for file_path in audio_dir.iterdir():
+                if file_path.suffix.lower() == ".wav":
+                    savename = (save_dir / file_path.name).with_suffix(".pkl")
                 else:
-                    print("Skipping " + str(savename))
-            except Exception:
-                print("Error loading: " + fname + ", skipping.")
-                print(traceback.format_exc())
+                    continue
+
+                # load the annotation
+                try:
+                    print(savename)
+                    if not savename.exists() or self.opts.get("overwrite", False):
+                        annots, wav, sample_rate = load_annotations(
+                            file_path, labels_dir
+                        )
+
+                        spec = self.generate_spectrogram(wav, sample_rate)
+
+                        # save to disk
+                        with open(savename, "wb") as f:
+                            pickle.dump((annots, spec), f, -1)
+                    else:
+                        print("Skipping " + str(savename))
+                except Exception:
+                    print("Error loading: " + str(file_path) + ", skipping.")
+                    print(traceback.format_exc())
 
     def generate_spectrogram(self, wav, sample_rate):
 
@@ -108,16 +113,34 @@ class CityNetTrainer:
         X = []
         y = []
 
-        src_dir = self.paths[data_type + "_spec_dir"]
-        for file_name in os.listdir(src_dir):
-            print("Loading file: ", file_name)
-            annots, spec = self.load_data_helper(src_dir + file_name)
-            X.append(spec)
-            y.append(annots)
+        for root_dir in self.opts["root_dirs"]:
+            X_tmp = []
+            y_tmp = []
+            src_dir = (
+                Path(root_dir)
+                / self.opts[data_type + "_dir"]
+                / self.opts["dest_dir"]
+                / self.opts["spec_type"]
+            )
+            all_path = Path(src_dir / "all.pkl")
+            if all_path.exists():
+                X_tmp, y_tmp = pickle.load(open(all_path, "rb"))
 
-        height = min(xx.shape[0] for xx in X)
-        X = [xx[-height:, :] for xx in X]
+            else:
+                for file_name in os.listdir(src_dir):
+                    print("Loading file: ", file_name)
+                    annots, spec = self.load_data_helper(src_dir / file_name)
+                    X_tmp.append(spec)
+                    y_tmp.append(annots)
 
+                height = min(xx.shape[0] for xx in X_tmp)
+                X_tmp = [xx[-height:, :] for xx in X_tmp]
+
+                with open(all_path, "wb") as f:
+                    pickle.dump((X_tmp, y_tmp), f, -1)
+
+            X += X_tmp
+            y += y_tmp
         return X, y
 
     @staticmethod
@@ -127,15 +150,7 @@ class CityNetTrainer:
         return dirpath
 
     def train_and_test(
-        self,
-        train_X,
-        test_X,
-        train_y,
-        test_y,
-        test_files,
-        TEST_FOLD=99,
-        val_X=None,
-        val_y=None,
+        self, train_X, test_X, train_y, test_y, val_X=None, val_y=None,
     ):
         """
         Doesn't do any data loading - assumes the train and test data are passed
@@ -191,7 +206,7 @@ class CityNetTrainer:
             self.opts["num_filters"],
             self.opts["wiggle_room"],
             self.opts["conv_filter_width"],
-            self.opts["num_dense_filters"],
+            self.opts["num_dense_units"],
             self.opts["do_batch_norm"],
         )
 
@@ -319,8 +334,6 @@ class CityNetTrainer:
 
         print("data_loaded")
 
-        test_files = os.listdir(self.paths["test_spec_dir"])
-
         for idx in range(self.opts["ensemble_members"]):
             print("train ensemble: ", idx)
             self.paths["results_dir"] = (
@@ -333,7 +346,7 @@ class CityNetTrainer:
                 yaml.dump(self.opts, f, default_flow_style=False)
 
             self.train_and_test(
-                train_X, test_X, train_y, test_y, test_files,
+                train_X, test_X, train_y, test_y,
             )
 
     def train_model(self):
