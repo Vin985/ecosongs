@@ -107,6 +107,16 @@ model1_opts = {
 res1 = evaluate_model(model1_opts, evaluator)
 
 #%%
+model1_opts = {
+    "options_file": "../models/biotic/network_opts.yaml",
+    "weight_path": "../models/biotic/biotic",
+    "save_dest": db_path / "predictions_model1.2.feather",
+    "name": "citynet1.2",
+}
+
+res1 = evaluate_model(model1_opts, evaluator)
+
+#%%
 model2_opts = {
     "name": "citynet1.1",
     "model_root": "../models/",
@@ -157,7 +167,30 @@ model5_opts = {
 res5 = evaluate_model(model5_opts, evaluator)
 
 #%%
+model6_opts = {
+    "name": "CityNetTF2",
+    "model_root": "../models/",
+    "options_file": "../models/CityNetTF2/20200821_214405/network_opts.yaml",
+    "weight_path": "../models/CityNetTF2/20200821_214405/test",
+    "save_dest": db_path / "predictions_CityNetTF2_2.feather",
+    "save_dest_root": db_path,
+    "is_tf2": True,
+}
 
+res6 = evaluate_model(model6_opts, evaluator)
+#%%
+model7_opts = {
+    "name": "citynet_augmented1",
+    "model_root": "../models/",
+    "options_file": "../models/citynet_augmented1/network_opts.yaml",
+    "weight_path": "../models/citynet_augmented1/citynet_augmented1-1",
+    "save_dest": db_path / "citynet_augmented1.feather",
+    "save_dest_root": db_path,
+}
+
+res3 = evaluate_model(model7_opts, evaluator)
+
+#%%
 # db_opts = {
 #     "database": "ecosongs",
 #     "db_type": "feather",
