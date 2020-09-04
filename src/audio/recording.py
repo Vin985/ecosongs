@@ -1,11 +1,11 @@
-from db.models import BaseModel
+from db.dbmodels import BaseDBModel
 from pysoundplayer import audio
 from utils.commons import is_df_empty
 
 from analysis.detection.detectors import DETECTORS
 
 
-class Recording(BaseModel):
+class Recording(BaseDBModel):
 
     NO_TAG = 0
     TAGS_INCOMPLETE = 1
