@@ -20,17 +20,17 @@ class TableManager:
     def get_class(self, name):
         try:
             model_name = self.table_classname(name)
-            mod = __import__(".".join([self.TABLE_MODULE, name]),
-                             fromlist=[model_name])
+            mod = __import__(".".join([self.TABLE_MODULE, name]), fromlist=[model_name])
             cls = getattr(mod, model_name)
             if not issubclass(cls, TableModel):
-                raise ImportError("%s must subclass %s" %
-                                  (model_name, TableModel))
+                raise ImportError("%s must subclass %s" % (model_name, TableModel))
         except ModuleNotFoundError:
             print(utils.fullclassname(TableModel))
-            msg = ("No class named {0} was found."
-                   " Please create a class that extends {1} and place it"
-                   " in db.tables").format(model_name, utils.fullclassname(TableModel))
+            msg = (
+                "No class named {0} was found."
+                " Please create a class that extends {1} and place it"
+                " in db.tables"
+            ).format(model_name, utils.fullclassname(TableModel))
             raise ImportError(msg)
         return cls
 
@@ -50,6 +50,11 @@ class TableManager:
     def list_tables(self):
         module_path = os.path.join(*self.TABLE_MODULE.split("."))
         path = os.path.join(os.getcwd(), module_path)
-        tables = [os.path.splitext(f)[0] for f in os.listdir(path) if os.path.isfile(
-            os.path.join(path, f)) and f.endswith(".py") and not f.startswith("__")]
+        tables = [
+            os.path.splitext(f)[0]
+            for f in os.listdir(path)
+            if os.path.isfile(os.path.join(path, f))
+            and f.endswith(".py")
+            and not f.startswith("__")
+        ]
         return tables
