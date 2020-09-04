@@ -1,13 +1,13 @@
-from db.models import TableModel
+from db.dbmodels import TableDBModel
 
 
-class SongEventsTable(TableModel):
+class SongEventsTable(TableDBModel):
     TABLE_NAME = "song_events"
     COLUMNS = ["event_id", "recording_id", "start", "end", "analysis_options"]
     DUPLICATE_COLUMNS = ["recording_id", "analysis_options"]
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+        TableDBModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
     def get_duplicates_dict(self, df):
         recs = df["recording_id"].unique()

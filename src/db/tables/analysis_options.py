@@ -1,16 +1,16 @@
 import pandas as pd
 
 from audio.recording import Recording
-from db.models import TableModel
+from db.dbmodels import TableDBModel
 
 
-class AnalysisOptionsTable(TableModel):
+class AnalysisOptionsTable(TableDBModel):
     TABLE_NAME = "analysis_options"
     COLUMNS = ["analysis_type", "options"]
     DUPLICATE_COLUMNS = ["analysis_type", "options"]
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+        TableDBModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
     def add(self, options, analysis_type, save=False, replace=True):
 
@@ -20,19 +20,20 @@ class AnalysisOptionsTable(TableModel):
             #         "Analysis type should be provided if options is a list")
             opts = self.format_options_list(options)
             new = pd.DataFrame(
-                {"analysis_type": [analysis_type] * len(opts), "options": opts})
+                {"analysis_type": [analysis_type] * len(opts), "options": opts}
+            )
         elif isinstance(options, dict):
             # if analysis_type is None:
             #     raise AttributeError(
             #         "Analysis type should be provided if options is a dict")
             opts = self.format_options(options)
-            new = pd.DataFrame(
-                [{"analysis_type": analysis_type, "options": opts}])
+            new = pd.DataFrame([{"analysis_type": analysis_type, "options": opts}])
         # elif isinstance(options, pd.DataFrame):
         #     pass
         else:
             raise AttributeError(
-                "options attribute should be a list of dicts or a dict")
+                "options attribute should be a list of dicts or a dict"
+            )
 
         # existing = None
         # opt_id = 0
@@ -40,7 +41,7 @@ class AnalysisOptionsTable(TableModel):
         # if opts and self.df.shape[0] > 0:
         #     existing = self.df.loc[(self.df["analysis_type"] == analysis_type) &
         #                            self.df["options"].isin(opts)]
-            # print("existing: " + str(existing))
+        # print("existing: " + str(existing))
 
         # if existing is not None and existing.shape[0] > 0:
         #     opt_id = int(existing.id.iloc[0])

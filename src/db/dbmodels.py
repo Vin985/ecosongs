@@ -1,40 +1,7 @@
 import pandas as pd
 
 
-class BaseModel:
-    COLUMNS = []
-    id = None
-
-    def __init__(self, from_collection):
-        if from_collection:
-            if type(from_collection) is list:
-                if len(from_collection) == len(self.COLUMNS):
-                    from_collection = dict(zip(self.COLUMNS, from_collection))
-                else:
-                    message = (
-                        "The provided list has an unexpected length. "
-                        "{0} elements found when {1} were expected. "
-                        "The {2!s} class expects "
-                        "the following elements {3!s}".format(
-                            len(from_collection),
-                            len(self.COLUMNS),
-                            self.__class__,
-                            self.COLUMNS,
-                        )
-                    )
-                    raise ValueError(message)
-            self.attrs_from_collection(from_collection)
-
-    def attrs_from_collection(self, collection):
-        if collection:
-            for key in collection:
-                setattr(self, key, collection[key])
-
-    def to_dict(self):
-        return {key: getattr(self, key) for key in self.COLUMNS}
-
-
-class TableModel:
+class TableDBModel:
     TABLE_NAME = ""
     COMMON_COLUMNS = ["id"]
     DUPLICATE_COLUMNS = []
@@ -179,3 +146,36 @@ class TableModel:
     def export_table(self, options, table=None):
         to_export = table if table is not None else self.df
         self.dbmanager.export_table(to_export, options["dest"])
+
+
+class BaseDBModel:
+    COLUMNS = []
+    id = None
+
+    def __init__(self, from_collection):
+        if from_collection:
+            if type(from_collection) is list:
+                if len(from_collection) == len(self.COLUMNS):
+                    from_collection = dict(zip(self.COLUMNS, from_collection))
+                else:
+                    message = (
+                        "The provided list has an unexpected length. "
+                        "{0} elements found when {1} were expected. "
+                        "The {2!s} class expects "
+                        "the following elements {3!s}".format(
+                            len(from_collection),
+                            len(self.COLUMNS),
+                            self.__class__,
+                            self.COLUMNS,
+                        )
+                    )
+                    raise ValueError(message)
+            self.attrs_from_collection(from_collection)
+
+    def attrs_from_collection(self, collection):
+        if collection:
+            for key in collection:
+                setattr(self, key, collection[key])
+
+    def to_dict(self):
+        return {key: getattr(self, key) for key in self.COLUMNS}

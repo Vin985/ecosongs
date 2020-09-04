@@ -1,7 +1,7 @@
-from db.models import TableModel
+from db.dbmodels import TableDBModel
 
 
-class TagsTable(TableModel):
+class TagsTable(TableDBModel):
     TABLE_NAME = "tags"
     COLUMNS = [
         "tag_index",
@@ -22,7 +22,7 @@ class TagsTable(TableModel):
     NOISE = {"rain": 1, "wind": 2}
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+        TableDBModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
 
     def get_recording_tags(self, recording_id):
         return self.df.loc[self.df.recording_id == recording_id]

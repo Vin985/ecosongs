@@ -1,10 +1,10 @@
 import numpy as np
 
 from audio.recording import Recording
-from db.models import TableModel
+from db.dbmodels import TableDBModel
 
 
-class RecordingsTable(TableModel):
+class RecordingsTable(TableDBModel):
     TABLE_NAME = "recordings"
     COLUMNS = [
         "name",
@@ -34,7 +34,7 @@ class RecordingsTable(TableModel):
     REFERRED_BY = ["activity_predictions"]
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+        TableDBModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
         self.recordings = {}
 
     def load_recordings(self, indexes):

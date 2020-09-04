@@ -3,10 +3,10 @@ import numpy as np
 
 from analysis.detection.detectors.standard_detector import StandardDetector
 from analysis.detection.detectors.subsampling_detector import SubsamplingDetector
-from db.models import TableModel
+from db.dbmodels import TableDBModel
 
 
-class ActivityPredictionsTable(TableModel):
+class ActivityPredictionsTable(TableDBModel):
     TABLE_NAME = "activity_predictions"
     COMMON_COLUMNS = []
     COLUMNS = ["recording_id", "time", "activity"]
@@ -24,7 +24,7 @@ class ActivityPredictionsTable(TableModel):
     }
 
     def __init__(self, df=None, dbmanager=None):
-        TableModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
+        TableDBModel.__init__(self, self.COLUMNS, df=df, dbmanager=dbmanager)
         self.detectors = {
             "standard": StandardDetector(),
             "subsampling": SubsamplingDetector(),
