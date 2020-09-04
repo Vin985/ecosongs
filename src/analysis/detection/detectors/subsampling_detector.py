@@ -179,7 +179,7 @@ class SubsamplingDetector(Detector):
         events.loc[events.tag_index != "", "tag"] = 1
         stats = self.get_stats(events, expand_index=True)
         print("Stats for options {0}: {1}".format(options, stats))
-        return [options, stats, events]
+        return {"options": options, "stats": stats, "events": events}
 
     # def evaluate_by_time(self, predictions, tags, options):
     #     preds = predictions.copy()
