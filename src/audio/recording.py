@@ -14,7 +14,7 @@ class Recording(BaseDBModel):
     # TODO: load from file_path only
     def __init__(self, attributes):
         # TODO: load from path
-        BaseModel.__init__(self, attributes)
+        BaseDBModel.__init__(self, attributes)
         self.audio = None
         self.predictions = None
         self.tags = None
