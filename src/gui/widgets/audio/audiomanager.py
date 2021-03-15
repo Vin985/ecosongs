@@ -117,7 +117,7 @@ class AudioManager(PageWidget, Ui_AudioManager):
     def draw_events(self):
         event_options = self.song_events_options.get_options()
         events = self.current_recording.get_events(event_options)
-        if not events.empty:
+        if events is not None and not events.empty:
             for event in events.itertuples():
                 # # TODO: externalize color
                 fill_color = "#99ebef00"
