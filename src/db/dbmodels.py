@@ -78,7 +78,7 @@ class TableDBModel:
                 range(self.next_id, self.next_id + table.shape[0])
             )
         if not table.empty:
-            self.next_id = max(table["id"]) + 1
+            self.next_id = int(max(table["id"]) + 1)
         return table
 
     def check_types(self, df):
