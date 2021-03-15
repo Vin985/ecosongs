@@ -1,6 +1,6 @@
 import utils.commons as utils
 
-from .models import TableModel
+from .dbmodels import TableDBModel
 import os
 
 
@@ -22,15 +22,15 @@ class TableManager:
             model_name = self.table_classname(name)
             mod = __import__(".".join([self.TABLE_MODULE, name]), fromlist=[model_name])
             cls = getattr(mod, model_name)
-            if not issubclass(cls, TableModel):
-                raise ImportError("%s must subclass %s" % (model_name, TableModel))
+            if not issubclass(cls, TableDBModel):
+                raise ImportError("%s must subclass %s" % (model_name, TableDBModel))
         except ModuleNotFoundError:
-            print(utils.fullclassname(TableModel))
+            print(utils.fullclassname(TableDBModel))
             msg = (
                 "No class named {0} was found."
                 " Please create a class that extends {1} and place it"
                 " in db.tables"
-            ).format(model_name, utils.fullclassname(TableModel))
+            ).format(model_name, utils.fullclassname(TableDBModel))
             raise ImportError(msg)
         return cls
 
