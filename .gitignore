@@ -27,3 +27,13 @@ src/gui/widgets/common/ui/labeled_slider_ui.py
 src/gui/ecosongs_new.ui
 src/test/db/feather/analysis_options copy.feather.bak
 src/plot/export_data_celine.py
+src/test/test_detector.py
+src/test/test_flowchart.py
+src/test/test_graph_eval.py
+src/test/test_list_comp.py
+src/test/test_profile_detector copy.py
+src/test/test_scatter.py
+src/test/timeplot.py
+src/test/tags_matched.png
+src/test/citynet2/models
+logs
