@@ -37,3 +37,9 @@ src/test/timeplot.py
 src/test/tags_matched.png
 src/test/citynet2/models
 logs
+src/test/test_detector_new.py
+src/test/test_SNR.py
+src/test/test_detector_new.py
+src/test/test_detector_new.py
+src/test/example.wav
+src/test/rename.R
