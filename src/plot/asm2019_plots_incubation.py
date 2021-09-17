@@ -1,3 +1,4 @@
+#%%
 import datetime
 import inspect
 import math
@@ -5,16 +6,32 @@ import os
 
 import feather
 import pandas as pd
-from plotnine import (aes, annotate, element_blank, facet_grid, facet_wrap,
-                      geom_errorbar, geom_line, geom_point, geom_rect,
-                      geom_smooth, ggplot, save_as_pdf_pages,
-                      scale_colour_manual, scale_x_continuous,
-                      scale_y_continuous, theme, theme_classic, xlab, xlim,
-                      ylab, ylim)
+from plotnine import (
+    aes,
+    annotate,
+    element_blank,
+    facet_grid,
+    facet_wrap,
+    geom_errorbar,
+    geom_line,
+    geom_point,
+    geom_rect,
+    geom_smooth,
+    ggplot,
+    save_as_pdf_pages,
+    scale_colour_manual,
+    scale_x_continuous,
+    scale_y_continuous,
+    theme,
+    theme_classic,
+    xlab,
+    xlim,
+    ylab,
+    ylim,
+)
 from plotnine.facets.facet_wrap import n2mfrow
 
-currentdir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 print(currentdir)
 parentdir = os.path.dirname(currentdir)
 os.sys.path.insert(0, parentdir)
@@ -25,8 +42,10 @@ except Exception:
 
 
 def label_x(dates):
-    res = [(datetime.datetime(2018, 1, 1) + datetime.timedelta(x)
-            ).strftime("%d-%m") for x in dates]
+    res = [
+        (datetime.datetime(2018, 1, 1) + datetime.timedelta(x)).strftime("%d-%m")
+        for x in dates
+    ]
     print(res)
     return res
 
@@ -36,37 +55,58 @@ if __name__ == "__main__":
     # subset = {"exclude": {"site": ["Cape Churchill", "Coats Island",
     #                                "Hochstetter", "Colville River Delta"],
     #                       "plot": ["SDHC_1", "SDHC_1 2"]}}
-    subset = {"include": {"site": ["Igloolik", "East Bay", "Barrow", "Burntpoint Creek", "Canning River", "Svalbard"]},
-              "exclude": {"plot": "BARW_8"}}
+    subset = {
+        "include": {
+            "site": [
+                "Igloolik",
+                "East Bay",
+                "Barrow",
+                "Burntpoint Creek",
+                "Canning River",
+                "Svalbard",
+            ]
+        },
+        "exclude": {"plot": "BARW_8"},
+    }
 
-    save = {"path": "../plot/figs",
-            "height": 10,
-            "width": 16,
-            "dpi": 150,
-            "filename": "asm2019_songevents_compare.png"}
+    save = {
+        "path": "../plot/figs",
+        "height": 10,
+        "width": 16,
+        "dpi": 150,
+        "filename": "asm2019_songevents_compare.png",
+    }
 
     site_data = pd.read_excel(
-        "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/sites_deployment_2018.xlsx")
+        "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/sites_deployment_2018.xlsx"
+    )
 
-    plt = EventsPlot(events="../plot/data/song_events_mac2.feather",
-                     recordings="../plot/data/recordings_mac.feather",
-                     deployment_data=site_data,
-                     opts={  # "julian_bounds": (164, 220),
-                         "subset": subset,
-                         # "save": save,
-                         "facet_scales": "fixed",
-                         "facet_nrow": 2,
-                         "smoothed": True})
+    plt = EventsPlot(
+        events="/mnt/win/UMoncton/Doctorat/dev/ecosongs/src/results/data/song_events_mac2.feather",
+        recordings="/mnt/win/UMoncton/Doctorat/dev/ecosongs/src/results/data/recordings_mac.feather",
+        deployment_data=site_data,
+        opts={  # "julian_bounds": (164, 220),
+            "subset": subset,
+            # "save": save,
+            "facet_scales": "fixed",
+            "facet_nrow": 2,
+            "smoothed": True,
+        },
+    )
 
 
 plt.create_plot_data()
+
+#%%
 
 
 def create_file_name(type, site, prefix, suffix):
     return "_".join(filter(None, [prefix, type, site, suffix]))
 
 
-def incubation_plot(data, site, nest_data_path, save=True, ext=".png", prefix="", suffix=""):
+def incubation_plot(
+    data, site, nest_data_path, save=True, ext=".png", prefix="", suffix=""
+):
     df = data.loc[data.site == site]
 
     df_nest = pd.read_excel(nest_data_path)
@@ -77,58 +117,90 @@ def incubation_plot(data, site, nest_data_path, save=True, ext=".png", prefix=""
     inc_end = df_nest[df_nest.type == "incubation"].julian.max()
     inc_lbl_pos = inc_start + (inc_end - inc_start) / 2
     hatch_start = df_nest[df_nest.type == "hatch"].julian.min()
-    hatch_end = min(df_nest[df_nest.type ==
-                            "hatch"].julian.max(), df.julian.max() + 2)
+    hatch_end = min(df_nest[df_nest.type == "hatch"].julian.max(), df.julian.max() + 2)
     hatch_lbl_pos = hatch_start + (hatch_end - hatch_start) / 2
 
     xmin = min(inc_start, df.julian.min())
-    xmax = min(df_nest[df_nest.type == "hatch"].julian.max(),
-               df.julian.max() + 2)
+    xmax = min(df_nest[df_nest.type == "hatch"].julian.max(), df.julian.max() + 2)
 
-    yrange = (df.value.max() - df.value.min())
-    bufmin = .1 * yrange
-    bufmax = .15 * yrange
+    yrange = df.value.max() - df.value.min()
+    bufmin = 0.1 * yrange
+    bufmax = 0.15 * yrange
     ymin = df.value.min() - bufmin
     ymax = df.value.max() + bufmax
 
-    se_plot = (ggplot(data=df, mapping=aes(x='julian', y='value', colour='site'))
-               + xlab("Day")
-               + ylab("Mean daily events detected")
-               + geom_point()
-               + theme_classic()
-               + theme(legend_position="none")
-               + geom_smooth(method="mavg", se=False,
-                             method_args={"window": 4, "center": True, "min_periods": 1})
-               + annotate("rect", xmin=[inc_start, hatch_start], xmax=[inc_end, hatch_end],
-                          ymin=-math.inf, ymax=math.inf, alpha=0.1, fill=["red", "blue"])
-               + annotate("text", x=[inc_lbl_pos, hatch_lbl_pos],
-                          y=df.value.max() + .1 * yrange, label=["Incubation initiation", "Hatching"])
-               + scale_x_continuous(labels=label_x, limits=[xmin, xmax])
-               + ylim(ymin, ymax))
+    se_plot = (
+        ggplot(data=df, mapping=aes(x="julian", y="value", colour="site"))
+        + xlab("Day")
+        + ylab("Mean daily events detected")
+        + geom_point()
+        + theme_classic()
+        + theme(legend_position="none")
+        + geom_smooth(
+            method="mavg",
+            se=False,
+            method_args={"window": 4, "center": True, "min_periods": 1},
+        )
+        + annotate(
+            "rect",
+            xmin=[inc_start, hatch_start],
+            xmax=[inc_end, hatch_end],
+            ymin=-math.inf,
+            ymax=math.inf,
+            alpha=0.1,
+            fill=["red", "blue"],
+        )
+        + annotate(
+            "text",
+            x=[inc_lbl_pos, hatch_lbl_pos],
+            y=df.value.max() + 0.1 * yrange,
+            label=["Incubation initiation", "Hatching"],
+        )
+        + scale_x_continuous(labels=label_x, limits=[xmin, xmax])
+        + ylim(ymin, ymax)
+    )
 
-    df_inc = df_nest.groupby(
-        ["julian", "type"], as_index=False).uniqueID.count().reset_index().copy()
+    df_inc = (
+        df_nest.groupby(["julian", "type"], as_index=False)
+        .uniqueID.count()
+        .reset_index()
+        .copy()
+    )
 
     print(df_inc)
     print(df_inc.loc[df_inc.type == "incubation", "uniqueID"].max())
-    inc_plot = (ggplot(data=df_inc, mapping=aes(x="julian", y="uniqueID"))
-                + xlab("Day")
-                + ylab("Number of nest initiation/hatch")
-                + theme_classic()
-                + theme(axis_line=element_blank(),
-                        axis_title_y=element_blank(), axis_ticks_major_y=element_blank(), axis_text_y=element_blank())
-                # + geom_line()
-                # + geom_smooth(data=df_inc, linetype="dashed",
-                #               method="mavg", se=False,
-                #               method_args={"window": 2, "center": True, "min_periods": 1})
-                + geom_smooth(data=df_inc.loc[df_inc["type"] == "incubation"], linetype="dashed",
-                              method="mavg", se=False,
-                              method_args={"window": 3, "center": True, "min_periods": 1})
-                + geom_smooth(data=df_inc.loc[df_inc["type"] == "hatch"], linetype="dotted",
-                              method="mavg", se=False,
-                              method_args={"window": 3, "center": True, "min_periods": 1})
-                + scale_x_continuous(labels=label_x, limits=[xmin, xmax])
-                + scale_y_continuous(position="right", limits=[0, df_inc.uniqueID.max() * 1.2]))
+    inc_plot = (
+        ggplot(data=df_inc, mapping=aes(x="julian", y="uniqueID"))
+        + xlab("Day")
+        + ylab("Number of nest initiation/hatch")
+        + theme_classic()
+        + theme(
+            axis_line=element_blank(),
+            axis_title_y=element_blank(),
+            axis_ticks_major_y=element_blank(),
+            axis_text_y=element_blank(),
+        )
+        # + geom_line()
+        # + geom_smooth(data=df_inc, linetype="dashed",
+        #               method="mavg", se=False,
+        #               method_args={"window": 2, "center": True, "min_periods": 1})
+        + geom_smooth(
+            data=df_inc.loc[df_inc["type"] == "incubation"],
+            linetype="dashed",
+            method="mavg",
+            se=False,
+            method_args={"window": 3, "center": True, "min_periods": 1},
+        )
+        + geom_smooth(
+            data=df_inc.loc[df_inc["type"] == "hatch"],
+            linetype="dotted",
+            method="mavg",
+            se=False,
+            method_args={"window": 3, "center": True, "min_periods": 1},
+        )
+        + scale_x_continuous(labels=label_x, limits=[xmin, xmax])
+        + scale_y_continuous(position="right", limits=[0, df_inc.uniqueID.max() * 1.2])
+    )
 
     if save:
         se_name = create_file_name("sound_events", site, prefix, suffix)
@@ -144,12 +216,15 @@ label_x([175])
 #                                      "/home/vin/Doctorat/data/datasheet/2018/IGLO/IGLO_nest_2018.xlsx",
 #                                      # save=False,
 #                                      prefix="asm2019")
-# (barw_se, barw_inc) = incubation_plot(plt.plot_data, "Barrow",
-#                                      "/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_nest_2018.xlsx",
-#                                      # save=False,
-#                                      prefix="asm2019")
+(barw_se, barw_inc) = incubation_plot(
+    plt.plot_data,
+    "Barrow",
+    "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/Nest Monitoring/2018/BARW/BARW_nest_2018.xlsx",
+    # save=False,
+    prefix="asm2019_2",
+)
 
-
+#%%
 def join_tuple(tuple, sep):
     tuple = list(filter(None, tuple))
     if len(tuple) > 1:
@@ -172,12 +247,19 @@ def check_dates(df, site_data):
     return res
 
 
-sites = ["Igloolik", "East Bay", "Barrow",
-         "Burntpoint Creek", "Canning River", "Svalbard"]
+sites = [
+    "Igloolik",
+    "East Bay",
+    "Barrow",
+    "Burntpoint Creek",
+    "Canning River",
+    "Svalbard",
+]
 plot_excl = ["BARW_8"]
 
 site_data = pd.read_excel(
-    "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/sites_deployment_2018.xlsx")
+    "/mnt/win/UMoncton/OneDrive - Université de Moncton/Data/sites_deployment_2018.xlsx"
+)
 aci = feather.read_dataframe("../plot/data/ACI.feather")
 aci = aci.loc[aci.site.isin(sites)]
 aci = aci.loc[~aci["plot"].isin(plot_excl)]
@@ -191,21 +273,26 @@ aci = aci.loc[aci["denoised"] == False]
 aci = aci.reset_index()
 res = aci.groupby(["plot"], as_index=False).apply(check_dates, site_data)
 res.index = res.index.droplevel()
-res = res.groupby(["site", "julian"], as_index=False).agg(
-    {"ACI": ["mean", "std"]})
+res = res.groupby(["site", "julian"], as_index=False).agg({"ACI": ["mean", "std"]})
 res.columns = pd.Index(join_tuple(i, "_") for i in res.columns)
 aci_test = res
 aci_test["value"] = res.ACI_mean
 
 
-(iglo_aci, iglo_inc) = incubation_plot(aci_test, "Igloolik",
-                                       "/home/vin/Doctorat/data/datasheet/2018/IGLO/IGLO_nest_2018.xlsx",
-                                       # save=False,
-                                       prefix="asm2019_ACI2")
-(barw_aci, barw_inc) = incubation_plot(aci_test, "Barrow",
-                                       "/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_nest_2018.xlsx",
-                                       # save=False,
-                                       prefix="asm2019_ACI2")
+(iglo_aci, iglo_inc) = incubation_plot(
+    aci_test,
+    "Igloolik",
+    "/home/vin/Doctorat/data/datasheet/2018/IGLO/IGLO_nest_2018.xlsx",
+    # save=False,
+    prefix="asm2019_ACI2",
+)
+(barw_aci, barw_inc) = incubation_plot(
+    aci_test,
+    "Barrow",
+    "/home/vin/Doctorat/data/datasheet/2018/BARW/BARW_nest_2018.xlsx",
+    # save=False,
+    prefix="asm2019_ACI2",
+)
 
 # plt.plot()
 # print(plt.plot_data)
